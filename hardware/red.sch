@@ -37,7 +37,7 @@ $Descr A3 16535 11693
 encoding utf-8
 Sheet 1 5
 Title "RED Brick"
-Date "24 feb 2014"
+Date "27 feb 2014"
 Rev "1.0"
 Comp "Tinkerforge GmbH"
 Comment1 "Licensed under CERN OHL v.1.1"
@@ -3078,6 +3078,4 @@ F 3 "" H 700 5500 60  0000 C CNN
 	-1   0    0    -1  
 $EndComp
 Connection ~ 700  5300
-Text Notes 8150 5250 0    60   ~ 0
-3V3 einspeisen? ->Debug/Extensions?\n5V nach oben im Stack schalten?
 $EndSCHEMATC
