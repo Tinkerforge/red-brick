@@ -1,0 +1,6 @@
+#
+# /etc/fstab
+#
+# <device> <mountpoint> <filesystemtype><options> <dump> <fsckorder>
+
+none            /proc       proc    defaults

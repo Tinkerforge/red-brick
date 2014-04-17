@@ -1,0 +1,4 @@
+# /etc/udev/rules.d/50-mali.rules
+
+KERNEL=="mali", MODE="0660", GROUP="video"
+KERNEL=="ump" , MODE="0660", GROUP="video"
