@@ -91,15 +91,11 @@ multistrap -f ./$OPTS_DIR/root-fs/$MULTISTRAP_SCRIPT
 echo -e "\nInfo: Copying qemu-arm-static\n"
 cp $QEMU_BIN ./$ROOT_DIR/usr/bin/
 
-# Mounting key FS to the chroot environment
-mount --bind /proc ./$ROOT_DIR/proc/
-mount --bind /dev ./$ROOT_DIR/dev/
-mount --bind /tmp ./$ROOT_DIR/tmp/
-
 # Rootfs configuration
 echo -e "\nInfo: Configuring the generated rootfs\n"
 chroot ./$ROOT_DIR<<EOF
 export LC_ALL=C LANGUAGE=C LANG=C
+mount -t proc proc /proc
 /var/lib/dpkg/info/dash.preinst install
 dpkg --configure -a
 EOF
@@ -171,11 +167,6 @@ curl https://www.npmjs.org/install.sh | sh
 rm -vrf /etc/resolv.conf
 sync
 EOF
-
-# Unmounting key FS from the chroot environment
-umount ./$ROOT_DIR/proc/
-umount ./$ROOT_DIR/dev/
-umount ./$ROOT_DIR/tmp/
 
 # Removing qemu-arm-static from rootfs
 echo -e "\nInfo: Removing qemu-arm-static from rootfs\n"
