@@ -1,4 +1,4 @@
-Red Brick
+RED Brick
 =========
 
 This repository contains only the hardware design files of
