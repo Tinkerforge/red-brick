@@ -1,16 +1,11 @@
 #!/bin/bash
 
-# Variables
-UBOOT_SRC_DIR="u-boot-sunxi"
-UBOOT_GIT_BRANCH="sunxi"
-UBOOT_GIT_SRC="http://github.com/linux-sunxi/u-boot-sunxi.git"
-
-KERNEL_SRC_DIR="linux-sunxi"
-KERNEL_GIT_BRANCH="sunxi-3.4"
-KERNEL_GIT_SRC="http://github.com/linux-sunxi/linux-sunxi.git"
-
-SUNXI_TOOLS_SRC_DIR="sunxi-tools"
-SUNXI_TOOLS_GIT_SRC="http://github.com/linux-sunxi/sunxi-tools.git"
+# Getting the configuration variables
+if [ "$#" -ne 1 ]; then
+    echo -e "\nError: Too many or too few parameters (provide image configuration)\n"
+    exit 1
+fi
+. $1
 
 # Reset U-Boot source
 echo -e "\nInfo: Reset U-Boot source\n"

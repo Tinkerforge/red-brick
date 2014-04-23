@@ -9,25 +9,12 @@ then
     exit 1
 fi
 
-# Variables
-OPTS_DIR="optimizations"
-ROOT_DIR="root-fs"
-DEB_CACHE_DIR="deb-cache"
-
-UBOOT_SRC_DIR="u-boot-sunxi"
-UBOOT_IMAGE="sunxi-spl.bin"
-
-KERNEL_SRC_DIR="linux-sunxi"
-KERNEL_MOD_DIR="out"
-KERNEL_IMAGE="uImage"
-BOOT_SCRIPT="script_red_brick.bin"
-
-QEMU_BIN="/usr/bin/qemu-arm-static"
-MULTISTRAP_SCRIPT="multistrap-stable.conf"
-
-UBOOT_DD_SEEK=16
-SCRIPTBIN_DD_SEEK=80
-KERNEL_DD_SEEK=224
+# Getting the configuration variables
+if [ "$#" -ne 1 ]; then
+    echo -e "\nError: Too many or too few parameters (provide image configuration)\n"
+    exit 1
+fi
+. $1
 
 # Checking u-boot
 if [ ! -e ./$UBOOT_SRC_DIR/spl/$UBOOT_IMAGE ]
@@ -41,7 +28,7 @@ then
     echo -e "\nError: Please build the kernel first\n"
     exit 1
 fi
-if [ ! -e ./$OPTS_DIR/kernel/$BOOT_SCRIPT ]
+if [ ! -e ./$OPTS_DIR/kernel/$KERNEL_SCRIPT_BIN ]
 then
     echo -e "\nError: No boot script found\n"
     exit 1
@@ -115,8 +102,9 @@ cp ./$OPTS_DIR/root-fs/50-mali.rules    ./$ROOT_DIR/etc/udev/rules.d/
 # Rootfs configuration
 echo -e "\nInfo: Configuring the generated rootfs\n"
 chroot ./$ROOT_DIR<<EOF
-apt-get update
 export LC_ALL=C LANGUAGE=C LANG=C
+apt-get update
+dpkg --configure -a
 mount -t proc proc /proc
 /var/lib/dpkg/info/dash.preinst install
 dpkg --configure -a
@@ -134,6 +122,7 @@ cp ./$OPTS_DIR/root-fs/tf-logo.png           ./$ROOT_DIR/etc/
 cp ./$OPTS_DIR/root-fs/asplashscreen         ./$ROOT_DIR/etc/init.d/
 cp ./$OPTS_DIR/root-fs/killasplashscreen     ./$ROOT_DIR/etc/init.d/
 chroot ./$ROOT_DIR<<EOF
+export LC_ALL=C LANGUAGE=C LANG=C
 chmod a+x /etc/init.d/asplashscreen
 chmod a+x /etc/init.d/killasplashscreen
 insserv /etc/init.d/asplashscreen
@@ -144,6 +133,7 @@ EOF
 # Setup Mali GPU
 cp -avr ./$OPTS_DIR/root-fs/mali-gpu       ./$ROOT_DIR/tmp/
 chroot ./$ROOT_DIR<<EOF
+export LC_ALL=C LANGUAGE=C LANG=C
 cd /tmp/mali-gpu
 dpkg -i ./libdri2-1_1.0-2_armhf.deb
 dpkg -i ./libsunxi-mali-x11_1.0-4_armhf.deb
@@ -160,14 +150,11 @@ cp -avr ./$OPTS_DIR/root-fs/tf.xpm ./$ROOT_DIR/usr/share/X11/xdm/pixmaps/
 cp -avr ./$OPTS_DIR/root-fs/tf-bw.xpm ./$ROOT_DIR/usr/share/X11/xdm/pixmaps/
 cp -avr ./$OPTS_DIR/root-fs/Xresources ./$ROOT_DIR/etc/X11/xdm/
 cp ./$OPTS_DIR/root-fs/tf-logo.png      ./$ROOT_DIR/etc/alternatives/desktop-background
-chroot ./$ROOT_DIR<<EOF
-chmod a+x /etc/rc.local
-sync
-EOF
 
 # Install Node.JS and NPM
 cp ./$OPTS_DIR/root-fs/node_0.10.26-1_armhf.deb      ./$ROOT_DIR/tmp/
 chroot ./$ROOT_DIR<<EOF
+export LC_ALL=C LANGUAGE=C LANG=C
 cd /tmp
 dpkg -i node_0.10.26-1_armhf.deb
 rm -vrf ./node_0.10.26-1_armhf.deb
@@ -178,6 +165,7 @@ EOF
 # to get the version number is not working.
 # So right now it is hard coded.
 #chroot ./$ROOT_DIR<<EOF
+#export LC_ALL=C LANGUAGE=C LANG=C
 #echo "nameserver 8.8.8.8" > /etc/resolv.conf
 #cd /tmp
 #wget -N http://nodejs.org/dist/node-latest.tar.gz
@@ -200,18 +188,21 @@ EOF
 
 # Applying console settings
 chroot ./$ROOT_DIR<<EOF
+export LC_ALL=C LANGUAGE=C LANG=C
 setupcon
 sync
 EOF
 
 # Cleaning up APT cache
 chroot ./$ROOT_DIR<<EOF
+export LC_ALL=C LANGUAGE=C LANG=C
 apt-get clean
 sync
 EOF
 
 # Setting root password
 chroot ./$ROOT_DIR<<EOF
+export LC_ALL=C LANGUAGE=C LANG=C
 passwd root
 tf
 tf
@@ -220,14 +211,24 @@ EOF
 
 # Enable BASH completion
 chroot ./$ROOT_DIR<<EOF
+export LC_ALL=C LANGUAGE=C LANG=C
 . /etc/bash_completion
 sync
 EOF
 
 # Setup fake-hwclock
 chroot ./$ROOT_DIR<<EOF
+export LC_ALL=C LANGUAGE=C LANG=C
 insserv -r /etc/init.d/hwclock.sh
 fake-hwclock
+sync
+EOF
+
+# Removing plymouth
+chroot ./$ROOT_DIR<<EOF
+export LC_ALL=C LANGUAGE=C LANG=C
+apt-get remove plymouth -y
+apt-get purge plymouth -y
 sync
 EOF
 
@@ -287,7 +288,7 @@ echo -e "\nInfo: Installing U-Boot to the storage device\n"
 dd bs=512 seek=$UBOOT_DD_SEEK if=./$UBOOT_SRC_DIR/spl/$UBOOT_IMAGE of=/dev/$STORAGE_DEVICE 
 
 echo -e "\nInfo: Installing boot script to the storage device\n"
-dd bs=512 seek=$SCRIPTBIN_DD_SEEK if=./$OPTS_DIR/kernel/$BOOT_SCRIPT of=/dev/$STORAGE_DEVICE
+dd bs=512 seek=$SCRIPTBIN_DD_SEEK if=./$OPTS_DIR/kernel/$KERNEL_SCRIPT_BIN of=/dev/$STORAGE_DEVICE
 
 echo -e "\nInfo: Installing the kernel to the storage device\n"
 dd bs=512 seek=$KERNEL_DD_SEEK if=./$KERNEL_SRC_DIR/arch/arm/boot/$KERNEL_IMAGE of=/dev/$STORAGE_DEVICE

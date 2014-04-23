@@ -1,23 +1,11 @@
 #! /bin/bash
 
-# Variables
-CROSS_COMPILE_TC="arm-linux-gnueabihf-"
-OPTS_DIR="optimizations"
-
-UBOOT_SRC_DIR="u-boot-sunxi"
-UBOOT_CONFIG="A10s-OLinuXino-M_config"
-UBOOT_PATCH="u-boot-opt-spl-ramoc.patch"
-
-KERNEL_SRC_DIR="linux-sunxi"
-KERNEL_CONFIG="red_brick_full_defconfig"
-KERNEL_I2C_PATCH="sunxi-i2c.patch"
-KERNEL_HCD_AXP_PATCH="hcd_axp.patch"
-KERNEL_IMAGE="uImage"
-KERNEL_MOD_PATH="out"
-
-SUNXI_TOOLS_DIR="sunxi-tools"
-SCRIPT_FEX="script_red_brick.fex"
-SCRIPT_BIN="script_red_brick.bin"
+# Getting the configuration variables
+if [ "$#" -ne 1 ]; then
+    echo -e "\nError: Too many or too few parameters (provide image configuration)\n"
+    exit 1
+fi
+. $1
 
 # Check U_Boot patch
 if [ ! -e ./$OPTS_DIR/u-boot/$UBOOT_PATCH ]
@@ -43,7 +31,7 @@ then
     exit 1
 fi
 # Check boot script FEX file
-if [ ! -e ./$OPTS_DIR/kernel/$SCRIPT_FEX ]
+if [ ! -e ./$OPTS_DIR/kernel/$KERNEL_SCRIPT_FEX ]
 then
     echo -e "\nError: Boot script FEX file not found\n"
     exit 1
@@ -99,15 +87,15 @@ if [ $? -eq 0 ]
 then
     patch -p1 < ./$KERNEL_HCD_AXP_PATCH
 fi
-make ARCH=arm CROSS_COMPILE=$CROSS_COMPILE_TC -j16 INSTALL_MOD_PATH=$KERNEL_MOD_PATH $KERNEL_IMAGE modules
-make ARCH=arm CROSS_COMPILE=$CROSS_COMPILE_TC INSTALL_MOD_PATH=$KERNEL_MOD_PATH modules_install
+make ARCH=arm CROSS_COMPILE=$CROSS_COMPILE_TC -j16 INSTALL_MOD_PATH=$KERNEL_MOD_DIR $KERNEL_IMAGE modules
+make ARCH=arm CROSS_COMPILE=$CROSS_COMPILE_TC INSTALL_MOD_PATH=$KERNEL_MOD_DIR modules_install
 cd ../
 
 # Building sunxi-tools
 cd ./$SUNXI_TOOLS_DIR
 make clean
 make all
-./fex2bin ../$OPTS_DIR/kernel/$SCRIPT_FEX ../$OPTS_DIR/kernel/$SCRIPT_BIN
+./fex2bin ../$OPTS_DIR/kernel/$KERNEL_SCRIPT_FEX ../$OPTS_DIR/kernel/$KERNEL_SCRIPT_BIN
 
 sync
 
