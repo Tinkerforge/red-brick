@@ -12,6 +12,7 @@ fi
 # Variables
 OPTS_DIR="optimizations"
 ROOT_DIR="root-fs"
+DEB_CACHE_DIR="deb-cache"
 
 UBOOT_SRC_DIR="u-boot-sunxi"
 UBOOT_IMAGE="sunxi-spl.bin"
@@ -77,10 +78,19 @@ then
 fi
 
 # Cleaning up where rootfs will be generated
-echo -e "\nInfo: Cleaning up\n"
 if [ -d ./$ROOT_DIR ]
 then
-    rm -vfr ./$ROOT_DIR
+    rm -vrf ./$ROOT_DIR
+fi
+
+# Setting up caching
+if [ ! -d ./$DEB_CACHE_DIR ]
+then
+    mkdir ./$DEB_CACHE_DIR
+else
+    mkdir ./$ROOT_DIR
+    mkdir -p ./$ROOT_DIR/var/cache/apt/archives
+    cp -avr ./$DEB_CACHE_DIR/* ./$ROOT_DIR/var/cache/apt/archives/
 fi
 
 # Starting multistrap
@@ -90,15 +100,6 @@ multistrap -f ./$OPTS_DIR/root-fs/$MULTISTRAP_SCRIPT
 # Copying qemu-arm-static to rootfs
 echo -e "\nInfo: Copying qemu-arm-static\n"
 cp $QEMU_BIN ./$ROOT_DIR/usr/bin/
-
-# Rootfs configuration
-echo -e "\nInfo: Configuring the generated rootfs\n"
-chroot ./$ROOT_DIR<<EOF
-export LC_ALL=C LANGUAGE=C LANG=C
-mount -t proc proc /proc
-/var/lib/dpkg/info/dash.preinst install
-dpkg --configure -a
-EOF
 
 # Copying config files to rootfs
 echo -e "\nInfo: Copying config files to rootfs\n"
@@ -110,6 +111,17 @@ cp ./$OPTS_DIR/root-fs/modules          ./$ROOT_DIR/etc/
 cp ./$OPTS_DIR/root-fs/passwd           ./$ROOT_DIR/etc/
 cp ./$OPTS_DIR/root-fs/interfaces       ./$ROOT_DIR/etc/network/
 cp ./$OPTS_DIR/root-fs/50-mali.rules    ./$ROOT_DIR/etc/udev/rules.d/
+
+# Rootfs configuration
+echo -e "\nInfo: Configuring the generated rootfs\n"
+chroot ./$ROOT_DIR<<EOF
+apt-get update
+export LC_ALL=C LANGUAGE=C LANG=C
+mount -t proc proc /proc
+/var/lib/dpkg/info/dash.preinst install
+dpkg --configure -a
+umount /proc
+EOF
 
 # Copying kernel modules to rootfs
 echo -e "\nInfo: Copying kernel modules to rootfs\n"
@@ -147,24 +159,75 @@ EOF
 cp -avr ./$OPTS_DIR/root-fs/tf.xpm ./$ROOT_DIR/usr/share/X11/xdm/pixmaps/
 cp -avr ./$OPTS_DIR/root-fs/tf-bw.xpm ./$ROOT_DIR/usr/share/X11/xdm/pixmaps/
 cp -avr ./$OPTS_DIR/root-fs/Xresources ./$ROOT_DIR/etc/X11/xdm/
-cp -avr ./$OPTS_DIR/root-fs/rc.local ./$ROOT_DIR/etc/
+cp ./$OPTS_DIR/root-fs/tf-logo.png      ./$ROOT_DIR/etc/alternatives/desktop-background
 chroot ./$ROOT_DIR<<EOF
 chmod a+x /etc/rc.local
 sync
 EOF
 
-# Building and install Node.JS and NPM
+# Install Node.JS and NPM
+cp ./$OPTS_DIR/root-fs/node_0.10.26-1_armhf.deb      ./$ROOT_DIR/tmp/
 chroot ./$ROOT_DIR<<EOF
-echo "nameserver 8.8.8.8" > /etc/resolv.conf
-src=$(mktemp -d) && cd $src
-wget -N http://nodejs.org/dist/node-latest.tar.gz
-tar xzvf node-latest.tar.gz && cd node-v*
-./configure
-fakeroot checkinstall -y --install=no --pkgversion $(echo $(pwd) | sed -n -re's/.+node-v(.+)$/\1/p') make -j$(($(nproc)+1)) install
-dpkg -i node_*
-rm -vrf node_*
-curl https://www.npmjs.org/install.sh | sh
-rm -vrf /etc/resolv.conf
+cd /tmp
+dpkg -i node_0.10.26-1_armhf.deb
+rm -vrf ./node_0.10.26-1_armhf.deb
+sync
+EOF
+
+# FIXME: For some strange reason the hack
+# to get the version number is not working.
+# So right now it is hard coded.
+#chroot ./$ROOT_DIR<<EOF
+#echo "nameserver 8.8.8.8" > /etc/resolv.conf
+#cd /tmp
+#wget -N http://nodejs.org/dist/node-latest.tar.gz
+#tar zxvf node-latest.tar.gz
+#rm -vrf node-latest.tar.gz
+#cd node-v*
+#./configure
+#node_full_name=${PWD##*/}
+#node_version=${node_full_name:6}
+#fakeroot checkinstall -y --install=no --pkgversion 0.10.26 make -j16 install
+#dpkg -i node_*
+#wget --no-check-certificate https://www.npmjs.org/install.sh
+#chmod 777 install.sh
+#./install.sh
+#rm -vrf node-v*
+#rm -vrf install.sh
+#rm -vrf /etc/resolv.conf
+#sync
+#EOF
+
+# Applying console settings
+chroot ./$ROOT_DIR<<EOF
+setupcon
+sync
+EOF
+
+# Cleaning up APT cache
+chroot ./$ROOT_DIR<<EOF
+apt-get clean
+sync
+EOF
+
+# Setting root password
+chroot ./$ROOT_DIR<<EOF
+passwd root
+tf
+tf
+sync
+EOF
+
+# Enable BASH completion
+chroot ./$ROOT_DIR<<EOF
+. /etc/bash_completion
+sync
+EOF
+
+# Setup fake-hwclock
+chroot ./$ROOT_DIR<<EOF
+insserv -r /etc/init.d/hwclock.sh
+fake-hwclock
 sync
 EOF
 
@@ -184,12 +247,6 @@ echo -e "\n"
 read -p "Attention: Make sure the device $STORAGE_DEVICE is not mounted.
 Press ENTER when ready"
 echo -e "\n"
-
-# Applying console settings
-chroot ./$ROOT_DIR<<EOF
-setupcon
-sync
-EOF
 
 echo -e "\nInfo: Zeroing first 32MB of /dev/$STORAGE_DEVICE\n"
 dd bs=1M count=32 if=/dev/zero of=/dev/$STORAGE_DEVICE
