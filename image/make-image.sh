@@ -52,16 +52,13 @@ then
     exit 1
 fi
 
-# Getting storage device
-echo -e "\n"
-read -p "Storage device to prepare(e.g sdb or mmcblk0): " STORAGE_DEVICE
-echo -e "\n"
-
-# Check if the device is there
-if [ ! -e /dev/$STORAGE_DEVICE ]
+# Cleaning up output directory
+if [ -d ./$OUTPUT_DIR ]
 then
-    echo -e "\nError: Specified device not found\n"
-    exit 1
+    rm -vrf ./$OUTPUT_DIR
+    mkdir ./$OUTPUT_DIR
+else
+    mkdir ./$OUTPUT_DIR
 fi
 
 # Cleaning up where rootfs will be generated
@@ -78,6 +75,15 @@ else
     mkdir ./$ROOT_DIR
     mkdir -p ./$ROOT_DIR/var/cache/apt/archives
     cp -avr ./$DEB_CACHE_DIR/* ./$ROOT_DIR/var/cache/apt/archives/
+fi
+
+# Setting up output directory
+if [ -d ./$OUTPUT_DIR ]
+then
+    rm -vrf $OUTPUT_DIR
+    mkdir ./$OUTPUT_DIR
+else
+    mkdir ./$OUTPUT_DIR
 fi
 
 # Starting multistrap
@@ -104,10 +110,10 @@ echo -e "\nInfo: Configuring the generated rootfs\n"
 chroot ./$ROOT_DIR<<EOF
 export LC_ALL=C LANGUAGE=C LANG=C
 apt-get update
-dpkg --configure -a
 mount -t proc proc /proc
 /var/lib/dpkg/info/dash.preinst install
 dpkg --configure -a
+sync
 umount /proc
 EOF
 
@@ -149,7 +155,7 @@ EOF
 cp -avr ./$OPTS_DIR/root-fs/tf.xpm ./$ROOT_DIR/usr/share/X11/xdm/pixmaps/
 cp -avr ./$OPTS_DIR/root-fs/tf-bw.xpm ./$ROOT_DIR/usr/share/X11/xdm/pixmaps/
 cp -avr ./$OPTS_DIR/root-fs/Xresources ./$ROOT_DIR/etc/X11/xdm/
-cp ./$OPTS_DIR/root-fs/tf-logo.png      ./$ROOT_DIR/etc/alternatives/desktop-background
+cp -avr ./$OPTS_DIR/root-fs/pcmanfm.conf ./$ROOT_DIR/etc/xdg/pcmanfm/LXDE/
 
 # Install Node.JS and NPM
 cp ./$OPTS_DIR/root-fs/node_0.10.26-1_armhf.deb      ./$ROOT_DIR/tmp/
@@ -216,14 +222,6 @@ export LC_ALL=C LANGUAGE=C LANG=C
 sync
 EOF
 
-# Setup fake-hwclock
-chroot ./$ROOT_DIR<<EOF
-export LC_ALL=C LANGUAGE=C LANG=C
-insserv -r /etc/init.d/hwclock.sh
-fake-hwclock
-sync
-EOF
-
 # Removing plymouth
 chroot ./$ROOT_DIR<<EOF
 export LC_ALL=C LANGUAGE=C LANG=C
@@ -232,29 +230,37 @@ apt-get purge plymouth -y
 sync
 EOF
 
+# Setting up desktop wallpaper
+chroot ./$ROOT_DIR<<EOF
+rm -vrf /etc/alternatives/desktop-background
+ln -s /etc/tf-logo.png /etc/alternatives/desktop-background
+sync
+EOF
+
+# Setup fake-hwclock
+chroot ./$ROOT_DIR<<EOF
+export LC_ALL=C LANGUAGE=C LANG=C
+insserv -r /etc/init.d/hwclock.sh
+fake-hwclock
+sync
+EOF
+
 # Removing qemu-arm-static from rootfs
 echo -e "\nInfo: Removing qemu-arm-static from rootfs\n"
 rm ./$ROOT_DIR$QEMU_BIN
 
-# Check if the device is there
-if [ ! -e /dev/$STORAGE_DEVICE ]
-then
-    echo -e "\nError: Specified device not found\n"
-    exit 1
-fi
+# Creating empty image
+echo -e "\nInfo: Creating empty image\n"
+dd bs=$IMAGE_BS count=$IMAGE_COUNT if=/dev/zero of=./$OUTPUT_DIR/$IMAGE_NAME.img
 
-# Preparing the storage
-echo -e "\n"
-read -p "Attention: Make sure the device $STORAGE_DEVICE is not mounted.
-Press ENTER when ready"
-echo -e "\n"
+# Setting up loop device for image
+echo -e "\nInfo: Setting up loop device for image\n"
+loop_dev=$(losetup -f)
+losetup $loop_dev ./$OUTPUT_DIR/$IMAGE_NAME.img
 
-echo -e "\nInfo: Zeroing first 32MB of /dev/$STORAGE_DEVICE\n"
-dd bs=1M count=32 if=/dev/zero of=/dev/$STORAGE_DEVICE
-
-echo -e "\nInfo: Partitioning /dev/$STORAGE_DEVICE\n"
-
-fdisk /dev/$STORAGE_DEVICE <<EOF
+# Partitioning image
+echo -e "\nInfo: Partitioning the image\n"
+fdisk $loop_dev <<EOF
 p
 o
 n
@@ -265,42 +271,38 @@ p
 w
 EOF
 
-if [ ${STORAGE_DEVICE:0:3} = "mmc" ]
-then
-    PARTITION_1="/dev/"$STORAGE_DEVICE"p1"
-else
-    PARTITION_1="/dev/"$STORAGE_DEVICE"1"
-fi
+# Setting up loop device for image partition
+echo -e "\nInfo: Setting up loop device for image partition\n"
+loop_dev_p1=$(losetup -f)
+losetup -o $((512*20480)) $loop_dev_p1 ./$OUTPUT_DIR/$IMAGE_NAME.img
 
-# Checking partitions
-if [ ! -e $PARTITION_1 ]
-then
-    echo -e "\nError: Partition 1 not found\n"
-    exit 1
-fi
-
-echo -e "\nInfo: Formatting partitions\n"
-
-mkfs.ext3 $PARTITION_1
+# Formatting image partition
+echo -e "\nInfo: Formatting image partitions\n"
+mkfs.ext3 $loop_dev_p1
 
 # Installing U-Boot, boot script and the kernel to the storage device
 echo -e "\nInfo: Installing U-Boot to the storage device\n"
-dd bs=512 seek=$UBOOT_DD_SEEK if=./$UBOOT_SRC_DIR/spl/$UBOOT_IMAGE of=/dev/$STORAGE_DEVICE 
+dd bs=512 seek=$UBOOT_DD_SEEK if=./$UBOOT_SRC_DIR/spl/$UBOOT_IMAGE of=$loop_dev
 
 echo -e "\nInfo: Installing boot script to the storage device\n"
-dd bs=512 seek=$SCRIPTBIN_DD_SEEK if=./$OPTS_DIR/kernel/$KERNEL_SCRIPT_BIN of=/dev/$STORAGE_DEVICE
+dd bs=512 seek=$SCRIPTBIN_DD_SEEK if=./$OPTS_DIR/kernel/$KERNEL_SCRIPT_BIN of=$loop_dev
 
 echo -e "\nInfo: Installing the kernel to the storage device\n"
-dd bs=512 seek=$KERNEL_DD_SEEK if=./$KERNEL_SRC_DIR/arch/arm/boot/$KERNEL_IMAGE of=/dev/$STORAGE_DEVICE
+dd bs=512 seek=$KERNEL_DD_SEEK if=./$KERNEL_SRC_DIR/arch/arm/boot/$KERNEL_IMAGE of=$loop_dev
 
-echo -e "\nInfo: Installing rootfs to the storage device\n"
+echo -e "\nInfo: Copying rootfs to the image\n"
 umount /mnt
-mount $PARTITION_1 /mnt
+mount $loop_dev_p1 /mnt
 cp -avr ./$ROOT_DIR/* /mnt
-umount $PARTITION_1
+sync
+umount $loop_dev_p1
+
+# Release loop device
+echo -e "\nInfo: Releasing loop device\n"
+losetup -d $loop_dev
+losetup -d $loop_dev_p1
 
 sync
-partprobe
 
 echo -e "\nInfo: Process finished\n"
 
