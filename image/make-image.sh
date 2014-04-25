@@ -14,6 +14,10 @@ if [ "$#" -ne 1 ]; then
     echo -e "\nError: Too many or too few parameters (provide image configuration)\n"
     exit 1
 fi
+if [ ! -e $1 ]; then
+    echo -e "\nError: No such configuration file\n"
+    exit 1
+fi
 . $1
 
 # Checking u-boot
@@ -53,49 +57,32 @@ then
 fi
 
 # Cleaning up output directory
+echo -e "\nInfo: Cleaning up output directory\n"
 if [ -d ./$OUTPUT_DIR ]
 then
     rm -vrf ./$OUTPUT_DIR
-    mkdir ./$OUTPUT_DIR
+    mkdir   ./$OUTPUT_DIR
 else
     mkdir ./$OUTPUT_DIR
 fi
 
-# Cleaning up where rootfs will be generated
+# Cleaning up root-fs directory
+echo -e "\nInfo: Cleaning up root-fs directory\n"
 if [ -d ./$ROOT_DIR ]
 then
     rm -vrf ./$ROOT_DIR
-fi
-
-# Setting up caching
-if [ ! -d ./$DEB_CACHE_DIR ]
-then
-    mkdir ./$DEB_CACHE_DIR
-else
-    mkdir ./$ROOT_DIR
-    mkdir -p ./$ROOT_DIR/var/cache/apt/archives
-    cp -avr ./$DEB_CACHE_DIR/* ./$ROOT_DIR/var/cache/apt/archives/
-fi
-
-# Setting up output directory
-if [ -d ./$OUTPUT_DIR ]
-then
-    rm -vrf $OUTPUT_DIR
-    mkdir ./$OUTPUT_DIR
-else
-    mkdir ./$OUTPUT_DIR
 fi
 
 # Starting multistrap
 echo -e "\nInfo: Starting multistrap\n"
 multistrap -f ./$OPTS_DIR/root-fs/$MULTISTRAP_SCRIPT
 
-# Copying qemu-arm-static to rootfs
-echo -e "\nInfo: Copying qemu-arm-static\n"
+# Copying qemu-arm-static to root-fs
+echo -e "\nInfo: Copying qemu-arm-static to root-fs\n"
 cp $QEMU_BIN ./$ROOT_DIR/usr/bin/
 
-# Copying config files to rootfs
-echo -e "\nInfo: Copying config files to rootfs\n"
+# Copying config files to root-fs
+echo -e "\nInfo: Copying config files to root-fs\n"
 cp ./$OPTS_DIR/root-fs/securetty        ./$ROOT_DIR/etc/
 cp ./$OPTS_DIR/root-fs/inittab          ./$ROOT_DIR/etc/
 cp ./$OPTS_DIR/root-fs/hostname         ./$ROOT_DIR/etc/
@@ -106,9 +93,12 @@ cp ./$OPTS_DIR/root-fs/interfaces       ./$ROOT_DIR/etc/network/
 cp ./$OPTS_DIR/root-fs/50-mali.rules    ./$ROOT_DIR/etc/udev/rules.d/
 
 # Rootfs configuration
-echo -e "\nInfo: Configuring the generated rootfs\n"
+echo -e "\nInfo: Configuring the generated root-fs\n"
 chroot ./$ROOT_DIR<<EOF
 export LC_ALL=C LANGUAGE=C LANG=C
+echo "nameserver 8.8.8.8" > /etc/resolv.conf
+wget -qO - http://archive.raspbian.org/raspbian.public.key | sudo apt-key add -
+wget -qO - http://archive.raspberrypi.org/debian/raspberrypi.gpg.key | sudo apt-key add -
 apt-get update
 mount -t proc proc /proc
 /var/lib/dpkg/info/dash.preinst install
@@ -117,8 +107,8 @@ sync
 umount /proc
 EOF
 
-# Copying kernel modules to rootfs
-echo -e "\nInfo: Copying kernel modules to rootfs\n"
+# Copying kernel modules to root-fs
+echo -e "\nInfo: Copying kernel modules to root-fs\n"
 cp -avr ./$KERNEL_SRC_DIR/$KERNEL_MOD_DIR/lib/modules/ ./$ROOT_DIR/lib/
 cp -avr ./$KERNEL_SRC_DIR/$KERNEL_MOD_DIR/lib/firmware/* ./$ROOT_DIR/lib/firmware/
 
@@ -137,6 +127,7 @@ sync
 EOF
 
 # Setup Mali GPU
+echo -e "\nInfo: Configuring Mali GPU\n"
 cp -avr ./$OPTS_DIR/root-fs/mali-gpu       ./$ROOT_DIR/tmp/
 chroot ./$ROOT_DIR<<EOF
 export LC_ALL=C LANGUAGE=C LANG=C
@@ -148,22 +139,31 @@ dpkg -i ./libvpx0_0.9.7.p1-2_armhf.deb
 dpkg -i ./sunxi-disp-test_1.0-1_armhf.deb
 dpkg -i ./udevil_0.4.1-3_armhf.deb
 dpkg -i ./xserver-xorg-video-sunximali_1.0-3_armhf.deb
+cd ..
+rm -vrf mali-gpu
 sync
 EOF
 
 # Setting up XDM logo and desktop wallpaper
+echo -e "\nInfo: Setting up XDM logo and desktop wallpaper\n"
 cp -avr ./$OPTS_DIR/root-fs/tf.xpm ./$ROOT_DIR/usr/share/X11/xdm/pixmaps/
 cp -avr ./$OPTS_DIR/root-fs/tf-bw.xpm ./$ROOT_DIR/usr/share/X11/xdm/pixmaps/
 cp -avr ./$OPTS_DIR/root-fs/Xresources ./$ROOT_DIR/etc/X11/xdm/
 cp -avr ./$OPTS_DIR/root-fs/pcmanfm.conf ./$ROOT_DIR/etc/xdg/pcmanfm/LXDE/
+chroot ./$ROOT_DIR<<EOF
+rm -vrf /etc/alternatives/desktop-background
+ln -s /etc/tf-logo.png /etc/alternatives/desktop-background
+sync
+EOF
 
 # Install Node.JS and NPM
+echo -e "\nInfo: Install Node.JS and NPM\n"
 cp ./$OPTS_DIR/root-fs/node_0.10.26-1_armhf.deb      ./$ROOT_DIR/tmp/
 chroot ./$ROOT_DIR<<EOF
 export LC_ALL=C LANGUAGE=C LANG=C
 cd /tmp
-dpkg -i node_0.10.26-1_armhf.deb
-rm -vrf ./node_0.10.26-1_armhf.deb
+dpkg -i node_*
+rm -vrf ./node_*
 sync
 EOF
 
@@ -193,20 +193,15 @@ EOF
 #EOF
 
 # Applying console settings
+echo -e "\nInfo: Applying console settings\n"
 chroot ./$ROOT_DIR<<EOF
 export LC_ALL=C LANGUAGE=C LANG=C
 setupcon
 sync
 EOF
 
-# Cleaning up APT cache
-chroot ./$ROOT_DIR<<EOF
-export LC_ALL=C LANGUAGE=C LANG=C
-apt-get clean
-sync
-EOF
-
 # Setting root password
+echo -e "\nInfo: Setting root password\n"
 chroot ./$ROOT_DIR<<EOF
 export LC_ALL=C LANGUAGE=C LANG=C
 passwd root
@@ -216,6 +211,7 @@ sync
 EOF
 
 # Enable BASH completion
+echo -e "\nInfo: Enabling BASH completion\n"
 chroot ./$ROOT_DIR<<EOF
 export LC_ALL=C LANGUAGE=C LANG=C
 . /etc/bash_completion
@@ -223,6 +219,7 @@ sync
 EOF
 
 # Removing plymouth
+echo -e "\nInfo: Removing plymouth\n"
 chroot ./$ROOT_DIR<<EOF
 export LC_ALL=C LANGUAGE=C LANG=C
 apt-get remove plymouth -y
@@ -230,14 +227,38 @@ apt-get purge plymouth -y
 sync
 EOF
 
-# Setting up desktop wallpaper
+# Installing brickv and brickd
+echo -e "\nInfo: Installing brickv and brickd\n"
 chroot ./$ROOT_DIR<<EOF
-rm -vrf /etc/alternatives/desktop-background
-ln -s /etc/tf-logo.png /etc/alternatives/desktop-background
+export LC_ALL=C LANGUAGE=C LANG=C
+cd /tmp
+wget http://download.tinkerforge.com/tools/brickd/linux/brickd_linux_latest_armhf.deb
+wget http://download.tinkerforge.com/tools/brickv/linux/brickv_linux_latest.deb
+gdebi brickd_linux_latest_armhf.deb
+gdebi brickv_linux_latest.deb
+rm -vrf brickv_linux_latest*
 sync
 EOF
 
-# Setup fake-hwclock
+# Cleaning and updating APT
+echo -e "\nInfo: Cleaning and updating APT\n"
+chroot ./$ROOT_DIR<<EOF
+export LC_ALL=C LANGUAGE=C LANG=C
+apt-get clean
+apt-get update
+sync
+EOF
+
+# Emptying /etc/resolv.conf
+echo -e "\nInfo: Setting up fake-hwclock\n"
+chroot ./$ROOT_DIR<<EOF
+export LC_ALL=C LANGUAGE=C LANG=C
+echo "" > /etc/resolv.conf
+sync
+EOF
+
+# Setting up fake-hwclock
+echo -e "\nInfo: Setting up fake-hwclock\n"
 chroot ./$ROOT_DIR<<EOF
 export LC_ALL=C LANGUAGE=C LANG=C
 insserv -r /etc/init.d/hwclock.sh
@@ -245,8 +266,8 @@ fake-hwclock
 sync
 EOF
 
-# Removing qemu-arm-static from rootfs
-echo -e "\nInfo: Removing qemu-arm-static from rootfs\n"
+# Removing qemu-arm-static from the root file system
+echo -e "\nInfo: Removing qemu-arm-static from the root file system\n"
 rm ./$ROOT_DIR$QEMU_BIN
 
 # Creating empty image
@@ -277,20 +298,20 @@ loop_dev_p1=$(losetup -f)
 losetup -o $((512*20480)) $loop_dev_p1 ./$OUTPUT_DIR/$IMAGE_NAME.img
 
 # Formatting image partition
-echo -e "\nInfo: Formatting image partitions\n"
+echo -e "\nInfo: Formatting image partition\n"
 mkfs.ext3 $loop_dev_p1
 
-# Installing U-Boot, boot script and the kernel to the storage device
-echo -e "\nInfo: Installing U-Boot to the storage device\n"
+# Installing U-Boot, boot script and the kernel to the image
+echo -e "\nInfo: Installing U-Boot to the image\n"
 dd bs=512 seek=$UBOOT_DD_SEEK if=./$UBOOT_SRC_DIR/spl/$UBOOT_IMAGE of=$loop_dev
 
-echo -e "\nInfo: Installing boot script to the storage device\n"
+echo -e "\nInfo: Installing boot script to the image\n"
 dd bs=512 seek=$SCRIPTBIN_DD_SEEK if=./$OPTS_DIR/kernel/$KERNEL_SCRIPT_BIN of=$loop_dev
 
-echo -e "\nInfo: Installing the kernel to the storage device\n"
+echo -e "\nInfo: Installing the kernel to the image\n"
 dd bs=512 seek=$KERNEL_DD_SEEK if=./$KERNEL_SRC_DIR/arch/arm/boot/$KERNEL_IMAGE of=$loop_dev
 
-echo -e "\nInfo: Copying rootfs to the image\n"
+echo -e "\nInfo: Copying root-fs to the image\n"
 umount /mnt
 mount $loop_dev_p1 /mnt
 cp -avr ./$ROOT_DIR/* /mnt
