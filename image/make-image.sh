@@ -26,6 +26,7 @@ then
     echo -e "\nError: Please build u-boot first\n"
     exit 1
 fi
+
 # Checking kernel and boot script
 if [ ! -e ./$KERNEL_SRC_DIR/arch/arm/boot/$KERNEL_IMAGE ]
 then
@@ -37,18 +38,21 @@ then
     echo -e "\nError: No boot script found\n"
     exit 1
 fi
+
 # Checking kernel modules
 if [ ! -d ./$KERNEL_SRC_DIR/$KERNEL_MOD_DIR ]
 then
     echo -e "\nError: Build kernel modules first\n"
     exit 1
 fi
+
 # Checking multistrap script
 if [ ! -e ./$OPTS_DIR/root-fs/$MULTISTRAP_SCRIPT ]
 then
     echo -e "\nError: Multistrap script not found\n"
     exit 1
 fi
+
 # Checking qemu support
 if [ ! -e $QEMU_BIN ]
 then
@@ -85,14 +89,14 @@ cp $QEMU_BIN ./$ROOT_DIR/usr/bin/
 echo -e "\nInfo: Copying config files to root-fs\n"
 cp ./$OPTS_DIR/root-fs/securetty        ./$ROOT_DIR/etc/
 cp ./$OPTS_DIR/root-fs/inittab          ./$ROOT_DIR/etc/
-cp ./$OPTS_DIR/root-fs/hostname         ./$ROOT_DIR/etc/
+cp ./$OPTS_DIR/root-fs/hostname        ./$ROOT_DIR/etc/
 cp ./$OPTS_DIR/root-fs/fstab            ./$ROOT_DIR/etc/
 cp ./$OPTS_DIR/root-fs/modules          ./$ROOT_DIR/etc/
-cp ./$OPTS_DIR/root-fs/passwd           ./$ROOT_DIR/etc/
+cp ./$OPTS_DIR/root-fs/passwd          ./$ROOT_DIR/etc/
 cp ./$OPTS_DIR/root-fs/interfaces       ./$ROOT_DIR/etc/network/
 cp ./$OPTS_DIR/root-fs/50-mali.rules    ./$ROOT_DIR/etc/udev/rules.d/
 
-# Rootfs configuration
+# Configuring the generated root-fs
 echo -e "\nInfo: Configuring the generated root-fs\n"
 chroot ./$ROOT_DIR<<EOF
 export LC_ALL=C LANGUAGE=C LANG=C
@@ -100,6 +104,7 @@ echo "nameserver 8.8.8.8" > /etc/resolv.conf
 wget -qO - http://archive.raspbian.org/raspbian.public.key | sudo apt-key add -
 wget -qO - http://archive.raspberrypi.org/debian/raspberrypi.gpg.key | sudo apt-key add -
 apt-get update
+umount /proc
 mount -t proc proc /proc
 /var/lib/dpkg/info/dash.preinst install
 dpkg --configure -a
@@ -112,7 +117,7 @@ echo -e "\nInfo: Copying kernel modules to root-fs\n"
 cp -avr ./$KERNEL_SRC_DIR/$KERNEL_MOD_DIR/lib/modules/ ./$ROOT_DIR/lib/
 cp -avr ./$KERNEL_SRC_DIR/$KERNEL_MOD_DIR/lib/firmware/* ./$ROOT_DIR/lib/firmware/
 
-# Configuring boot splash
+# Configuring boot splash image
 echo -e "\nInfo: Configuring boot splash image\n"
 cp ./$OPTS_DIR/root-fs/tf-logo.png           ./$ROOT_DIR/etc/
 cp ./$OPTS_DIR/root-fs/asplashscreen         ./$ROOT_DIR/etc/init.d/
@@ -126,7 +131,7 @@ insserv /etc/init.d/killasplashscreen
 sync
 EOF
 
-# Setup Mali GPU
+# Configuring Mali GPU
 echo -e "\nInfo: Configuring Mali GPU\n"
 cp -avr ./$OPTS_DIR/root-fs/mali-gpu       ./$ROOT_DIR/tmp/
 chroot ./$ROOT_DIR<<EOF
@@ -141,6 +146,8 @@ dpkg -i ./udevil_0.4.1-3_armhf.deb
 dpkg -i ./xserver-xorg-video-sunximali_1.0-3_armhf.deb
 cd ..
 rm -vrf mali-gpu
+dpkg --configure -a
+apt-get update -y
 sync
 EOF
 
@@ -156,17 +163,18 @@ ln -s /etc/tf-logo.png /etc/alternatives/desktop-background
 sync
 EOF
 
-# Install Node.JS and NPM
-echo -e "\nInfo: Install Node.JS and NPM\n"
+# Installing Node.JS and NPM
+echo -e "\nInfo: Installing Node.JS and NPM\n"
 cp ./$OPTS_DIR/root-fs/node_0.10.26-1_armhf.deb      ./$ROOT_DIR/tmp/
 chroot ./$ROOT_DIR<<EOF
 export LC_ALL=C LANGUAGE=C LANG=C
 cd /tmp
 dpkg -i node_*
 rm -vrf ./node_*
+dpkg --configure -a
+apt-get update -y
 sync
 EOF
-
 # FIXME: For some strange reason the hack
 # to get the version number is not working.
 # So right now it is hard coded.
@@ -224,6 +232,8 @@ chroot ./$ROOT_DIR<<EOF
 export LC_ALL=C LANGUAGE=C LANG=C
 apt-get remove plymouth -y
 apt-get purge plymouth -y
+dpkg --configure -a
+apt-get update -y
 sync
 EOF
 
@@ -234,8 +244,11 @@ export LC_ALL=C LANGUAGE=C LANG=C
 cd /tmp
 wget http://download.tinkerforge.com/tools/brickd/linux/brickd_linux_latest_armhf.deb
 wget http://download.tinkerforge.com/tools/brickv/linux/brickv_linux_latest.deb
-gdebi brickd_linux_latest_armhf.deb
-gdebi brickv_linux_latest.deb
+dpkg -i brickd_linux_latest_armhf.deb
+dpkg -i brickv_linux_latest.deb
+apt-get -f install -y
+dpkg --configure -a
+apt-get update -y
 rm -vrf brickv_linux_latest*
 sync
 EOF
@@ -250,12 +263,17 @@ sync
 EOF
 
 # Emptying /etc/resolv.conf
-echo -e "\nInfo: Setting up fake-hwclock\n"
+echo -e "\nInfo: Emptying /etc/resolv.conf\n"
 chroot ./$ROOT_DIR<<EOF
 export LC_ALL=C LANGUAGE=C LANG=C
 echo "" > /etc/resolv.conf
 sync
 EOF
+
+# Copying /etc/issue and /etc/os-release
+echo -e "\nInfo: Copying /etc/issue and /etc/os-release\n"
+cp ./$OPTS_DIR/root-fs/issue            ./$ROOT_DIR/etc/
+cp ./$OPTS_DIR/root-fs/os-release       ./$ROOT_DIR/etc/
 
 # Setting up fake-hwclock
 echo -e "\nInfo: Setting up fake-hwclock\n"
@@ -304,13 +322,12 @@ mkfs.ext3 $loop_dev_p1
 # Installing U-Boot, boot script and the kernel to the image
 echo -e "\nInfo: Installing U-Boot to the image\n"
 dd bs=512 seek=$UBOOT_DD_SEEK if=./$UBOOT_SRC_DIR/spl/$UBOOT_IMAGE of=$loop_dev
-
 echo -e "\nInfo: Installing boot script to the image\n"
 dd bs=512 seek=$SCRIPTBIN_DD_SEEK if=./$OPTS_DIR/kernel/$KERNEL_SCRIPT_BIN of=$loop_dev
-
 echo -e "\nInfo: Installing the kernel to the image\n"
 dd bs=512 seek=$KERNEL_DD_SEEK if=./$KERNEL_SRC_DIR/arch/arm/boot/$KERNEL_IMAGE of=$loop_dev
 
+# Copying root-fs to the image
 echo -e "\nInfo: Copying root-fs to the image\n"
 umount /mnt
 mount $loop_dev_p1 /mnt
@@ -318,7 +335,7 @@ cp -avr ./$ROOT_DIR/* /mnt
 sync
 umount $loop_dev_p1
 
-# Release loop device
+# Releasing loop device
 echo -e "\nInfo: Releasing loop device\n"
 losetup -d $loop_dev
 losetup -d $loop_dev_p1
@@ -328,3 +345,4 @@ sync
 echo -e "\nInfo: Process finished\n"
 
 exit 0
+
