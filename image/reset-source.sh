@@ -5,7 +5,7 @@ if [ "$#" -ne 1 ]; then
     echo -e "\nError: Too many or too few parameters (provide image configuration)\n"
     exit 1
 fi
-if [ ! -e $1 ]; then
+if [ ! -e $1 ] || [ -d $1 ]; then
     echo -e "\nError: No such configuration file\n"
     exit 1
 fi
