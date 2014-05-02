@@ -293,7 +293,7 @@ unzip -d perl tinkerforge_perl_bindings_latest.zip
 cd perl
 tar zxvf Tinkerforge.tar.gz
 cd Tinkerforge-*
-perl Makefile.pl
+perl Makefile.PL
 make all
 make install
 make test
