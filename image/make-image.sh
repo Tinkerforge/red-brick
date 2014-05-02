@@ -95,14 +95,17 @@ cp ./$OPTS_DIR/root-fs/modules          ./$ROOT_DIR/etc/
 cp ./$OPTS_DIR/root-fs/passwd          ./$ROOT_DIR/etc/
 cp ./$OPTS_DIR/root-fs/interfaces       ./$ROOT_DIR/etc/network/
 cp ./$OPTS_DIR/root-fs/50-mali.rules    ./$ROOT_DIR/etc/udev/rules.d/
+cp ./$OPTS_DIR/root-fs/.octaverc        ./$ROOT_DIR/root/
 
 # Configuring the generated root-fs
 echo -e "\nInfo: Configuring the generated root-fs\n"
 chroot ./$ROOT_DIR<<EOF
 export LC_ALL=C LANGUAGE=C LANG=C
 echo "nameserver 8.8.8.8" > /etc/resolv.conf
-wget -qO - http://archive.raspbian.org/raspbian.public.key | sudo apt-key add -
-wget -qO - http://archive.raspberrypi.org/debian/raspberrypi.gpg.key | sudo apt-key add -
+rm -vrf /var/lib/apt/lists
+apt-get clean
+wget http://archive.raspbian.org/raspbian.public.key -O - | apt-key add -
+wget http://archive.raspberrypi.org/debian/raspberrypi.gpg.key -O - | apt-key add -
 apt-get update
 umount /proc
 mount -t proc proc /proc
@@ -250,6 +253,77 @@ apt-get -f install -y
 dpkg --configure -a
 apt-get update -y
 rm -vrf brickv_linux_latest*
+sync
+EOF
+
+# Setting up CPAN
+echo -e "\nInfo: Setting up CPAN\n"
+chroot ./$ROOT_DIR<<EOF
+export LC_ALL=C LANGUAGE=C LANG=C
+cpan upgrade Thread::Queue
+
+
+
+sync
+EOF
+
+# Setting up all the bindings
+echo -e "\nInfo: Setting up all the bindings\n"
+chroot ./$ROOT_DIR<<EOF
+export LC_ALL=C LANGUAGE=C LANG=C
+mkdir -p /usr/tinkerforge/bindings
+cd /usr/tinkerforge/bindings
+wget http://download.tinkerforge.com/bindings/c/tinkerforge_c_bindings_latest.zip
+unzip -d c_c++ tinkerforge_c_bindings_latest.zip
+wget http://download.tinkerforge.com/bindings/csharp/tinkerforge_csharp_bindings_latest.zip
+unzip -d c# tinkerforge_csharp_bindings_latest.zip
+wget http://download.tinkerforge.com/bindings/delphi/tinkerforge_delphi_bindings_latest.zip
+unzip -d delphi tinkerforge_delphi_bindings_latest.zip
+wget http://download.tinkerforge.com/bindings/java/tinkerforge_java_bindings_latest.zip
+unzip -d java tinkerforge_java_bindings_latest.zip
+wget http://download.tinkerforge.com/bindings/javascript/tinkerforge_javascript_bindings_latest.zip
+unzip -d javascript tinkerforge_javascript_bindings_latest.zip
+wget http://download.tinkerforge.com/bindings/labview/tinkerforge_labview_bindings_latest.zip
+unzip -d labview tinkerforge_labview_bindings_latest.zip
+wget http://download.tinkerforge.com/bindings/mathematica/tinkerforge_mathematica_bindings_latest.zip
+unzip -d mathematica tinkerforge_mathematica_bindings_latest.zip
+wget http://download.tinkerforge.com/bindings/matlab/tinkerforge_matlab_bindings_latest.zip
+unzip -d matlab tinkerforge_matlab_bindings_latest.zip
+wget http://download.tinkerforge.com/bindings/perl/tinkerforge_perl_bindings_latest.zip
+unzip -d perl tinkerforge_perl_bindings_latest.zip
+cd perl
+tar zxvf Tinkerforge.tar.gz
+cd Tinkerforge-*
+perl Makefile.pl
+make all
+make install
+make test
+cd /usr/tinkerforge/bindings
+wget http://download.tinkerforge.com/bindings/php/tinkerforge_php_bindings_latest.zip
+unzip -d php tinkerforge_php_bindings_latest.zip
+cd php
+pear install Tinkerforge.tgz
+cd /usr/tinkerforge/bindings
+wget http://download.tinkerforge.com/bindings/python/tinkerforge_python_bindings_latest.zip
+unzip -d python tinkerforge_python_bindings_latest.zip
+cd python
+easy_install tinkerforge.egg
+cd /usr/tinkerforge/bindings
+wget http://download.tinkerforge.com/bindings/ruby/tinkerforge_ruby_bindings_latest.zip
+unzip -d ruby tinkerforge_ruby_bindings_latest.zip
+cd ruby
+gem install tinkerforge.gem
+cd /usr/tinkerforge/bindings
+wget http://download.tinkerforge.com/bindings/shell/tinkerforge_shell_bindings_latest.zip
+unzip -d shell tinkerforge_shell_bindings_latest.zip
+cd shell
+cp ./tinkerforge /usr/local/bin/
+cp tinkerforge-bash-completion.sh /etc/bash_completion.d/
+. /etc/bash_completion
+wget http://download.tinkerforge.com/bindings/vbnet/tinkerforge_vbnet_bindings_latest.zip
+unzip -d vbnet tinkerforge_vbnet_bindings_latest.zip
+cd /usr/tinkerforge/bindings
+rm -vrf *_bindings_latest.zip
 sync
 EOF
 

@@ -1,0 +1,2 @@
+javaaddpath("/usr/tinkerforge/bindings/matlab/octave/Tinkerforge.jar");
+
