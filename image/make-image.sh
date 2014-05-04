@@ -77,6 +77,14 @@ then
     rm -vrf ./$ROOT_DIR
 fi
 
+# Cleaning up the mount directory
+if [ -d ./$MOUNT_DIR]
+then
+    echo -e "\nInfo: Cleaning up the mount directory\n"
+    rm -vrf ./$MOUNT_DIR
+    exit 1
+fi
+
 # Starting multistrap
 echo -e "\nInfo: Starting multistrap\n"
 multistrap -f ./$OPTS_DIR/root-fs/$MULTISTRAP_SCRIPT
@@ -402,11 +410,13 @@ dd bs=512 seek=$KERNEL_DD_SEEK if=./$KERNEL_SRC_DIR/arch/arm/boot/$KERNEL_IMAGE 
 
 # Copying root-fs to the image
 echo -e "\nInfo: Copying root-fs to the image\n"
-umount /mnt
-mount $loop_dev_p1 /mnt
-cp -avr ./$ROOT_DIR/* /mnt
+rm -vrf ./$MOUNT_DIR
+mkdir ./$MOUNT_DIR
+mount $loop_dev_p1 ./$MOUNT_DIR
+cp -avr ./$ROOT_DIR/* ./$MOUNT_DIR
 sync
 umount $loop_dev_p1
+rm -vrf ./$MOUNT_DIR
 
 # Releasing loop device
 echo -e "\nInfo: Releasing loop device\n"
