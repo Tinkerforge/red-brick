@@ -9,7 +9,7 @@ diff -rup1 ubs_org/board/sunxi/dram_a10s_olinuxino_m.c ubs_patched/board/sunxi/d
 +	/*
 +    .clock = 432,
 +	*/
-+    .clock = 480,
++    .clock = 432,
 +    .type = 3,
  	.rank_num = 1,
 @@ -12,4 +16,8 @@ static struct dram_para dram_para = {
@@ -19,7 +19,7 @@ diff -rup1 ubs_org/board/sunxi/dram_a10s_olinuxino_m.c ubs_patched/board/sunxi/d
  	.cas = 9,
 -	.zq = 123,
 +	*/
-+    .cas = 6,
++    .cas = 9,
 +    .zq = 123,
  	.odt_en = 0,
 diff -rup1 ubs_org/boards.cfg ubs_patched/boards.cfg
