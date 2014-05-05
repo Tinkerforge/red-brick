@@ -78,7 +78,7 @@ then
 fi
 
 # Cleaning up the mount directory
-if [ -d ./$MOUNT_DIR]
+if [ -d ./$MOUNT_DIR ]
 then
     echo -e "\nInfo: Cleaning up the mount directory\n"
     rm -vrf ./$MOUNT_DIR
