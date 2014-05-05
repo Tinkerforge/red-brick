@@ -327,6 +327,7 @@ cd shell
 cp ./tinkerforge /usr/local/bin/
 cp tinkerforge-bash-completion.sh /etc/bash_completion.d/
 . /etc/bash_completion
+cd /usr/tinkerforge/bindings
 wget http://download.tinkerforge.com/bindings/vbnet/tinkerforge_vbnet_bindings_latest.zip
 unzip -d vbnet tinkerforge_vbnet_bindings_latest.zip
 cd /usr/tinkerforge/bindings
