@@ -1,5 +1,7 @@
 #!/bin/bash
 
+set -e
+
 ROOT_UID="0"
 
 # Check if running as root

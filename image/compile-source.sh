@@ -1,4 +1,6 @@
-#! /bin/bash
+#!/bin/bash
+
+set -e
 
 # Getting the configuration variables
 if [ "$#" -ne 1 ]; then

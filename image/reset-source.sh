@@ -1,5 +1,7 @@
 #!/bin/bash
 
+set -e
+
 # Getting the configuration variables
 if [ "$#" -ne 1 ]; then
     echo -e "\nError: Too many or too few parameters (provide image configuration)\n"
