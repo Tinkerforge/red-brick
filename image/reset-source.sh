@@ -2,6 +2,27 @@
 
 set -e
 
+. ./utilities.sh
+
+clone_reset () {
+    display_name=$1
+    target_dir=$2
+    git_url=$3
+    git_branch=$4
+
+    if [ ! -d ./$target_dir ]
+    then
+        report_info "Cloning $display_name source"
+        git clone --depth 1 -b $git_branch $git_url ./$target_dir
+    else
+        report_info "Resetting $display_name source"
+        pushd ./$target_dir > /dev/null
+        git reset --hard
+        git clean -qfx
+        popd > /dev/null
+    fi
+}
+
 # Getting the configuration variables
 if [ "$#" -ne 1 ]; then
     report_error "Too many or too few parameters (provide image configuration)"
@@ -13,29 +34,14 @@ if [ ! -e $1 ] || [ -d $1 ]; then
 fi
 . $1
 
-# Reset U-Boot source
-echo -e "\nInfo: Reset U-Boot source\n"
-if [ -d ./$UBOOT_SRC_DIR ]
-then
-    rm -vfr ./$UBOOT_SRC_DIR
-fi
-git clone --depth 1 -b $UBOOT_GIT_BRANCH $UBOOT_GIT_SRC
+# Clone/Reset U-Boot source
+clone_reset "U-Boot" $UBOOT_SRC_DIR $UBOOT_GIT_URL $UBOOT_GIT_BRANCH
 
-# Reset kernel source
-echo -e "\nInfo: Reset kernel source\n"
-if [ -d ./$KERNEL_SRC_DIR ]
-then
-    rm -vfr ./$KERNEL_SRC_DIR
-fi
-git clone --depth 1 -b $KERNEL_GIT_BRANCH $KERNEL_GIT_SRC
+# Clone/Reset kernel source
+clone_reset "kernel" $KERNEL_SRC_DIR $KERNEL_GIT_URL $KERNEL_GIT_BRANCH
 
-# Reset sunxi-tools source
-echo -e "\nInfo: Reset sunxi-tools source\n"
-if [ -d ./$SUNXI_TOOLS_SRC_DIR ]
-then
-    rm -vfr ./$SUNXI_TOOLS_SRC_DIR
-fi
-git clone --depth 1 $SUNXI_TOOLS_GIT_SRC
+# Clone/Reset sunxi-tools source
+clone_reset "sunxi-tools" $SUNXI_TOOLS_SRC_DIR $SUNXI_TOOLS_GIT_URL $SUNXI_TOOLS_GIT_BRANCH
 
 sync
 
