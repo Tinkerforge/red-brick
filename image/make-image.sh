@@ -2,78 +2,80 @@
 
 set -e
 
+. ./utilities.sh
+
 ROOT_UID="0"
 
 # Check if running as root
 if [ "$UID" -ne "$ROOT_UID" ]
 then
-    echo -e "\nError: You must be root to execute the script\n"
+    report_error "You must be root to execute the script"
     exit 1
 fi
 
 # Getting the configuration variables
 if [ "$#" -ne 1 ]; then
-    echo -e "\nError: Too many or too few parameters (provide image configuration)\n"
+    report_error "Too many or too few parameters (provide image configuration)"
     exit 1
 fi
 if [ ! -e $1 ] || [ -d $1 ]; then
-    echo -e "\nError: No such configuration file\n"
+    report_error "No such configuration file"
     exit 1
 fi
 . $1
 
-# Checking u-boot
+# Checking U-Boot
 if [ ! -e ./$UBOOT_SRC_DIR/spl/$UBOOT_IMAGE ]
 then
-    echo -e "\nError: Please build u-boot first\n"
+    report_error "Please build U-Boot first"
     exit 1
 fi
 
 # Checking kernel and boot script
 if [ ! -e ./$KERNEL_SRC_DIR/arch/arm/boot/$KERNEL_IMAGE ]
 then
-    echo -e "\nError: Please build the kernel first\n"
+    report_error "Please build the kernel first"
     exit 1
 fi
 if [ ! -e ./$OPTS_DIR/kernel/$KERNEL_SCRIPT_BIN ]
 then
-    echo -e "\nError: No boot script found\n"
+    report_error "No boot script found"
     exit 1
 fi
 
 # Checking kernel modules
 if [ ! -d ./$KERNEL_SRC_DIR/$KERNEL_MOD_DIR ]
 then
-    echo -e "\nError: Build kernel modules first\n"
+    report_error "Build kernel modules first"
     exit 1
 fi
 
 # Checking multistrap script
 if [ ! -e ./$OPTS_DIR/root-fs/$MULTISTRAP_SCRIPT ]
 then
-    echo -e "\nError: Multistrap script not found\n"
+    report_error "Multistrap script not found"
     exit 1
 fi
 
 # Checking qemu support
 if [ ! -e $QEMU_BIN ]
 then
-    echo -e "\nError: Install qemu support for ARM\n"
+    report_error "Install qemu support for ARM"
     exit 1
 fi
 
 # Cleaning up output directory
-echo -e "\nInfo: Cleaning up output directory\n"
+report_info "Cleaning up output directory"
 if [ -d ./$OUTPUT_DIR ]
 then
     rm -vrf ./$OUTPUT_DIR
-    mkdir   ./$OUTPUT_DIR
+    mkdir ./$OUTPUT_DIR
 else
     mkdir ./$OUTPUT_DIR
 fi
 
 # Cleaning up root-fs directory
-echo -e "\nInfo: Cleaning up root-fs directory\n"
+report_info "Cleaning up root-fs directory"
 if [ -d ./$ROOT_DIR ]
 then
     rm -vrf ./$ROOT_DIR
@@ -82,21 +84,21 @@ fi
 # Cleaning up the mount directory
 if [ -d ./$MOUNT_DIR ]
 then
-    echo -e "\nInfo: Cleaning up the mount directory\n"
+    report_info "Cleaning up the mount directory"
     rm -vrf ./$MOUNT_DIR
     exit 1
 fi
 
 # Starting multistrap
-echo -e "\nInfo: Starting multistrap\n"
+report_info "Starting multistrap"
 multistrap -f ./$OPTS_DIR/root-fs/$MULTISTRAP_SCRIPT
 
 # Copying qemu-arm-static to root-fs
-echo -e "\nInfo: Copying qemu-arm-static to root-fs\n"
+report_info "Copying qemu-arm-static to root-fs"
 cp $QEMU_BIN ./$ROOT_DIR/usr/bin/
 
 # Copying config files to root-fs
-echo -e "\nInfo: Copying config files to root-fs\n"
+report_info "Copying config files to root-fs"
 cp ./$OPTS_DIR/root-fs/securetty        ./$ROOT_DIR/etc/
 cp ./$OPTS_DIR/root-fs/inittab          ./$ROOT_DIR/etc/
 cp ./$OPTS_DIR/root-fs/hostname        ./$ROOT_DIR/etc/
@@ -108,7 +110,7 @@ cp ./$OPTS_DIR/root-fs/50-mali.rules    ./$ROOT_DIR/etc/udev/rules.d/
 cp ./$OPTS_DIR/root-fs/.octaverc        ./$ROOT_DIR/root/
 
 # Configuring the generated root-fs
-echo -e "\nInfo: Configuring the generated root-fs\n"
+report_info "Configuring the generated root-fs"
 chroot ./$ROOT_DIR<<EOF
 export LC_ALL=C LANGUAGE=C LANG=C
 echo "nameserver 8.8.8.8" > /etc/resolv.conf
@@ -126,12 +128,12 @@ umount /proc
 EOF
 
 # Copying kernel modules to root-fs
-echo -e "\nInfo: Copying kernel modules to root-fs\n"
+report_info "Copying kernel modules to root-fs"
 cp -avr ./$KERNEL_SRC_DIR/$KERNEL_MOD_DIR/lib/modules/ ./$ROOT_DIR/lib/
 cp -avr ./$KERNEL_SRC_DIR/$KERNEL_MOD_DIR/lib/firmware/* ./$ROOT_DIR/lib/firmware/
 
 # Configuring boot splash image
-echo -e "\nInfo: Configuring boot splash image\n"
+report_info "Configuring boot splash image"
 cp ./$OPTS_DIR/root-fs/tf-logo.png           ./$ROOT_DIR/etc/
 cp ./$OPTS_DIR/root-fs/asplashscreen         ./$ROOT_DIR/etc/init.d/
 cp ./$OPTS_DIR/root-fs/killasplashscreen     ./$ROOT_DIR/etc/init.d/
@@ -145,7 +147,7 @@ sync
 EOF
 
 # Configuring Mali GPU
-echo -e "\nInfo: Configuring Mali GPU\n"
+report_info "Configuring Mali GPU"
 cp -avr ./$OPTS_DIR/root-fs/mali-gpu       ./$ROOT_DIR/tmp/
 chroot ./$ROOT_DIR<<EOF
 export LC_ALL=C LANGUAGE=C LANG=C
@@ -165,7 +167,7 @@ sync
 EOF
 
 # Setting up XDM logo and desktop wallpaper
-echo -e "\nInfo: Setting up XDM logo and desktop wallpaper\n"
+report_info "Setting up XDM logo and desktop wallpaper"
 cp -avr ./$OPTS_DIR/root-fs/tf.xpm ./$ROOT_DIR/usr/share/X11/xdm/pixmaps/
 cp -avr ./$OPTS_DIR/root-fs/tf-bw.xpm ./$ROOT_DIR/usr/share/X11/xdm/pixmaps/
 cp -avr ./$OPTS_DIR/root-fs/Xresources ./$ROOT_DIR/etc/X11/xdm/
@@ -177,7 +179,7 @@ sync
 EOF
 
 # Installing Node.JS and NPM
-echo -e "\nInfo: Installing Node.JS and NPM\n"
+report_info "Installing Node.JS and NPM"
 cp ./$OPTS_DIR/root-fs/node_0.10.26-1_armhf.deb      ./$ROOT_DIR/tmp/
 chroot ./$ROOT_DIR<<EOF
 export LC_ALL=C LANGUAGE=C LANG=C
@@ -214,7 +216,7 @@ EOF
 #EOF
 
 # Applying console settings
-echo -e "\nInfo: Applying console settings\n"
+report_info "Applying console settings"
 chroot ./$ROOT_DIR<<EOF
 export LC_ALL=C LANGUAGE=C LANG=C
 setupcon
@@ -222,7 +224,7 @@ sync
 EOF
 
 # Setting root password
-echo -e "\nInfo: Setting root password\n"
+report_info "Setting root password"
 chroot ./$ROOT_DIR<<EOF
 export LC_ALL=C LANGUAGE=C LANG=C
 passwd root
@@ -232,7 +234,7 @@ sync
 EOF
 
 # Enable BASH completion
-echo -e "\nInfo: Enabling BASH completion\n"
+report_info "Enabling BASH completion"
 chroot ./$ROOT_DIR<<EOF
 export LC_ALL=C LANGUAGE=C LANG=C
 . /etc/bash_completion
@@ -240,7 +242,7 @@ sync
 EOF
 
 # Removing plymouth
-echo -e "\nInfo: Removing plymouth\n"
+report_info "Removing plymouth"
 chroot ./$ROOT_DIR<<EOF
 export LC_ALL=C LANGUAGE=C LANG=C
 apt-get remove plymouth -y
@@ -251,7 +253,7 @@ sync
 EOF
 
 # Installing brickv and brickd
-echo -e "\nInfo: Installing brickv and brickd\n"
+report_info "Installing brickv and brickd"
 chroot ./$ROOT_DIR<<EOF
 export LC_ALL=C LANGUAGE=C LANG=C
 cd /tmp
@@ -267,7 +269,7 @@ sync
 EOF
 
 # Setting up CPAN
-echo -e "\nInfo: Setting up CPAN\n"
+report_info "Setting up CPAN"
 chroot ./$ROOT_DIR<<EOF
 export LC_ALL=C LANGUAGE=C LANG=C
 cpan upgrade Thread::Queue
@@ -277,7 +279,7 @@ sync
 EOF
 
 # Setting up all the bindings
-echo -e "\nInfo: Setting up all the bindings\n"
+report_info "Setting up all the bindings"
 chroot ./$ROOT_DIR<<EOF
 export LC_ALL=C LANGUAGE=C LANG=C
 mkdir -p /usr/tinkerforge/bindings
@@ -338,7 +340,7 @@ sync
 EOF
 
 # Cleaning and updating APT
-echo -e "\nInfo: Cleaning and updating APT\n"
+report_info "Cleaning and updating APT"
 chroot ./$ROOT_DIR<<EOF
 export LC_ALL=C LANGUAGE=C LANG=C
 apt-get clean
@@ -347,7 +349,7 @@ sync
 EOF
 
 # Emptying /etc/resolv.conf
-echo -e "\nInfo: Emptying /etc/resolv.conf\n"
+report_info "Emptying /etc/resolv.conf"
 chroot ./$ROOT_DIR<<EOF
 export LC_ALL=C LANGUAGE=C LANG=C
 echo "" > /etc/resolv.conf
@@ -355,12 +357,12 @@ sync
 EOF
 
 # Copying /etc/issue and /etc/os-release
-echo -e "\nInfo: Copying /etc/issue and /etc/os-release\n"
-cp ./$OPTS_DIR/root-fs/issue            ./$ROOT_DIR/etc/
-cp ./$OPTS_DIR/root-fs/os-release       ./$ROOT_DIR/etc/
+report_info "Copying /etc/issue and /etc/os-release"
+cp ./$OPTS_DIR/root-fs/issue ./$ROOT_DIR/etc/
+cp ./$OPTS_DIR/root-fs/os-release ./$ROOT_DIR/etc/
 
 # Setting up fake-hwclock
-echo -e "\nInfo: Setting up fake-hwclock\n"
+report_info "Setting up fake-hwclock"
 chroot ./$ROOT_DIR<<EOF
 export LC_ALL=C LANGUAGE=C LANG=C
 insserv -r /etc/init.d/hwclock.sh
@@ -369,20 +371,20 @@ sync
 EOF
 
 # Removing qemu-arm-static from the root file system
-echo -e "\nInfo: Removing qemu-arm-static from the root file system\n"
+report_info "Removing qemu-arm-static from the root file system"
 rm ./$ROOT_DIR$QEMU_BIN
 
 # Creating empty image
-echo -e "\nInfo: Creating empty image\n"
+report_info "Creating empty image"
 dd bs=$IMAGE_BS count=$IMAGE_COUNT if=/dev/zero of=./$OUTPUT_DIR/$IMAGE_NAME.img
 
 # Setting up loop device for image
-echo -e "\nInfo: Setting up loop device for image\n"
+report_info "Setting up loop device for image"
 loop_dev=$(losetup -f)
 losetup $loop_dev ./$OUTPUT_DIR/$IMAGE_NAME.img
 
 # Partitioning image
-echo -e "\nInfo: Partitioning the image\n"
+report_info "Partitioning the image"
 fdisk $loop_dev <<EOF
 p
 o
@@ -395,24 +397,24 @@ w
 EOF
 
 # Setting up loop device for image partition
-echo -e "\nInfo: Setting up loop device for image partition\n"
+report_info "Setting up loop device for image partition"
 loop_dev_p1=$(losetup -f)
 losetup -o $((512*20480)) $loop_dev_p1 ./$OUTPUT_DIR/$IMAGE_NAME.img
 
 # Formatting image partition
-echo -e "\nInfo: Formatting image partition\n"
+report_info "Formatting image partition"
 mkfs.ext3 $loop_dev_p1
 
 # Installing U-Boot, boot script and the kernel to the image
-echo -e "\nInfo: Installing U-Boot to the image\n"
+report_info "Installing U-Boot to the image"
 dd bs=512 seek=$UBOOT_DD_SEEK if=./$UBOOT_SRC_DIR/spl/$UBOOT_IMAGE of=$loop_dev
-echo -e "\nInfo: Installing boot script to the image\n"
+report_info "Installing boot script to the image"
 dd bs=512 seek=$SCRIPTBIN_DD_SEEK if=./$OPTS_DIR/kernel/$KERNEL_SCRIPT_BIN of=$loop_dev
-echo -e "\nInfo: Installing the kernel to the image\n"
+report_info "Installing the kernel to the image"
 dd bs=512 seek=$KERNEL_DD_SEEK if=./$KERNEL_SRC_DIR/arch/arm/boot/$KERNEL_IMAGE of=$loop_dev
 
 # Copying root-fs to the image
-echo -e "\nInfo: Copying root-fs to the image\n"
+report_info "Copying root-fs to the image"
 rm -vrf ./$MOUNT_DIR
 mkdir ./$MOUNT_DIR
 mount $loop_dev_p1 ./$MOUNT_DIR
@@ -422,13 +424,12 @@ umount $loop_dev_p1
 rm -vrf ./$MOUNT_DIR
 
 # Releasing loop device
-echo -e "\nInfo: Releasing loop device\n"
+report_info "Releasing loop device"
 losetup -d $loop_dev
 losetup -d $loop_dev_p1
 
 sync
 
-echo -e "\nInfo: Process finished\n"
+report_info "Process finished"
 
 exit 0
-

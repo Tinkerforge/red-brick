@@ -2,62 +2,64 @@
 
 set -e
 
+. ./utilities.sh
+
 # Getting the configuration variables
 if [ "$#" -ne 1 ]; then
-    echo -e "\nError: Too many or too few parameters (provide image configuration)\n"
+    report_error "Too many or too few parameters (provide image configuration)"
     exit 1
 fi
 if [ ! -e $1 ] || [ -d $1 ]; then
-    echo -e "\nError: No such configuration file\n"
+    report_error "No such configuration file"
     exit 1
 fi
 . $1
 
-# Check U_Boot patch
+# Check U-Boot patch
 if [ ! -e ./$OPTS_DIR/u-boot/$UBOOT_PATCH ]
 then
-    echo -e "\nError: U-Boot patch not found\n"
+    report_error "U-Boot patch not found"
     exit 1
 fi
 # Check kernel config
 if [ ! -e ./$OPTS_DIR/kernel/$KERNEL_CONFIG ]
 then
-    echo -e "\nError: Kernel config not found\n"
+    report_error "Kernel config not found"
     exit 1
 fi
 # Check kernel patch
 if [ ! -e ./$OPTS_DIR/kernel/$KERNEL_I2C_PATCH ]
 then
-    echo -e "\nError: Kernel I2C patch not found\n"
+    report_error "Kernel I2C patch not found"
     exit 1
 fi
 if [ ! -e ./$OPTS_DIR/kernel/$KERNEL_HCD_AXP_PATCH ]
 then
-    echo -e "\nError: Kernel HCD_AXP patch not found\n"
+    report_error "Kernel HCD_AXP patch not found"
     exit 1
 fi
 # Check boot script FEX file
 if [ ! -e ./$OPTS_DIR/kernel/$KERNEL_SCRIPT_FEX ]
 then
-    echo -e "\nError: Boot script FEX file not found\n"
+    report_error "Boot script FEX file not found"
     exit 1
 fi
 # Check U-Boot source directory
 if [ ! -d ./$UBOOT_SRC_DIR/arch ]
 then
-    echo -e "\nError: U-boot source not found\n"
+    report_error "U-boot source not found"
     exit 1
 fi
 # Check kernel source directory
 if [ ! -d ./$KERNEL_SRC_DIR/arch ]
 then
-    echo -e "\nError: Kernel source not found\n"
+    report_error "Kernel source not found"
     exit 1
 fi
 # Check sunxi-tools directory
 if [ ! -d ./$TOOLS_DIR ]
 then
-    echo -e "\nError: Sunxi-tools source not found\n"
+    report_error "Sunxi-tools source not found"
     exit 1
 fi
 
@@ -104,5 +106,7 @@ make all
 ./fex2bin ../$OPTS_DIR/kernel/$KERNEL_SCRIPT_FEX ../$OPTS_DIR/kernel/$KERNEL_SCRIPT_BIN
 
 sync
+
+report_info "Process finished"
 
 exit 0

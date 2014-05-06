@@ -4,11 +4,11 @@ set -e
 
 # Getting the configuration variables
 if [ "$#" -ne 1 ]; then
-    echo -e "\nError: Too many or too few parameters (provide image configuration)\n"
+    report_error "Too many or too few parameters (provide image configuration)"
     exit 1
 fi
 if [ ! -e $1 ] || [ -d $1 ]; then
-    echo -e "\nError: No such configuration file\n"
+    report_error "No such configuration file"
     exit 1
 fi
 . $1
