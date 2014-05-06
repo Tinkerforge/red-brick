@@ -63,11 +63,10 @@ then
     exit 1
 fi
 
-# Patching and building u-boot
-cd ./$UBOOT_SRC_DIR
+# Patching and building U-Boot
+pushd ./$UBOOT_SRC_DIR > /dev/null
 cp ../$OPTS_DIR/u-boot/$UBOOT_PATCH ./
-
-patch -p1 --dry-run --silent < ./$UBOOT_PATCH>/dev/null
+patch -p1 --dry-run --silent < ./$UBOOT_PATCH > /dev/null
 if [ $? -eq 0 ]
 then
     patch -p1 < ./$UBOOT_PATCH
@@ -75,35 +74,35 @@ fi
 make ARCH=arm CROSS_COMPILE=$CROSS_COMPILE_TC clean
 make ARCH=arm CROSS_COMPILE=$CROSS_COMPILE_TC $UBOOT_CONFIG
 make ARCH=arm CROSS_COMPILE=$CROSS_COMPILE_TC -j16
-cd ../
+popd > /dev/null
 
 # Patching and building the kernel and kernel modules
-cd ./$KERNEL_SRC_DIR
+pushd ./$KERNEL_SRC_DIR > /dev/null
 cp ../$OPTS_DIR/kernel/$KERNEL_CONFIG ./arch/arm/configs
-
 make ARCH=arm CROSS_COMPILE=$CROSS_COMPILE_TC clean
 make ARCH=arm CROSS_COMPILE=$CROSS_COMPILE_TC $KERNEL_CONFIG
 cp ../$OPTS_DIR/kernel/$KERNEL_I2C_PATCH ./
 cp ../$OPTS_DIR/kernel/$KERNEL_HCD_AXP_PATCH ./
-patch -p0 --dry-run --silent < ./$KERNEL_I2C_PATCH>/dev/null
+patch -p0 --dry-run --silent < ./$KERNEL_I2C_PATCH > /dev/null
 if [ $? -eq 0 ]
 then
    patch -p0 < ./$KERNEL_I2C_PATCH
 fi
-patch -p1 --dry-run --silent < ./$KERNEL_HCD_AXP_PATCH>/dev/null
+patch -p1 --dry-run --silent < ./$KERNEL_HCD_AXP_PATCH > /dev/null
 if [ $? -eq 0 ]
 then
     patch -p1 < ./$KERNEL_HCD_AXP_PATCH
 fi
 make ARCH=arm CROSS_COMPILE=$CROSS_COMPILE_TC -j16 INSTALL_MOD_PATH=$KERNEL_MOD_DIR $KERNEL_IMAGE modules
 make ARCH=arm CROSS_COMPILE=$CROSS_COMPILE_TC INSTALL_MOD_PATH=$KERNEL_MOD_DIR modules_install
-cd ../
+popd > /dev/null
 
 # Building sunxi-tools
-cd ./$SUNXI_TOOLS_DIR
+pushd ./$SUNXI_TOOLS_DIR > /dev/null
 make clean
 make all
 ./fex2bin ../$OPTS_DIR/kernel/$KERNEL_SCRIPT_FEX ../$OPTS_DIR/kernel/$KERNEL_SCRIPT_BIN
+popd > /dev/null
 
 sync
 
