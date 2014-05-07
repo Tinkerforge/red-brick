@@ -24,4 +24,6 @@ then
 fi
 tar $TAR_SWITCHES $TC_FILE_NAME
 
+report_info "Process finished"
+
 exit 0
