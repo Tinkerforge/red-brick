@@ -5,7 +5,7 @@ Requires a recent Debian or Ubuntu installation with Internet connection.
 
 First run
 
- sudo ./prepare-host.sh
+ sudo ./prepare-host.sh <CONFIG_FILE_PATH>
 
 to install required tools.
 
