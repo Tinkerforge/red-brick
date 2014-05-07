@@ -107,6 +107,11 @@ cp ./$OPTS_DIR/root-fs/interfaces       ./$ROOT_DIR/etc/network/
 cp ./$OPTS_DIR/root-fs/50-mali.rules    ./$ROOT_DIR/etc/udev/rules.d/
 cp ./$OPTS_DIR/root-fs/.octaverc        ./$ROOT_DIR/root/
 
+# Copying memory information tool
+echo -e "\nInfo: Copying memory information tool\n"
+cp ./$OPTS_DIR/root-fs/a10-meminfo-static	./$ROOT_DIR/usr/bin/
+chmod 777 ./$ROOT_DIR/usr/bin/a10-meminfo-static
+
 # Configuring the generated root-fs
 report_info "Configuring the generated root-fs"
 chroot ./$ROOT_DIR<<EOF
@@ -183,29 +188,6 @@ rm -vrf ./node_*
 dpkg --configure -a
 apt-get update -y
 EOF
-# FIXME: For some strange reason the hack
-# to get the version number is not working.
-# So right now it is hard coded.
-#chroot ./$ROOT_DIR<<EOF
-#export LC_ALL=C LANGUAGE=C LANG=C
-#echo "nameserver 8.8.8.8" > /etc/resolv.conf
-#cd /tmp
-#wget -N http://nodejs.org/dist/node-latest.tar.gz
-#tar zxvf node-latest.tar.gz
-#rm -vrf node-latest.tar.gz
-#cd node-v*
-#./configure
-#node_full_name=${PWD##*/}
-#node_version=${node_full_name:6}
-#fakeroot checkinstall -y --install=no --pkgversion 0.10.26 make -j16 install
-#dpkg -i node_*
-#wget --no-check-certificate https://www.npmjs.org/install.sh
-#chmod 777 install.sh
-#./install.sh
-#rm -vrf node-v*
-#rm -vrf install.sh
-#rm -vrf /etc/resolv.conf
-#EOF
 
 # Applying console settings
 report_info "Applying console settings"
@@ -219,8 +201,36 @@ report_info "Setting root password"
 chroot ./$ROOT_DIR<<EOF
 export LC_ALL=C LANGUAGE=C LANG=C
 passwd root
-tf
-tf
+tinkerforge
+tinkerforge
+sync
+EOF
+
+# Adding new user
+report_info "Info: Adding new user"
+chroot ./$ROOT_DIR<<EOF
+export LC_ALL=C LANGUAGE=C LANG=C
+adduser rbuser
+tinkerforge
+tinkerforge
+RED Brick User
+
+
+
+
+Y
+usermod -a -G adm rbuser
+usermod -a -G dialout rbuser
+usermod -a -G cdrom rbuser
+usermod -a -G sudo rbuser
+usermod -a -G audio rbuser
+usermod -a -G video rbuser
+usermod -a -G plugdev rbuser
+usermod -a -G games rbuser
+usermod -a -G users rbuser
+usermod -a -G ntp rbuser
+usermod -a -G crontab rbuser
+usermod -a -G netdev rbuser
 EOF
 
 # Enable BASH completion
@@ -259,7 +269,11 @@ EOF
 report_info "Setting up CPAN"
 chroot ./$ROOT_DIR<<EOF
 export LC_ALL=C LANGUAGE=C LANG=C
-cpan upgrade Thread::Queue
+rm -vrf /root/.cpan/
+perl -MCPAN -e 'install CPAN'
+
+
+perl -MCPAN -e 'install Thread::Queue'
 EOF
 
 # Setting up all the bindings
@@ -364,9 +378,9 @@ loop_dev=$(losetup -f)
 losetup $loop_dev ./$OUTPUT_DIR/$IMAGE_NAME.img
 
 # Partitioning image
+set +e
 report_info "Partitioning the image"
 fdisk $loop_dev <<EOF
-p
 o
 n
 p
@@ -375,6 +389,7 @@ p
 
 w
 EOF
+set -e
 
 # Setting up loop device for image partition
 report_info "Setting up loop device for image partition"
