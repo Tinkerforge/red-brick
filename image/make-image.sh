@@ -1,6 +1,4 @@
-#!/bin/bash
-
-set -ex
+#!/bin/sh -exu
 
 . ./utilities.sh
 
