@@ -13,7 +13,7 @@ fi
 
 report_info "Installing tools"
 
-apt-get install build-essential qemu-user-static multistrap git-core u-boot-tools gcc-arm-linux-gnueabihf
+apt-get install $REQUIRED_PACKAGES -y
 
 # Installing cross compiling toolchain
 report_info "Installing cross compiling toolchain"
