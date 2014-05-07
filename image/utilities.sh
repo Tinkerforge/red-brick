@@ -1,4 +1,4 @@
-#!/bin/bash
+#! /bin/bash
 
 report_error () {
     echo -e "\nError: $1\n"
