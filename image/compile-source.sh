@@ -61,6 +61,9 @@ then
     exit 1
 fi
 
+# Adding the toolchain to the subshell environment 
+export PATH=$PATH:$HOME/$TC_DIR_NAME/bin
+
 # Patching and building U-Boot
 pushd ./$UBOOT_SRC_DIR > /dev/null
 cp ../$OPTS_DIR/u-boot/$UBOOT_PATCH ./
