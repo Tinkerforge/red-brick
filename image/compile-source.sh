@@ -104,8 +104,6 @@ make all
 ./fex2bin ../$OPTS_DIR/kernel/$KERNEL_SCRIPT_FEX ../$OPTS_DIR/kernel/$KERNEL_SCRIPT_BIN
 popd > /dev/null
 
-sync
-
 report_info "Process finished"
 
 exit 0

@@ -44,6 +44,4 @@ clone_reset "kernel" $KERNEL_SRC_DIR $KERNEL_GIT_URL $KERNEL_GIT_BRANCH
 # Clone/Reset sunxi-tools source
 clone_reset "sunxi-tools" $SUNXI_TOOLS_SRC_DIR $SUNXI_TOOLS_GIT_URL $SUNXI_TOOLS_GIT_BRANCH
 
-sync
-
 exit 0

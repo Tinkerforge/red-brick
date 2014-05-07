@@ -123,7 +123,6 @@ umount /proc
 mount -t proc proc /proc
 /var/lib/dpkg/info/dash.preinst install
 dpkg --configure -a
-sync
 umount /proc
 EOF
 
@@ -143,7 +142,6 @@ chmod a+x /etc/init.d/asplashscreen
 chmod a+x /etc/init.d/killasplashscreen
 insserv /etc/init.d/asplashscreen
 insserv /etc/init.d/killasplashscreen
-sync
 EOF
 
 # Configuring Mali GPU
@@ -163,7 +161,6 @@ cd ..
 rm -vrf mali-gpu
 dpkg --configure -a
 apt-get update -y
-sync
 EOF
 
 # Setting up XDM logo and desktop wallpaper
@@ -175,7 +172,6 @@ cp -avr ./$OPTS_DIR/root-fs/pcmanfm.conf ./$ROOT_DIR/etc/xdg/pcmanfm/LXDE/
 chroot ./$ROOT_DIR<<EOF
 rm -vrf /etc/alternatives/desktop-background
 ln -s /etc/tf-logo.png /etc/alternatives/desktop-background
-sync
 EOF
 
 # Installing Node.JS and NPM
@@ -188,7 +184,6 @@ dpkg -i node_*
 rm -vrf ./node_*
 dpkg --configure -a
 apt-get update -y
-sync
 EOF
 # FIXME: For some strange reason the hack
 # to get the version number is not working.
@@ -212,7 +207,6 @@ EOF
 #rm -vrf node-v*
 #rm -vrf install.sh
 #rm -vrf /etc/resolv.conf
-#sync
 #EOF
 
 # Applying console settings
@@ -220,7 +214,6 @@ report_info "Applying console settings"
 chroot ./$ROOT_DIR<<EOF
 export LC_ALL=C LANGUAGE=C LANG=C
 setupcon
-sync
 EOF
 
 # Setting root password
@@ -230,7 +223,6 @@ export LC_ALL=C LANGUAGE=C LANG=C
 passwd root
 tf
 tf
-sync
 EOF
 
 # Enable BASH completion
@@ -238,7 +230,6 @@ report_info "Enabling BASH completion"
 chroot ./$ROOT_DIR<<EOF
 export LC_ALL=C LANGUAGE=C LANG=C
 . /etc/bash_completion
-sync
 EOF
 
 # Removing plymouth
@@ -249,7 +240,6 @@ apt-get remove plymouth -y
 apt-get purge plymouth -y
 dpkg --configure -a
 apt-get update -y
-sync
 EOF
 
 # Installing brickv and brickd
@@ -265,7 +255,6 @@ apt-get -f install -y
 dpkg --configure -a
 apt-get update -y
 rm -vrf brickv_linux_latest*
-sync
 EOF
 
 # Setting up CPAN
@@ -273,9 +262,6 @@ report_info "Setting up CPAN"
 chroot ./$ROOT_DIR<<EOF
 export LC_ALL=C LANGUAGE=C LANG=C
 cpan upgrade Thread::Queue
-
-
-sync
 EOF
 
 # Setting up all the bindings
@@ -336,7 +322,6 @@ wget http://download.tinkerforge.com/bindings/vbnet/tinkerforge_vbnet_bindings_l
 unzip -d vbnet tinkerforge_vbnet_bindings_latest.zip
 cd /usr/tinkerforge/bindings
 rm -vrf *_bindings_latest.zip
-sync
 EOF
 
 # Cleaning and updating APT
@@ -345,7 +330,6 @@ chroot ./$ROOT_DIR<<EOF
 export LC_ALL=C LANGUAGE=C LANG=C
 apt-get clean
 apt-get update
-sync
 EOF
 
 # Emptying /etc/resolv.conf
@@ -353,7 +337,6 @@ report_info "Emptying /etc/resolv.conf"
 chroot ./$ROOT_DIR<<EOF
 export LC_ALL=C LANGUAGE=C LANG=C
 echo "" > /etc/resolv.conf
-sync
 EOF
 
 # Copying /etc/issue and /etc/os-release
@@ -367,7 +350,6 @@ chroot ./$ROOT_DIR<<EOF
 export LC_ALL=C LANGUAGE=C LANG=C
 insserv -r /etc/init.d/hwclock.sh
 fake-hwclock
-sync
 EOF
 
 # Removing qemu-arm-static from the root file system
@@ -419,7 +401,6 @@ rm -vrf ./$MOUNT_DIR
 mkdir ./$MOUNT_DIR
 mount $loop_dev_p1 ./$MOUNT_DIR
 cp -avr ./$ROOT_DIR/* ./$MOUNT_DIR
-sync
 umount $loop_dev_p1
 rm -vrf ./$MOUNT_DIR
 
@@ -427,8 +408,6 @@ rm -vrf ./$MOUNT_DIR
 report_info "Releasing loop device"
 losetup -d $loop_dev
 losetup -d $loop_dev_p1
-
-sync
 
 report_info "Process finished"
 
