@@ -1,6 +1,6 @@
 #!/bin/bash
 
-set -e
+set -ex
 
 . ./utilities.sh
 
@@ -15,6 +15,6 @@ fi
 
 report_info "Installing tools"
 
-apt-get install build-essential qemu-user-static multistrap git-core u-boot-tools
+apt-get install build-essential qemu-user-static multistrap git-core u-boot-tools gcc-arm-linux-gnueabihf
 
 exit 0
