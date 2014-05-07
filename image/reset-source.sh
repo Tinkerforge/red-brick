@@ -17,7 +17,7 @@ clone_reset () {
         pushd ./$target_dir > /dev/null
         git reset --hard origin/$git_branch
         git clean -qfx
-        git pull
+        git pull origin $git_branch
         popd > /dev/null
     fi
 }
