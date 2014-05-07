@@ -13,6 +13,17 @@ then
     exit 1
 fi
 
+# Getting the configuration variables
+if [ "$#" -ne 1 ]; then
+    report_error "Too many or too few parameters (provide image configuration)"
+    exit 1
+fi
+if [ ! -e $1 ] || [ -d $1 ]; then
+    report_error "No such configuration file"
+    exit 1
+fi
+. $1
+
 report_info "Installing tools"
 
 apt-get install $REQUIRED_PACKAGES -y
