@@ -1,5 +1,7 @@
 #!/bin/sh -exu
 
+UID="$(id -u)"
+
 . ./utilities.sh
 
 ROOT_UID="0"
