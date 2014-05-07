@@ -17,8 +17,9 @@ clone_reset () {
     else
         report_info "Resetting $display_name source"
         pushd ./$target_dir > /dev/null
-        git reset --hard
+        git reset --hard origin/$git_branch
         git clean -qfx
+        git pull
         popd > /dev/null
     fi
 }
