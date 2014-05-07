@@ -55,7 +55,7 @@ then
     exit 1
 fi
 # Check sunxi-tools directory
-if [ ! -d ./$TOOLS_DIR ]
+if [ ! -d ./$SUNXI_TOOLS_DIR ]
 then
     report_error "Sunxi-tools source not found"
     exit 1
