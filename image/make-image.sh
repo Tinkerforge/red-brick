@@ -160,7 +160,6 @@ dpkg -i ./xserver-xorg-video-sunximali_1.0-3_armhf.deb
 cd ..
 rm -vrf mali-gpu
 dpkg --configure -a
-apt-get update -y
 EOF
 
 # Setting up XDM logo and desktop wallpaper
@@ -183,7 +182,6 @@ cd /tmp
 dpkg -i node_*
 rm -vrf ./node_*
 dpkg --configure -a
-apt-get update -y
 EOF
 
 # Applying console settings
@@ -248,7 +246,6 @@ export LC_ALL=C LANGUAGE=C LANG=C
 apt-get remove plymouth -y
 apt-get purge plymouth -y
 dpkg --configure -a
-apt-get update -y
 EOF
 
 # Installing brickv and brickd
@@ -262,7 +259,6 @@ dpkg -i brickd_linux_latest_armhf.deb
 dpkg -i brickv_linux_latest.deb
 apt-get -f install -y
 dpkg --configure -a
-apt-get update -y
 rm -vrf brickv_linux_latest*
 EOF
 
