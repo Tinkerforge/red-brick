@@ -13,8 +13,10 @@ Next run
 
  ./reset-source.sh
 
-to get the kernel and u-boot source code. Now the source can be compiled, run
+to get the kernel and u-boot source code. Now the source can be patched and
+compiled, run
 
+ ./patch-source.sh <image-config-name>
  ./compile-source.sh <image-config-name>
 
 The <image-config-name> option selects the image configuration to use. See
