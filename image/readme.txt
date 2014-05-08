@@ -5,13 +5,13 @@ Requires a recent Debian or Ubuntu installation with Internet connection.
 
 First run
 
- sudo ./prepare-host.sh <CONFIG_FILE_PATH>
+ ./prepare-host.sh
 
 to install required tools.
 
 Next run
 
- ./reset-source.sh <CONFIG_FILE_PATH>
+ ./reset-source.sh
 
 to get the kernel and u-boot source code. Now the source can be compiled, run
 
@@ -21,5 +21,5 @@ Finally run
 
  sudo ./make-image.sh <CONFIG_FILE_PATH>
 
-which creates the image file in the output directory.
-This can be transfered to an SD card now.
+which creates the image file in the output directory. This can be transfered
+to an SD card now.

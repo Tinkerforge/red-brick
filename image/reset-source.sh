@@ -1,6 +1,9 @@
 #! /bin/bash -exu
 
+BASE_DIR=`pwd`
+
 . ./utilities.sh
+. ./config/common.conf
 
 clone_reset () {
     display_name=$1
@@ -8,30 +11,19 @@ clone_reset () {
     git_url=$3
     git_branch=$4
 
-    if [ ! -d ./$target_dir ]
+    if [ ! -d $target_dir ]
     then
         report_info "Cloning $display_name source"
-        git clone --depth 1 -b $git_branch $git_url ./$target_dir
+        git clone --depth 1 -b $git_branch $git_url $target_dir
     else
         report_info "Resetting $display_name source"
-        pushd ./$target_dir > /dev/null
+        pushd $target_dir > /dev/null
         git reset --hard origin/$git_branch
         git clean -qfx
         git pull origin $git_branch
         popd > /dev/null
     fi
 }
-
-# Getting the configuration variables
-if [ "$#" -ne 1 ]; then
-    report_error "Too many or too few parameters (provide image configuration)"
-    exit 1
-fi
-if [ ! -e $1 ] || [ -d $1 ]; then
-    report_error "No such configuration file"
-    exit 1
-fi
-. $1
 
 # Clone/Reset U-Boot source
 clone_reset "U-Boot" $UBOOT_SRC_DIR $UBOOT_GIT_URL $UBOOT_GIT_BRANCH

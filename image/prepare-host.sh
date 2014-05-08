@@ -1,39 +1,36 @@
 #! /bin/bash -exu
 
+BASE_DIR=`pwd`
+
 . ./utilities.sh
+. ./config/common.conf
 
-ROOT_UID="0"
+# Installing tools
+report_info "Installing tools (requires root access)"
 
-# Check if running as root
-if [ "$(id -u)" -ne "$ROOT_UID" ]
-then
-    report_error "You must be root to execute the script"
-    exit 1
-fi
-
-# Getting the configuration variables
-if [ "$#" -ne 1 ]; then
-    report_error "Too many or too few parameters (provide image configuration)"
-    exit 1
-fi
-if [ ! -e $1 ] || [ -d $1 ]; then
-    report_error "No such configuration file"
-    exit 1
-fi
-. $1
-
-report_info "Installing tools"
-
-apt-get install $REQUIRED_PACKAGES -y
+sudo apt-get install $REQUIRED_PACKAGES -y
 
 # Installing cross compiling toolchain
 report_info "Installing cross compiling toolchain"
-cd ~/
+
+if [ ! -d $TOOLS_DIR ]
+then
+    mkdir -p $TOOLS_DIR
+fi
+
+pushd $TOOLS_DIR > /dev/null
+
 if [ ! -f ./$TC_FILE_NAME ]
 then
-    wget $TC_DL_LINK
+    wget $TC_URL
 fi
-tar $TAR_SWITCHES $TC_FILE_NAME
+
+if [ ! -d ./$TC_DIR_NAME ]
+then
+    tar jxf ./$TC_FILE_NAME
+fi
+
+popd > /dev/null
 
 report_info "Process finished"
 

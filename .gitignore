@@ -1,2 +1,4 @@
-image/root-fs
 *~
+image/build
+image/source
+image/tools
