@@ -14,16 +14,16 @@ then
     exit 1
 fi
 
-# Getting the configuration variables
+# Getting the image configuration variables
 if [ "$#" -ne 1 ]; then
-    report_error "Too many or too few parameters (provide image configuration)"
+    report_error "Too many or too few parameters (provide image configuration name)"
     exit 1
 fi
-if [ ! -e $1 ] || [ -d $1 ]; then
-    report_error "No such configuration file"
+if [ ! -f "./config/image_$1.conf" ]; then
+    report_error "No such image configuration"
     exit 1
 fi
-. $1
+. ./config/image_$1.conf
 
 # Checking U-Boot
 if [ ! -e $UBOOT_SRC_DIR/spl/$UBOOT_IMAGE ]

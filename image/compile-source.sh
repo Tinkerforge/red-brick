@@ -5,16 +5,16 @@ BASE_DIR=`pwd`
 . ./utilities.sh
 . ./config/common.conf
 
-# Getting the configuration variables
+# Getting the image configuration variables
 if [ "$#" -ne 1 ]; then
-    report_error "Too many or too few parameters (provide image configuration)"
+    report_error "Too many or too few parameters (provide image configuration name)"
     exit 1
 fi
-if [ ! -e $1 ] || [ -d $1 ]; then
-    report_error "No such configuration file"
+if [ ! -f "./config/image_$1.conf" ]; then
+    report_error "No such image configuration"
     exit 1
 fi
-. $1
+. ./config/image_$1.conf
 
 # Check U-Boot patch
 if [ ! -e $PATCHES_DIR/u-boot/$UBOOT_PATCH ]
