@@ -66,7 +66,7 @@ fi
 report_info "Cleaning up output directory"
 if [ -d ./$OUTPUT_DIR ]
 then
-    rm -vrf ./$OUTPUT_DIR
+    rm -rf ./$OUTPUT_DIR
     mkdir ./$OUTPUT_DIR
 else
     mkdir ./$OUTPUT_DIR
@@ -76,14 +76,14 @@ fi
 report_info "Cleaning up root-fs directory"
 if [ -d ./$ROOT_DIR ]
 then
-    rm -vrf ./$ROOT_DIR
+    rm -rf ./$ROOT_DIR
 fi
 
 # Cleaning up the mount directory
 if [ -d ./$MOUNT_DIR ]
 then
     report_info "Cleaning up the mount directory"
-    rm -vrf ./$MOUNT_DIR
+    rm -rf ./$MOUNT_DIR
     exit 1
 fi
 
