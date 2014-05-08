@@ -125,6 +125,7 @@ apt-get update
 umount /proc
 mount -t proc proc /proc
 /var/lib/dpkg/info/dash.preinst install
+echo "dash dash/sh boolean false" | debconf-set-selections
 dpkg --configure -a
 umount /proc
 EOF
