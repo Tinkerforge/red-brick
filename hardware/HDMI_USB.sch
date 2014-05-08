@@ -37,7 +37,7 @@ $Descr A4 11693 8268
 encoding utf-8
 Sheet 3 5
 Title ""
-Date "27 feb 2014"
+Date "11 apr 2014"
 Rev ""
 Comp ""
 Comment1 ""
@@ -677,7 +677,7 @@ L C C100
 U 1 1 526EC420
 P 4450 7000
 F 0 "C100" H 4500 7100 50  0000 L CNN
-F 1 "TBD" H 4500 6900 50  0000 L CNN
+F 1 "100nF" H 4200 6900 50  0000 L CNN
 F 2 "0805" H 4450 7000 60  0001 C CNN
 F 3 "" H 4450 7000 60  0000 C CNN
 	1    4450 7000
