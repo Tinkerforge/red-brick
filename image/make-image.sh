@@ -200,7 +200,6 @@ export LC_ALL=C LANGUAGE=C LANG=C
 passwd root
 tinkerforge
 tinkerforge
-sync
 EOF
 
 # Adding new user
