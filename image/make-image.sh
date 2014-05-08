@@ -219,6 +219,11 @@ RED Brick User
 
 
 Y
+EOF
+
+# Adding new user to proper groups
+report_info "Info: Adding new user to proper groups"
+chroot ./$ROOT_DIR<<EOF
 usermod -a -G adm rbuser
 usermod -a -G dialout rbuser
 usermod -a -G cdrom rbuser
