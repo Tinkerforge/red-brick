@@ -259,6 +259,7 @@ dpkg -i brickd_linux_latest_armhf.deb
 dpkg -i brickv_linux_latest.deb
 apt-get -f install -y
 dpkg --configure -a
+rm -vrf brickd_linux_latest_armhf*
 rm -vrf brickv_linux_latest*
 EOF
 
