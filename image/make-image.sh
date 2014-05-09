@@ -120,8 +120,8 @@ report_info "Copying kernel modules to root-fs"
 cp -r $KERNEL_SRC_DIR/$KERNEL_MOD_DIR_NAME/lib/modules/ $ROOTFS_DIR/lib/
 cp -r $KERNEL_SRC_DIR/$KERNEL_MOD_DIR_NAME/lib/firmware/* $ROOTFS_DIR/lib/firmware/
 
-# Copying files to the root-fs
-report_info "Copying files to the root-fs"
+# Patching the root-fs
+report_info "Patching the root-fs"
 cp -r $PATCHES_DIR/root-fs/common/* $ROOTFS_DIR/
 cp -r $PATCHES_DIR/root-fs/$1/* $ROOTFS_DIR/
 
