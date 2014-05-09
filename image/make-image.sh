@@ -92,97 +92,20 @@ multistrap -d $ROOTFS_DIR -f $MULTISTRAP_CONFIG_FILE
 report_info "Copying qemu-arm-static to root-fs"
 cp $QEMU_BIN $ROOTFS_DIR/usr/bin/
 
-# Copying config files to root-fs
-report_info "Copying config files to root-fs"
-cp $PATCHES_DIR/root-fs/securetty        $ROOTFS_DIR/etc/
-cp $PATCHES_DIR/root-fs/inittab          $ROOTFS_DIR/etc/
-cp $PATCHES_DIR/root-fs/hostname         $ROOTFS_DIR/etc/
-cp $PATCHES_DIR/root-fs/fstab            $ROOTFS_DIR/etc/
-cp $PATCHES_DIR/root-fs/modules          $ROOTFS_DIR/etc/
-cp $PATCHES_DIR/root-fs/passwd           $ROOTFS_DIR/etc/
-cp $PATCHES_DIR/root-fs/interfaces       $ROOTFS_DIR/etc/network/
-cp $PATCHES_DIR/root-fs/50-mali.rules    $ROOTFS_DIR/etc/udev/rules.d/
-cp $PATCHES_DIR/root-fs/.octaverc        $ROOTFS_DIR/root/
-
-# Copying memory information tool
-echo -e "\nInfo: Copying memory information tool\n"
-cp $PATCHES_DIR/root-fs/a10-meminfo-static $ROOTFS_DIR/usr/bin/
-chmod 777 $ROOTFS_DIR/usr/bin/a10-meminfo-static
-
 # Configuring the generated root-fs
 report_info "Configuring the generated root-fs"
 chroot $ROOTFS_DIR<<EOF
 export LC_ALL=C LANGUAGE=C LANG=C
 echo "nameserver 8.8.8.8" > /etc/resolv.conf
 rm -vrf /var/lib/apt/lists
-apt-get clean
 wget http://archive.raspbian.org/raspbian.public.key -O - | apt-key add -
 wget http://archive.raspberrypi.org/debian/raspberrypi.gpg.key -O - | apt-key add -
-apt-get update
 umount /proc
 mount -t proc proc /proc
 /var/lib/dpkg/info/dash.preinst install
 echo "dash dash/sh boolean false" | debconf-set-selections
 dpkg --configure -a
 umount /proc
-EOF
-
-# Copying kernel modules to root-fs
-report_info "Copying kernel modules to root-fs"
-cp -avr $KERNEL_SRC_DIR/$KERNEL_MOD_DIR_NAME/lib/modules/ $ROOTFS_DIR/lib/
-cp -avr $KERNEL_SRC_DIR/$KERNEL_MOD_DIR_NAME/lib/firmware/* $ROOTFS_DIR/lib/firmware/
-
-# Configuring boot splash image
-report_info "Configuring boot splash image"
-cp $PATCHES_DIR/root-fs/tf-logo.png           $ROOTFS_DIR/etc/
-cp $PATCHES_DIR/root-fs/asplashscreen         $ROOTFS_DIR/etc/init.d/
-cp $PATCHES_DIR/root-fs/killasplashscreen     $ROOTFS_DIR/etc/init.d/
-chroot $ROOTFS_DIR<<EOF
-export LC_ALL=C LANGUAGE=C LANG=C
-chmod a+x /etc/init.d/asplashscreen
-chmod a+x /etc/init.d/killasplashscreen
-insserv /etc/init.d/asplashscreen
-insserv /etc/init.d/killasplashscreen
-EOF
-
-# Configuring Mali GPU
-report_info "Configuring Mali GPU"
-cp -avr $PATCHES_DIR/root-fs/mali-gpu       $ROOTFS_DIR/tmp/
-chroot $ROOTFS_DIR<<EOF
-export LC_ALL=C LANGUAGE=C LANG=C
-cd /tmp/mali-gpu
-dpkg -i ./libdri2-1_1.0-2_armhf.deb
-dpkg -i ./libsunxi-mali-x11_1.0-4_armhf.deb
-dpkg -i ./libvdpau-sunxi_1.0-1_armhf.deb
-dpkg -i ./libvpx0_0.9.7.p1-2_armhf.deb
-dpkg -i ./sunxi-disp-test_1.0-1_armhf.deb
-dpkg -i ./udevil_0.4.1-3_armhf.deb
-dpkg -i ./xserver-xorg-video-sunximali_1.0-3_armhf.deb
-cd ..
-rm -vrf mali-gpu
-dpkg --configure -a
-EOF
-
-# Setting up XDM logo and desktop wallpaper
-report_info "Setting up XDM logo and desktop wallpaper"
-cp -avr $PATCHES_DIR/root-fs/tf.xpm $ROOTFS_DIR/usr/share/X11/xdm/pixmaps/
-cp -avr $PATCHES_DIR/root-fs/tf-bw.xpm $ROOTFS_DIR/usr/share/X11/xdm/pixmaps/
-cp -avr $PATCHES_DIR/root-fs/Xresources $ROOTFS_DIR/etc/X11/xdm/
-cp -avr $PATCHES_DIR/root-fs/pcmanfm.conf $ROOTFS_DIR/etc/xdg/pcmanfm/LXDE/
-chroot $ROOTFS_DIR<<EOF
-rm -vrf /etc/alternatives/desktop-background
-ln -s /etc/tf-logo.png /etc/alternatives/desktop-background
-EOF
-
-# Installing Node.JS and NPM
-report_info "Installing Node.JS and NPM"
-cp $PATCHES_DIR/root-fs/node_0.10.26-1_armhf.deb      $ROOTFS_DIR/tmp/
-chroot $ROOTFS_DIR<<EOF
-export LC_ALL=C LANGUAGE=C LANG=C
-cd /tmp
-dpkg -i node_*
-rm -vrf ./node_*
-dpkg --configure -a
 EOF
 
 # Applying console settings
@@ -192,76 +115,37 @@ export LC_ALL=C LANGUAGE=C LANG=C
 setupcon
 EOF
 
-# Setting root password
-report_info "Setting root password"
-chroot $ROOTFS_DIR<<EOF
-export LC_ALL=C LANGUAGE=C LANG=C
-passwd root
-tinkerforge
-tinkerforge
-EOF
+# Copying kernel modules to root-fs
+report_info "Copying kernel modules to root-fs"
+cp -r $KERNEL_SRC_DIR/$KERNEL_MOD_DIR_NAME/lib/modules/ $ROOTFS_DIR/lib/
+cp -r $KERNEL_SRC_DIR/$KERNEL_MOD_DIR_NAME/lib/firmware/* $ROOTFS_DIR/lib/firmware/
 
-# Adding new user
-report_info "Info: Adding new user"
-chroot $ROOTFS_DIR<<EOF
-export LC_ALL=C LANGUAGE=C LANG=C
-adduser rbuser
-tinkerforge
-tinkerforge
-RED Brick User
+# Copying files to the root-fs
+report_info "Copying files to the root-fs"
+cp -r $PATCHES_DIR/root-fs/common/* $ROOTFS_DIR/
+cp -r $PATCHES_DIR/root-fs/$1/* $ROOTFS_DIR/
 
+# Setting up memory information tool
+echo -e "\nInfo: Setting up memory information tool\n"
+chmod 777 $ROOTFS_DIR/usr/bin/a10-meminfo-static
 
-
-
-Y
-EOF
-
-# Adding new user to proper groups
-report_info "Info: Adding new user to proper groups"
-chroot $ROOTFS_DIR<<EOF
-usermod -a -G adm rbuser
-usermod -a -G dialout rbuser
-usermod -a -G cdrom rbuser
-usermod -a -G sudo rbuser
-usermod -a -G audio rbuser
-usermod -a -G video rbuser
-usermod -a -G plugdev rbuser
-usermod -a -G games rbuser
-usermod -a -G users rbuser
-usermod -a -G ntp rbuser
-usermod -a -G crontab rbuser
-usermod -a -G netdev rbuser
-EOF
-
-# Enable BASH completion
-report_info "Enabling BASH completion"
-chroot $ROOTFS_DIR<<EOF
-export LC_ALL=C LANGUAGE=C LANG=C
-. /etc/bash_completion
-EOF
-
-# Removing plymouth
-report_info "Removing plymouth"
-chroot $ROOTFS_DIR<<EOF
-export LC_ALL=C LANGUAGE=C LANG=C
-apt-get remove plymouth -y
-apt-get purge plymouth -y
-dpkg --configure -a
-EOF
-
-# Installing brickv and brickd
-report_info "Installing brickv and brickd"
+# Installing brickd
+report_info "Installing brickd"
 chroot $ROOTFS_DIR<<EOF
 export LC_ALL=C LANGUAGE=C LANG=C
 cd /tmp
 wget http://download.tinkerforge.com/tools/brickd/linux/brickd_linux_latest_armhf.deb
-wget http://download.tinkerforge.com/tools/brickv/linux/brickv_linux_latest.deb
 dpkg -i brickd_linux_latest_armhf.deb
-dpkg -i brickv_linux_latest.deb
-apt-get -f install -y
 dpkg --configure -a
-rm -vrf brickd_linux_latest_armhf*
-rm -vrf brickv_linux_latest*
+EOF
+
+# Installing Node.JS and NPM
+report_info "Installing Node.JS and NPM"
+chroot $ROOTFS_DIR<<EOF
+export LC_ALL=C LANGUAGE=C LANG=C
+cd /tmp
+dpkg -i node_*
+dpkg --configure -a
 EOF
 
 # Setting up CPAN
@@ -332,12 +216,112 @@ cd /usr/tinkerforge/bindings
 rm -vrf *_bindings_latest.zip
 EOF
 
-# Cleaning and updating APT
-report_info "Cleaning and updating APT"
+# Enable BASH completion
+report_info "Enabling BASH completion"
 chroot $ROOTFS_DIR<<EOF
 export LC_ALL=C LANGUAGE=C LANG=C
-apt-get clean
-apt-get update
+. /etc/bash_completion
+EOF
+
+# Setting root password
+report_info "Setting root password"
+chroot $ROOTFS_DIR<<EOF
+export LC_ALL=C LANGUAGE=C LANG=C
+passwd root
+tinkerforge
+tinkerforge
+EOF
+
+# Adding new user
+report_info "Info: Adding new user"
+chroot $ROOTFS_DIR<<EOF
+export LC_ALL=C LANGUAGE=C LANG=C
+adduser rbuser
+tinkerforge
+tinkerforge
+RED Brick User
+
+
+
+
+Y
+EOF
+
+# Adding new user to proper groups
+report_info "Info: Adding new user to proper groups"
+chroot $ROOTFS_DIR<<EOF
+usermod -a -G adm rbuser
+usermod -a -G dialout rbuser
+usermod -a -G cdrom rbuser
+usermod -a -G sudo rbuser
+usermod -a -G audio rbuser
+usermod -a -G video rbuser
+usermod -a -G plugdev rbuser
+usermod -a -G games rbuser
+usermod -a -G users rbuser
+usermod -a -G ntp rbuser
+usermod -a -G crontab rbuser
+usermod -a -G netdev rbuser
+EOF
+
+# Add image specific tasks
+
+# Specific tasks for the full image
+if [ $1 -eq "full" ]
+then
+    report_info "Image specific tasks"
+    # Configuring Mali GPU
+    report_info "Configuring Mali GPU"
+    chroot $ROOTFS_DIR<<EOF
+    export LC_ALL=C LANGUAGE=C LANG=C
+    cd /tmp/mali-gpu
+    dpkg -i ./libdri2-1_1.0-2_armhf.deb
+    dpkg -i ./libsunxi-mali-x11_1.0-4_armhf.deb
+    dpkg -i ./libvdpau-sunxi_1.0-1_armhf.deb
+    dpkg -i ./libvpx0_0.9.7.p1-2_armhf.deb
+    dpkg -i ./sunxi-disp-test_1.0-1_armhf.deb
+    dpkg -i ./udevil_0.4.1-3_armhf.deb
+    dpkg -i ./xserver-xorg-video-sunximali_1.0-3_armhf.deb
+    dpkg --configure -a
+EOF
+    # Configuring boot splash image
+    report_info "Configuring boot splash image"
+    chroot $ROOTFS_DIR<<EOF
+    export LC_ALL=C LANGUAGE=C LANG=C
+    chmod a+x /etc/init.d/asplashscreen
+    chmod a+x /etc/init.d/killasplashscreen
+    insserv /etc/init.d/asplashscreen
+    insserv /etc/init.d/killasplashscreen
+EOF
+    # Setting up XDM logo and desktop wallpaper
+    report_info "Setting up XDM logo and desktop wallpaper"
+    chroot $ROOTFS_DIR<<EOF
+    rm -rf /etc/alternatives/desktop-background
+    ln -s /usr/share/images/tf-image.png /etc/alternatives/desktop-background
+EOF
+    # Installing brickv
+    report_info "Installing brickv"
+    chroot $ROOTFS_DIR<<EOF
+    export LC_ALL=C LANGUAGE=C LANG=C
+    cd /tmp
+    wget http://download.tinkerforge.com/tools/brickv/linux/brickv_linux_latest.deb
+    dpkg -i brickv_linux_latest.deb
+    dpkg --configure -a
+EOF
+    # Removing plymouth
+    report_info "Removing plymouth"
+    chroot $ROOTFS_DIR<<EOF
+    export LC_ALL=C LANGUAGE=C LANG=C
+    apt-get remove plymouth -y
+    apt-get purge plymouth -y
+    dpkg --configure -a
+EOF
+fi
+
+# Cleaning /tmp directory
+report_info "Emptying /tmp directory"
+chroot $ROOTFS_DIR<<EOF
+rm -rf /tmp/*
 EOF
 
 # Emptying /etc/resolv.conf
@@ -347,10 +331,14 @@ export LC_ALL=C LANGUAGE=C LANG=C
 echo "" > /etc/resolv.conf
 EOF
 
-# Copying /etc/issue and /etc/os-release
-report_info "Copying /etc/issue and /etc/os-release"
-cp $PATCHES_DIR/root-fs/issue $ROOTFS_DIR/etc/
-cp $PATCHES_DIR/root-fs/os-release $ROOTFS_DIR/etc/
+# Cleaning, updating and fixing APT
+report_info "Cleaning and updating APT"
+chroot $ROOTFS_DIR<<EOF
+export LC_ALL=C LANGUAGE=C LANG=C
+apt-get clean
+apt-get update
+apt-get -f install
+EOF
 
 # Setting up fake-hwclock
 report_info "Setting up fake-hwclock"
