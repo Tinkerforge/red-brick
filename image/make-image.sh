@@ -1,9 +1,10 @@
 #! /bin/bash -exu
 
 BASE_DIR=`pwd`
+CONFIG_DIR="$BASE_DIR/config"
 
 . ./utilities.sh
-. ./config/common.conf
+. $CONFIG_DIR/common.conf
 
 ROOT_UID="0"
 
@@ -19,11 +20,11 @@ if [ "$#" -ne 1 ]; then
     report_error "Too many or too few parameters (provide image configuration name)"
     exit 1
 fi
-if [ ! -f "./config/image_$1.conf" ]; then
+if [ ! -f "$CONFIG_DIR/image_$1.conf" ]; then
     report_error "No such image configuration"
     exit 1
 fi
-. ./config/image_$1.conf
+. $CONFIG_DIR/image_$1.conf
 
 # Checking U-Boot
 if [ ! -e $UBOOT_SRC_DIR/spl/$UBOOT_IMAGE ]

@@ -1,14 +1,15 @@
 #! /bin/bash -exu
 
 BASE_DIR=`pwd`
+CONFIG_DIR="$BASE_DIR/config"
 
 . ./utilities.sh
-. ./config/common.conf
+. $CONFIG_DIR/common.conf
 
 # Installing tools
 report_info "Installing tools (requires root access)"
 
-sudo apt-get install $REQUIRED_PACKAGES -y
+sudo apt-get install -y $REQUIRED_HOST_PACKAGES
 
 # Installing cross compiling toolchain
 report_info "Installing cross compiling toolchain"

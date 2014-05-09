@@ -1,9 +1,10 @@
 #! /bin/bash -exu
 
 BASE_DIR=`pwd`
+CONFIG_DIR="$BASE_DIR/config"
 
 . ./utilities.sh
-. ./config/common.conf
+. $CONFIG_DIR/common.conf
 
 clone_reset () {
     display_name=$1
