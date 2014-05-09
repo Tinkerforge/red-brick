@@ -265,14 +265,11 @@ rm -vrf brickv_linux_latest*
 EOF
 
 # Setting up CPAN
-report_info "Setting up CPAN"
+report_info "Setting up CPANminus"
 chroot $ROOTFS_DIR<<EOF
 export LC_ALL=C LANGUAGE=C LANG=C
-rm -vrf /root/.cpan/
-perl -MCPAN -e 'install CPAN'
-
-
-perl -MCPAN -e 'install Thread::Queue'
+rm -vrf /root/.cpanm/
+cpanm -n Thread::Queue
 EOF
 
 # Setting up all the bindings
