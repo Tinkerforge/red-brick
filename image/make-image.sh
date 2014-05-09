@@ -364,6 +364,10 @@ EOF
 report_info "Removing qemu-arm-static from the root file system"
 rm $ROOTFS_DIR$QEMU_BIN
 
+# Ensure host name integrity
+report_info "Ensure host name integrity"
+hostname -F /etc/hostname
+
 # Creating empty image
 report_info "Creating empty image"
 dd bs=$IMAGE_DD_BS count=$IMAGE_DD_COUNT if=/dev/zero of=$OUTPUT_DIR/$IMAGE_NAME.img
