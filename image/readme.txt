@@ -16,18 +16,19 @@ Next run
 to get the kernel and u-boot source code. Now the source can be patched and
 compiled, run
 
- ./patch-source.sh <image-config-name>
- ./compile-source.sh <image-config-name>
+ ./patch-source.sh <config-name>
+ ./compile-source.sh <config-name>
 
-The <image-config-name> option selects the image configuration to use. See
-the image_<image-config-name>.conf files in the config directory for available
-image configurations. For example:
+The <config-name> option selects the image configuration to use. See the
+image_<config-name>.conf files in the config directory for available
+configurations. For example:
 
+ ./patch-source.sh full
  ./compile-source.sh full
 
 Finally run
 
- sudo ./make-image.sh <image-config-name>
+ sudo ./make-image.sh <config-name>
 
 which creates the image file in the output directory. This can be transfered
 to an SD card now.

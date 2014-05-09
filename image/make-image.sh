@@ -1,10 +1,6 @@
 #! /bin/bash -exu
 
-BASE_DIR=`pwd`
-CONFIG_DIR="$BASE_DIR/config"
-
 . ./utilities.sh
-. $CONFIG_DIR/common.conf
 
 ROOT_UID="0"
 
@@ -15,31 +11,35 @@ then
     exit 1
 fi
 
+BASE_DIR=`pwd`
+CONFIG_DIR="$BASE_DIR/config"
+
+. $CONFIG_DIR/common.conf
+
 # Getting the image configuration variables
 if [ "$#" -ne 1 ]; then
     report_error "Too many or too few parameters (provide image configuration name)"
     exit 1
 fi
-if [ ! -f "$CONFIG_DIR/image_$1.conf" ]; then
-    report_error "No such image configuration"
-    exit 1
-fi
-. $CONFIG_DIR/image_$1.conf
+
+CONFIG_NAME=$1
+. $CONFIG_DIR/image.conf
 
 # Checking U-Boot
-if [ ! -e $UBOOT_SRC_DIR/spl/$UBOOT_IMAGE ]
+if [ ! -e $UBOOT_IMAGE_FILE ]
 then
     report_error "Please build U-Boot first"
     exit 1
 fi
 
 # Checking kernel and boot script
-if [ ! -e $KERNEL_SRC_DIR/arch/arm/boot/$KERNEL_IMAGE ]
+if [ ! -e $KERNEL_IMAGE_FILE ]
 then
     report_error "Please build the kernel first"
     exit 1
 fi
-if [ ! -e $PATCHES_DIR/kernel/$KERNEL_SCRIPT_BIN ]
+
+if [ ! -e $SCRIPT_BIN_FILE ]
 then
     report_error "No boot script found"
     exit 1
@@ -52,10 +52,10 @@ then
     exit 1
 fi
 
-# Checking multistrap script
-if [ ! -e $PATCHES_DIR/root-fs/$MULTISTRAP_SCRIPT ]
+# Checking multistrap config
+if [ ! -e $MULTISTRAP_CONFIG_FILE ]
 then
-    report_error "Multistrap script not found"
+    report_error "Multistrap config not found"
     exit 1
 fi
 
@@ -86,7 +86,7 @@ fi
 
 # Starting multistrap
 report_info "Starting multistrap"
-multistrap -d $ROOTFS_DIR -f $PATCHES_DIR/root-fs/$MULTISTRAP_SCRIPT
+multistrap -d $ROOTFS_DIR -f $MULTISTRAP_CONFIG_FILE
 
 # Copying qemu-arm-static to root-fs
 report_info "Copying qemu-arm-static to root-fs"
@@ -398,11 +398,11 @@ mkfs.ext3 $loop_dev_p1
 
 # Installing U-Boot, boot script and the kernel to the image
 report_info "Installing U-Boot to the image"
-dd bs=512 seek=$UBOOT_DD_SEEK if=$UBOOT_SRC_DIR/spl/$UBOOT_IMAGE of=$loop_dev
+dd bs=512 seek=$UBOOT_DD_SEEK if=$UBOOT_IMAGE_FILE of=$loop_dev
 report_info "Installing boot script to the image"
-dd bs=512 seek=$SCRIPTBIN_DD_SEEK if=$PATCHES_DIR/kernel/$KERNEL_SCRIPT_BIN of=$loop_dev
+dd bs=512 seek=$SCRIPT_DD_SEEK if=$SCRIPT_BIN_FILE of=$loop_dev
 report_info "Installing the kernel to the image"
-dd bs=512 seek=$KERNEL_DD_SEEK if=$KERNEL_SRC_DIR/arch/arm/boot/$KERNEL_IMAGE of=$loop_dev
+dd bs=512 seek=$KERNEL_DD_SEEK if=$KERNEL_IMAGE_FILE of=$loop_dev
 
 # Copying root-fs to the image
 report_info "Copying root-fs to the image"
@@ -415,6 +415,8 @@ umount $loop_dev_p1
 report_info "Releasing loop device"
 losetup -d $loop_dev
 losetup -d $loop_dev_p1
+
+chown -R `logname`:`logname` $BUILD_DIR
 
 report_info "Process finished"
 

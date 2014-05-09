@@ -1,9 +1,10 @@
 #! /bin/bash -exu
 
+. ./utilities.sh
+
 BASE_DIR=`pwd`
 CONFIG_DIR="$BASE_DIR/config"
 
-. ./utilities.sh
 . $CONFIG_DIR/common.conf
 
 # Installing tools
