@@ -366,7 +366,7 @@ rm $ROOTFS_DIR$QEMU_BIN
 
 # Creating empty image
 report_info "Creating empty image"
-dd bs=$IMAGE_BS count=$IMAGE_COUNT if=/dev/zero of=$OUTPUT_DIR/$IMAGE_NAME.img
+dd bs=$IMAGE_DD_BS count=$IMAGE_DD_COUNT if=/dev/zero of=$OUTPUT_DIR/$IMAGE_NAME.img
 
 # Setting up loop device for image
 report_info "Setting up loop device for image"
