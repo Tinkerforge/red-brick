@@ -1,8 +1,8 @@
 # /etc/network/interfaces
 
 # interfaces(5) file used by ifup(8) and ifdown(8)
-#auto lo
+auto lo
 iface lo inet loopback
 
 #auto eth0
-iface eth0 inet dhcp
+#iface eth0 inet dhcp
