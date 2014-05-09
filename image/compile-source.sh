@@ -58,6 +58,7 @@ popd > /dev/null
 pushd $SUNXI_TOOLS_SRC_DIR > /dev/null
 make clean
 make all
+mkdir -p $BASE_DIR/build # Make build directory (otherwise fex2bin can't write to $SCRIPT_BIN_FILE)
 ./fex2bin $SCRIPT_FEX_FILE $SCRIPT_BIN_FILE
 popd > /dev/null
 
