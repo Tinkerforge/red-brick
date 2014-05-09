@@ -1,5 +1,5 @@
---- arch/arm/plat-sunxi/include/plat/i2c.h	2013-09-13 14:02:25.000000000 +0300
-+++ arch/arm/plat-sunxi/include/plat/i2c.h	2013-09-13 14:02:49.000000000 +0300
+--- a/arch/arm/plat-sunxi/include/plat/i2c.h	2013-09-13 14:02:25.000000000 +0300
++++ b/arch/arm/plat-sunxi/include/plat/i2c.h	2013-09-13 14:02:49.000000000 +0300
 @@ -194,10 +194,10 @@
  #define TWI4_BASE_ADDR_END    (TWI4_BASE_ADDR_START + AW_TWI_ADDR_SIZE)
  
