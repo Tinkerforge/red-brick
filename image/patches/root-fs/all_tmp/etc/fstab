@@ -1,5 +1,0 @@
-#
-# /etc/fstab
-#
-# <device>      <mountpoint>    <filesystemtype>    <options>   <dump>  <fsckorder>
-/dev/mmcblk0p1  /               ext3                defaults    0       1
