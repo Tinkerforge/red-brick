@@ -117,13 +117,13 @@ EOF
 
 # Copying kernel modules to root-fs
 report_info "Copying kernel modules to root-fs"
-cp -r $KERNEL_SRC_DIR/$KERNEL_MOD_DIR_NAME/lib/modules/ $ROOTFS_DIR/lib/
-cp -r $KERNEL_SRC_DIR/$KERNEL_MOD_DIR_NAME/lib/firmware/* $ROOTFS_DIR/lib/firmware/
+cp -ar $KERNEL_SRC_DIR/$KERNEL_MOD_DIR_NAME/lib/modules/ $ROOTFS_DIR/lib/
+cp -ar $KERNEL_SRC_DIR/$KERNEL_MOD_DIR_NAME/lib/firmware/* $ROOTFS_DIR/lib/firmware/
 
 # Patching the root-fs
 report_info "Patching the root-fs"
-cp -r $PATCHES_DIR/root-fs/common/* $ROOTFS_DIR/
-cp -r $PATCHES_DIR/root-fs/$1/* $ROOTFS_DIR/
+cp -ar $PATCHES_DIR/root-fs/common/* $ROOTFS_DIR/
+cp -ar $PATCHES_DIR/root-fs/$1/* $ROOTFS_DIR/
 
 # Setting up memory information tool
 echo -e "\nInfo: Setting up memory information tool\n"
