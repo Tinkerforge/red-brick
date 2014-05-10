@@ -126,8 +126,8 @@ EOF
 
 # Copying kernel modules to root-fs
 report_info "Copying kernel modules to root-fs"
-rsync -arp $KERNEL_SRC_DIR/$KERNEL_MOD_DIR_NAME/lib/modules/ $ROOTFS_DIR/lib/
-rsync -arp $KERNEL_SRC_DIR/$KERNEL_MOD_DIR_NAME/lib/firmware/ $ROOTFS_DIR/lib/firmware/
+rsync -arp $KERNEL_SRC_DIR/$KERNEL_MOD_DIR_NAME/lib/modules $ROOTFS_DIR/lib/
+rsync -arp $KERNEL_SRC_DIR/$KERNEL_MOD_DIR_NAME/lib/firmware $ROOTFS_DIR/lib/firmware/
 
 # Patching the root-fs
 report_info "Patching the root-fs"
@@ -409,7 +409,7 @@ dd bs=512 seek=$KERNEL_DD_SEEK if=$KERNEL_IMAGE_FILE of=$loop_dev
 report_info "Copying root-fs to the image"
 mkdir -p $MOUNT_DIR
 mount $loop_dev_p1 $MOUNT_DIR
-rsync -arp $ROOTFS_DIR $MOUNT_DIR
+rsync -arp $ROOTFS_DIR/ $MOUNT_DIR
 umount $loop_dev_p1
 
 # Releasing loop device
