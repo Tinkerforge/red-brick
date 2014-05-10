@@ -75,6 +75,15 @@ else
     mkdir -p $OUTPUT_DIR
 fi
 
+# Checking stray /proc mount on root-fs directory
+set +e
+report_info "Checking stray /proc mount on root-fs directory"
+if [ -d $ROOTFS_DIR/proc ]
+then
+    umount $ROOTFS_DIR/proc > /dev/null
+fi
+set -e
+
 # Cleaning up root-fs directory
 report_info "Cleaning up root-fs directory"
 if [ -d $ROOTFS_DIR ]
