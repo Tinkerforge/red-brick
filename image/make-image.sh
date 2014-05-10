@@ -97,6 +97,11 @@ fi
 report_info "Starting multistrap"
 multistrap -d $ROOTFS_DIR -f $MULTISTRAP_CONFIG_FILE
 
+# Patching the root-fs
+report_info "Patching the root-fs"
+rsync -arp $PATCHES_DIR/root-fs/common/ $ROOTFS_DIR/
+rsync -arp $PATCHES_DIR/root-fs/$1/ $ROOTFS_DIR/
+
 # Copying qemu-arm-static to root-fs
 report_info "Copying qemu-arm-static to root-fs"
 cp $QEMU_BIN $ROOTFS_DIR/usr/bin/
@@ -128,11 +133,6 @@ EOF
 report_info "Copying kernel modules to root-fs"
 rsync -arp $KERNEL_SRC_DIR/$KERNEL_MOD_DIR_NAME/lib/modules $ROOTFS_DIR/lib/
 rsync -arp $KERNEL_SRC_DIR/$KERNEL_MOD_DIR_NAME/lib/firmware $ROOTFS_DIR/lib/
-
-# Patching the root-fs
-report_info "Patching the root-fs"
-rsync -arp $PATCHES_DIR/root-fs/common/ $ROOTFS_DIR/
-rsync -arp $PATCHES_DIR/root-fs/$1/ $ROOTFS_DIR/
 
 # Setting up memory information tool
 echo -e "\nInfo: Setting up memory information tool\n"
@@ -276,54 +276,58 @@ EOF
 # Add image specific tasks
 
 # Specific tasks for the full image
-if [ $1 -eq "full" ]
+if [ "$1" = "full" ]
 then
-    report_info "Image specific tasks"
-    # Configuring Mali GPU
-    report_info "Configuring Mali GPU"
-    chroot $ROOTFS_DIR<<EOF
-    export LC_ALL=C LANGUAGE=C LANG=C
-    cd /tmp/mali-gpu
-    dpkg -i ./libdri2-1_1.0-2_armhf.deb
-    dpkg -i ./libsunxi-mali-x11_1.0-4_armhf.deb
-    dpkg -i ./libvdpau-sunxi_1.0-1_armhf.deb
-    dpkg -i ./libvpx0_0.9.7.p1-2_armhf.deb
-    dpkg -i ./sunxi-disp-test_1.0-1_armhf.deb
-    dpkg -i ./udevil_0.4.1-3_armhf.deb
-    dpkg -i ./xserver-xorg-video-sunximali_1.0-3_armhf.deb
-    dpkg --configure -a
+	report_info "Image specific tasks"
+	
+	# Configuring Mali GPU
+	report_info "Configuring Mali GPU"
+	chroot $ROOTFS_DIR<<EOF
+export LC_ALL=C LANGUAGE=C LANG=C
+cd /tmp/mali-gpu
+dpkg -i ./libdri2-1_1.0-2_armhf.deb
+dpkg -i ./libsunxi-mali-x11_1.0-4_armhf.deb
+dpkg -i ./libvdpau-sunxi_1.0-1_armhf.deb
+dpkg -i ./libvpx0_0.9.7.p1-2_armhf.deb
+dpkg -i ./sunxi-disp-test_1.0-1_armhf.deb
+dpkg -i ./udevil_0.4.1-3_armhf.deb
+dpkg -i ./xserver-xorg-video-sunximali_1.0-3_armhf.deb
+dpkg --configure -a
 EOF
-    # Configuring boot splash image
-    report_info "Configuring boot splash image"
-    chroot $ROOTFS_DIR<<EOF
-    export LC_ALL=C LANGUAGE=C LANG=C
-    chmod a+x /etc/init.d/asplashscreen
-    chmod a+x /etc/init.d/killasplashscreen
-    insserv /etc/init.d/asplashscreen
-    insserv /etc/init.d/killasplashscreen
+
+	# Configuring boot splash image
+	report_info "Configuring boot splash image"
+	chroot $ROOTFS_DIR<<EOF
+export LC_ALL=C LANGUAGE=C LANG=C
+chmod a+x /etc/init.d/asplashscreen
+chmod a+x /etc/init.d/killasplashscreen
+insserv /etc/init.d/asplashscreen
+insserv /etc/init.d/killasplashscreen
 EOF
-    # Setting up XDM logo and desktop wallpaper
-    report_info "Setting up XDM logo and desktop wallpaper"
-    chroot $ROOTFS_DIR<<EOF
-    rm -rf /etc/alternatives/desktop-background
-    ln -s /usr/share/images/tf-image.png /etc/alternatives/desktop-background
+
+	# Setting up XDM logo and desktop wallpaper
+	report_info "Setting up XDM logo and desktop wallpaper"
+	chroot $ROOTFS_DIR<<EOF
+rm -rf /etc/alternatives/desktop-background
+ln -s /usr/share/images/tf-image.png /etc/alternatives/desktop-background
 EOF
-    # Installing brickv
-    report_info "Installing brickv"
-    chroot $ROOTFS_DIR<<EOF
-    export LC_ALL=C LANGUAGE=C LANG=C
-    cd /tmp
-    wget http://download.tinkerforge.com/tools/brickv/linux/brickv_linux_latest.deb
-    dpkg -i brickv_linux_latest.deb
-    dpkg --configure -a
+
+	# Installing brickv
+	report_info "Installing brickv"
+	chroot $ROOTFS_DIR<<EOF
+export LC_ALL=C LANGUAGE=C LANG=C
+cd /tmp
+wget http://download.tinkerforge.com/tools/brickv/linux/brickv_linux_latest.deb
+dpkg -i brickv_linux_latest.deb
+dpkg --configure -a
 EOF
-    # Removing plymouth
-    report_info "Removing plymouth"
-    chroot $ROOTFS_DIR<<EOF
-    export LC_ALL=C LANGUAGE=C LANG=C
-    apt-get remove plymouth -y
-    apt-get purge plymouth -y
-    dpkg --configure -a
+
+	# Removing plymouth
+	report_info "Removing plymouth"
+	chroot $ROOTFS_DIR<<EOF
+export LC_ALL=C LANGUAGE=C LANG=C
+apt-get purge plymouth -y
+dpkg --configure -a
 EOF
 fi
 
@@ -409,7 +413,7 @@ dd bs=512 seek=$KERNEL_DD_SEEK if=$KERNEL_IMAGE_FILE of=$loop_dev
 report_info "Copying root-fs to the image"
 mkdir -p $MOUNT_DIR
 mount $loop_dev_p1 $MOUNT_DIR
-rsync -arp $ROOTFS_DIR/ $MOUNT_DIR
+cp -arp $ROOTFS_DIR/* $MOUNT_DIR/
 umount $loop_dev_p1
 
 # Releasing loop device
