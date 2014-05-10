@@ -106,7 +106,7 @@ report_info "Configuring the generated root-fs"
 chroot $ROOTFS_DIR<<EOF
 export LC_ALL=C LANGUAGE=C LANG=C
 echo "nameserver 8.8.8.8" > /etc/resolv.conf
-rm -vrf /var/lib/apt/lists
+rm -rf /var/lib/apt/lists
 wget http://archive.raspbian.org/raspbian.public.key -O - | apt-key add -
 wget http://archive.raspberrypi.org/debian/raspberrypi.gpg.key -O - | apt-key add -
 umount /proc
@@ -126,13 +126,13 @@ EOF
 
 # Copying kernel modules to root-fs
 report_info "Copying kernel modules to root-fs"
-cp -ar $KERNEL_SRC_DIR/$KERNEL_MOD_DIR_NAME/lib/modules/ $ROOTFS_DIR/lib/
-cp -ar $KERNEL_SRC_DIR/$KERNEL_MOD_DIR_NAME/lib/firmware/* $ROOTFS_DIR/lib/firmware/
+rsync -arp $KERNEL_SRC_DIR/$KERNEL_MOD_DIR_NAME/lib/modules/ $ROOTFS_DIR/lib/
+rsync -arp $KERNEL_SRC_DIR/$KERNEL_MOD_DIR_NAME/lib/firmware/ $ROOTFS_DIR/lib/firmware/
 
 # Patching the root-fs
 report_info "Patching the root-fs"
-cp -ar $PATCHES_DIR/root-fs/common/* $ROOTFS_DIR/
-cp -ar $PATCHES_DIR/root-fs/$1/* $ROOTFS_DIR/
+rsync -arp $PATCHES_DIR/root-fs/common/ $ROOTFS_DIR/
+rsync -arp $PATCHES_DIR/root-fs/$1/ $ROOTFS_DIR/
 
 # Setting up memory information tool
 echo -e "\nInfo: Setting up memory information tool\n"
@@ -161,7 +161,7 @@ EOF
 report_info "Setting up CPANminus"
 chroot $ROOTFS_DIR<<EOF
 export LC_ALL=C LANGUAGE=C LANG=C
-rm -vrf /root/.cpanm/
+rm -rf /root/.cpanm/
 cpanm -n Thread::Queue
 EOF
 
@@ -222,7 +222,7 @@ cd /usr/tinkerforge/bindings
 wget http://download.tinkerforge.com/bindings/vbnet/tinkerforge_vbnet_bindings_latest.zip
 unzip -d vbnet tinkerforge_vbnet_bindings_latest.zip
 cd /usr/tinkerforge/bindings
-rm -vrf *_bindings_latest.zip
+rm -rf *_bindings_latest.zip
 EOF
 
 # Enable BASH completion
@@ -409,7 +409,7 @@ dd bs=512 seek=$KERNEL_DD_SEEK if=$KERNEL_IMAGE_FILE of=$loop_dev
 report_info "Copying root-fs to the image"
 mkdir -p $MOUNT_DIR
 mount $loop_dev_p1 $MOUNT_DIR
-cp -ar $ROOTFS_DIR/* $MOUNT_DIR
+rsync -arp $ROOTFS_DIR $MOUNT_DIR
 umount $loop_dev_p1
 
 # Releasing loop device
