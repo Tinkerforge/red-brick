@@ -127,7 +127,7 @@ EOF
 # Copying kernel modules to root-fs
 report_info "Copying kernel modules to root-fs"
 rsync -arp $KERNEL_SRC_DIR/$KERNEL_MOD_DIR_NAME/lib/modules $ROOTFS_DIR/lib/
-rsync -arp $KERNEL_SRC_DIR/$KERNEL_MOD_DIR_NAME/lib/firmware $ROOTFS_DIR/lib/firmware/
+rsync -arp $KERNEL_SRC_DIR/$KERNEL_MOD_DIR_NAME/lib/firmware $ROOTFS_DIR/lib/
 
 # Patching the root-fs
 report_info "Patching the root-fs"
