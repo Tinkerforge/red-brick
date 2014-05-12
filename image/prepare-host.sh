@@ -34,6 +34,29 @@ fi
 
 popd > /dev/null
 
+
+# Installing advanced cp and mv commands
+report_info "Installing advanced cp and mv commands"
+
+if [ ! -d $TOOLS_DIR ]
+then
+    mkdir -p $TOOLS_DIR
+fi
+
+pushd $TOOLS_DIR > /dev/null
+
+if [ ! -f ./$ACPMV_FILE_NAME ]
+then
+    wget $ACPMV_URL
+fi
+
+if [ ! -d ./$ACPMV_DIR_NAME ]
+then
+    tar xvJf ./$ACPMV_FILE_NAME
+fi
+
+popd > /dev/null
+
 report_info "Process finished"
 
 exit 0
