@@ -135,7 +135,7 @@ rsync -arp $KERNEL_SRC_DIR/$KERNEL_MOD_DIR_NAME/lib/modules $ROOTFS_DIR/lib/
 rsync -arp $KERNEL_SRC_DIR/$KERNEL_MOD_DIR_NAME/lib/firmware $ROOTFS_DIR/lib/
 
 # Setting up memory information tool
-echo -e "\nInfo: Setting up memory information tool\n"
+report_info "Setting up memory information tool"
 chmod 777 $ROOTFS_DIR/usr/bin/a10-meminfo-static
 
 # Installing Java 8
@@ -256,7 +256,7 @@ tinkerforge
 EOF
 
 # Adding new user
-report_info "Info: Adding new user"
+report_info "Adding new user"
 chroot $ROOTFS_DIR<<EOF
 export LC_ALL=C LANGUAGE=C LANG=C
 adduser rbuser
@@ -271,7 +271,7 @@ Y
 EOF
 
 # Adding new user to proper groups
-report_info "Info: Adding new user to proper groups"
+report_info "Adding new user to proper groups"
 chroot $ROOTFS_DIR<<EOF
 usermod -a -G adm rbuser
 usermod -a -G dialout rbuser
@@ -293,7 +293,7 @@ EOF
 if [ "$CONFIG_NAME" = "full" ]
 then
 	report_info "Image specific tasks"
-	
+
 	# Configuring Mali GPU
 	report_info "Configuring Mali GPU"
 	chroot $ROOTFS_DIR<<EOF
