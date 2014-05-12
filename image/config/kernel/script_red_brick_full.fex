@@ -54,8 +54,8 @@ twi_sda = port:PB01<2><1><default><default>
 
 [uart_para]
 uart_debug_port = 0
-uart_debug_tx = port:PB19<2><1><default><default>
-uart_debug_rx = port:PB20<2><1><default><default>
+uart_debug_tx = port:PC16<4><1><default><default>
+uart_debug_rx = port:PC17<4><1><default><default>
 
 [jtag_para]
 jtag_enable = 0
@@ -151,7 +151,7 @@ twi2_scl = port:PB17<2><default><default><default>
 twi2_sda = port:PB18<2><default><default><default>
 
 [uart_para0]
-uart_used = 1
+uart_used = 0
 uart_port = 0
 uart_type = 2
 uart_tx = port:PB19<2><1><default><default>
@@ -167,7 +167,7 @@ uart_rts = port:PA15<3><1><default><default>
 uart_cts = port:PA14<3><1><default><default>
 
 [uart_para2]
-uart_used = 1
+uart_used = 0
 uart_port = 2
 uart_type = 2
 uart_tx = port:PC18<3><1><default><default>
@@ -177,8 +177,8 @@ uart_rx = port:PC19<3><1><default><default>
 uart_used = 1
 uart_port = 3
 uart_type = 2
-uart_tx = port:PG09<3><1><default><default>
-uart_rx = port:PG10<3><1><default><default>
+uart_tx = port:PC16<4><1><default><default>
+uart_rx = port:PC17<4><1><default><default>
 
 [spi1_para]
 spi_used = 0
