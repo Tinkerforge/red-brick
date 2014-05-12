@@ -138,6 +138,18 @@ rsync -arp $KERNEL_SRC_DIR/$KERNEL_MOD_DIR_NAME/lib/firmware $ROOTFS_DIR/lib/
 echo -e "\nInfo: Setting up memory information tool\n"
 chmod 777 $ROOTFS_DIR/usr/bin/a10-meminfo-static
 
+# Installing Java 8
+report_info "Installing Java 8"
+chroot $ROOTFS_DIR<<EOF
+cd /tmp
+wget download.tinkerforge.com/_stuff/jdk-8-linux-arm-vfp-hflt.tar.gz
+tar zxvf jdk-8-linux-arm-vfp-hflt.tar.gz -C /usr/lib/jvm
+update-alternatives --install /usr/bin/javac javac /usr/lib/jvm/jdk1.8.0/bin/javac 1
+update-alternatives --install /usr/bin/java java /usr/lib/jvm/jdk1.8.0/bin/java 1
+update-alternatives --config javac
+update-alternatives --config java
+EOF
+
 # Installing brickd
 report_info "Installing brickd"
 chroot $ROOTFS_DIR<<EOF
