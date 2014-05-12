@@ -1,0 +1,42 @@
+diff --git a/arch/arm/cpu/armv7/sunxi/board.c b/arch/arm/cpu/armv7/sunxi/board.c
+index 9e5aec2..fe38104 100644
+--- a/arch/arm/cpu/armv7/sunxi/board.c
++++ b/arch/arm/cpu/armv7/sunxi/board.c
+@@ -74,6 +74,10 @@ int gpio_init(void)
+ 	sunxi_gpio_set_cfgpin(SUNXI_GPG(3), SUN5I_GPG3_UART1_TX);
+ 	sunxi_gpio_set_cfgpin(SUNXI_GPG(4), SUN5I_GPG4_UART1_RX);
+ 	sunxi_gpio_set_pull(SUNXI_GPG(4), 1);
++#elif CONFIG_CONS_INDEX == 4 && defined(CONFIG_SUN5I)
++	sunxi_gpio_set_cfgpin(SUNXI_GPC(16), SUN5I_GPC16_UART3_TX);
++	sunxi_gpio_set_cfgpin(SUNXI_GPC(17), SUN5I_GPC17_UART3_RX);
++	sunxi_gpio_set_pull(SUNXI_GPC(17), 1);
+ #elif CONFIG_CONS_INDEX == 5 && defined(CONFIG_SUN8I)
+ 	sunxi_gpio_set_cfgpin(SUNXI_GPL(2), SUN8I_GPL2_R_UART_TX);
+ 	sunxi_gpio_set_cfgpin(SUNXI_GPL(3), SUN8I_GPL3_R_UART_RX);
+diff --git a/arch/arm/include/asm/arch-sunxi/gpio.h b/arch/arm/include/asm/arch-sunxi/gpio.h
+index 46a111e..da93842 100644
+--- a/arch/arm/include/asm/arch-sunxi/gpio.h
++++ b/arch/arm/include/asm/arch-sunxi/gpio.h
+@@ -133,6 +133,9 @@ enum sunxi_gpio_number {
+ #define SUN5I_GPG3_UART1_TX	4
+ #define SUN5I_GPG4_UART1_RX	4
+ 
++#define SUN5I_GPC16_UART3_TX     4
++#define SUN5I_GPC17_UART3_RX     4
++
+ #define SUNXI_GPC6_SDC2		3
+ 
+ #define SUNXI_GPF0_SDC0		2
+diff --git a/boards.cfg b/boards.cfg
+index 6f32cf2..2c68c13 100644
+--- a/boards.cfg
++++ b/boards.cfg
+@@ -375,7 +375,7 @@ Active  arm         armv7          sunxi       -               sunxi
+ Active  arm         armv7          sunxi       -               sunxi               A10-OLinuXino-Lime                   sun4i:A10_OLINUXINO_L,STATUSLED=226,SPL,SUNXI_EMAC                                                                                -
+ # RED-Brick-OPT: Disable LED, power and ethernet support
+ #Active  arm         armv7          sunxi       -               sunxi               A10s-OLinuXino-M                     sun5i:A10S_OLINUXINO_M,STATUSLED=131,AXP152_POWER,CONS_INDEX=1,SPL,SUNXI_EMAC                                                     -
+-Active  arm         armv7          sunxi       -               sunxi               A10s-OLinuXino-M                     sun5i:A10S_OLINUXINO_M,CONS_INDEX=1,SPL                                                     -
++Active  arm         armv7          sunxi       -               sunxi               A10s-OLinuXino-M                     sun5i:A10S_OLINUXINO_M,CONS_INDEX=4,SPL                                                     -
+ Active  arm         armv7          sunxi       -               sunxi               A10s-OLinuXino-M_FEL                 sun5i:A10S_OLINUXINO_M,STATUSLED=131,AXP152_POWER,CONS_INDEX=1,SPL_FEL,SUNXI_EMAC                                                 -
+ Active  arm         armv7          sunxi       -               sunxi               A13-OLinuXino                        sun5i:A13_OLINUXINO,SPL,STATUSLED=201,CONS_INDEX=2                                                                                -
+ Active  arm         armv7          sunxi       -               sunxi               A13-OLinuXino_FEL                    sun5i:A13_OLINUXINO,SPL_FEL,STATUSLED=201,CONS_INDEX=2                                                                            -
