@@ -100,7 +100,7 @@ multistrap -d $ROOTFS_DIR -f $MULTISTRAP_CONFIG_FILE
 # Patching the root-fs
 report_info "Patching the root-fs"
 rsync -arp $PATCHES_DIR/root-fs/common/ $ROOTFS_DIR/
-rsync -arp $PATCHES_DIR/root-fs/$1/ $ROOTFS_DIR/
+rsync -arp $PATCHES_DIR/root-fs/$CONFIG_NAME/ $ROOTFS_DIR/
 
 # Copying qemu-arm-static to root-fs
 report_info "Copying qemu-arm-static to root-fs"
@@ -290,7 +290,7 @@ EOF
 # Add image specific tasks
 
 # Specific tasks for the full image
-if [ "$1" = "full" ]
+if [ "$CONFIG_NAME" = "full" ]
 then
 	report_info "Image specific tasks"
 	
