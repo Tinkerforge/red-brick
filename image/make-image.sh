@@ -146,10 +146,8 @@ wget download.tinkerforge.com/_stuff/jdk-8-linux-arm-vfp-hflt.tar.gz
 tar zxvf jdk-8-linux-arm-vfp-hflt.tar.gz -C /usr/lib/jvm
 update-alternatives --install /usr/bin/javac javac /usr/lib/jvm/jdk1.8.0/bin/javac 1
 update-alternatives --install /usr/bin/java java /usr/lib/jvm/jdk1.8.0/bin/java 1
-update-alternatives --config javac
-3
-update-alternatives --config java
-3
+echo 3 | update-alternatives --config javac
+echo 3 | update-alternatives --config java
 EOF
 
 # Installing brickd
@@ -351,13 +349,6 @@ chroot $ROOTFS_DIR<<EOF
 rm -rf /tmp/*
 EOF
 
-# Emptying /etc/resolv.conf
-report_info "Emptying /etc/resolv.conf"
-chroot $ROOTFS_DIR<<EOF
-export LC_ALL=C LANGUAGE=C LANG=C
-echo "" > /etc/resolv.conf
-EOF
-
 # Cleaning, updating and fixing APT
 report_info "Cleaning and updating APT"
 chroot $ROOTFS_DIR<<EOF
@@ -365,6 +356,13 @@ export LC_ALL=C LANGUAGE=C LANG=C
 apt-get clean
 apt-get update
 apt-get -f install
+EOF
+
+# Emptying /etc/resolv.conf
+report_info "Emptying /etc/resolv.conf"
+chroot $ROOTFS_DIR<<EOF
+export LC_ALL=C LANGUAGE=C LANG=C
+echo "" > /etc/resolv.conf
 EOF
 
 # Setting up fake-hwclock
