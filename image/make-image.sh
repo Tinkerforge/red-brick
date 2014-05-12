@@ -427,7 +427,7 @@ dd bs=512 seek=$KERNEL_DD_SEEK if=$KERNEL_IMAGE_FILE of=$loop_dev
 report_info "Copying root-fs to the image"
 mkdir -p $MOUNT_DIR
 mount $loop_dev_p1 $MOUNT_DIR
-cp -arp $ROOTFS_DIR/* $MOUNT_DIR/
+$TOOLS_DIR/$ACPMV_DIR_NAME/cp -garp $ROOTFS_DIR/* $MOUNT_DIR/
 umount $loop_dev_p1
 
 # Releasing loop device
