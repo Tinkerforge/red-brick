@@ -87,7 +87,7 @@ dram_emr2 = 0x10
 dram_emr3 = 0x0
 
 [nand_para]
-nand_used = 1
+nand_used = 0
 nand_we = port:PC00<2><default><default><default>
 nand_ale = port:PC01<2><default><default><default>
 nand_cle = port:PC02<2><default><default><default>
@@ -115,7 +115,7 @@ mali_used = 1
 mali_clkdiv = 2
 
 [emac_para]
-emac_used = 1
+emac_used = 0
 emac_rxd3 = port:PA00<2><default><default><default>
 emac_rxd2 = port:PA01<2><default><default><default>
 emac_rxd1 = port:PA02<2><default><default><default>
@@ -247,7 +247,7 @@ fb1_pixel_sequence = 0
 fb1_scaler_mode_enable = 0
 
 [lcd0_para]
-lcd_used = 1
+lcd_used = 0
 lcd_x = 800
 lcd_y = 480
 lcd_dclk_freq = 33
@@ -318,7 +318,7 @@ lcdvsync = port:PD27<2><0><default><default>
 lcdgamma4iep = 22
 
 [tv_out_dac_para]
-dac_used = 1
+dac_used = 0
 dac0_src = 0
 
 [hdmi_para]
@@ -708,7 +708,7 @@ output_mode = 5
 auto_hpd = 1
 
 [gpio_para]
-gpio_used = 1
+gpio_used = 0
 gpio_num = 25
 gpio_pin_1 = port:PB14<0><default><default><1>
 gpio_pin_2 = port:PB13<0><default><default><1>
@@ -762,4 +762,3 @@ pin_22 = port:PE08<0><default><default><1>
 pin_23 = port:PE09<0><default><default><1>
 pin_24 = port:PE10<0><default><default><1>
 pin_25 = port:PE11<0><default><default><1>
-
