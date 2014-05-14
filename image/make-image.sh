@@ -129,11 +129,6 @@ export LC_ALL=C LANGUAGE=C LANG=C
 setupcon
 EOF
 
-# Copying kernel modules to root-fs
-report_info "Copying kernel modules to root-fs"
-rsync -arp $KERNEL_SRC_DIR/$KERNEL_MOD_DIR_NAME/lib/modules $ROOTFS_DIR/lib/
-rsync -arp $KERNEL_SRC_DIR/$KERNEL_MOD_DIR_NAME/lib/firmware $ROOTFS_DIR/lib/
-
 # Setting up memory information tool
 report_info "Setting up memory information tool"
 chmod 777 $ROOTFS_DIR/usr/bin/a10-meminfo-static
@@ -421,11 +416,13 @@ dd bs=512 seek=$SCRIPT_DD_SEEK if=$SCRIPT_BIN_FILE of=$loop_dev
 report_info "Installing the kernel to the image"
 dd bs=512 seek=$KERNEL_DD_SEEK if=$KERNEL_IMAGE_FILE of=$loop_dev
 
-# Copying root-fs to the image
-report_info "Copying root-fs to the image"
+# Copying root-fs and  kernel modules to the image
+report_info "Copying root-fs and  kernel modules to the image"
 mkdir -p $MOUNT_DIR
 mount $loop_dev_p1 $MOUNT_DIR
 $TOOLS_DIR/$ACPMV_DIR_NAME/cp -garp $ROOTFS_DIR/* $MOUNT_DIR/
+rsync -arp $KERNEL_SRC_DIR/$KERNEL_MOD_DIR_NAME/lib/modules $MOUNT_DIR/lib/
+rsync -arp $KERNEL_SRC_DIR/$KERNEL_MOD_DIR_NAME/lib/firmware $MOUNT_DIR/lib/
 umount $loop_dev_p1
 
 # Releasing loop device
