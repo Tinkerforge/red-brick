@@ -418,8 +418,8 @@ dd bs=512 seek=$SCRIPT_DD_SEEK if=$SCRIPT_BIN_FILE of=$loop_dev
 report_info "Installing the kernel to the image"
 dd bs=512 seek=$KERNEL_DD_SEEK if=$KERNEL_IMAGE_FILE of=$loop_dev
 
-# Copying root-fs and  kernel modules to the image
-report_info "Copying root-fs and  kernel modules to the image"
+# Copying root-fs and kernel modules to the image
+report_info "Copying root-fs and kernel modules to the image"
 mkdir -p $MOUNT_DIR
 mount $loop_dev_p1 $MOUNT_DIR
 $ACP_CMD -garp $ROOTFS_DIR/* $MOUNT_DIR/
