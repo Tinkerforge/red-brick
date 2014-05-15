@@ -1,3 +1,0 @@
-1. Find a way to keep ownership of the config files consistent during
-   copying root-fs patch.
-

@@ -1,0 +1,15 @@
+- find a way to keep ownership of the config files consistent during copying
+  root-fs patches
+
+- fsck on boot must not ask any question, it just should fix any issue
+  automatically. currently it can just sit there ask you a question and wait
+  for an answer, but there's nobody to asnwer it
+
+- kernel boot can hang between this two lines:
+
+  <30>udevd[161]: starting version 175
+  <6>EXT3-fs (mmcblk0p1): using internal journal
+
+  this might be related to a problem in the prepared root-fs, as rebuilding
+  it seems to fix it. but there was one case were an already working image got
+  into this state
