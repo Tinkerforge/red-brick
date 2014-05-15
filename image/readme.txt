@@ -14,9 +14,10 @@ First run
 
 to install required tools. Next run
 
- ./clone-source.sh
+ ./update-source.sh
 
-to get the kernel and u-boot source code. Now the source can be compiled, run
+to get or update the kernel and u-boot source code. Now the source can be
+compiled, run
 
  ./compile-source.sh <config-name>
 
