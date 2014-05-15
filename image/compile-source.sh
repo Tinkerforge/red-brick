@@ -52,6 +52,8 @@ popd > /dev/null
 
 # Building the kernel and kernel modules
 pushd $KERNEL_SRC_DIR > /dev/null
+cp $KERNEL_CONFIG_FILE ./arch/arm/configs
+make ARCH=arm CROSS_COMPILE=$TC_PREFIX $KERNEL_CONFIG_NAME
 make ARCH=arm CROSS_COMPILE=$TC_PREFIX clean
 make ARCH=arm CROSS_COMPILE=$TC_PREFIX -j16 INSTALL_MOD_PATH=$KERNEL_MOD_DIR_NAME $KERNEL_IMAGE_NAME modules
 make ARCH=arm CROSS_COMPILE=$TC_PREFIX INSTALL_MOD_PATH=$KERNEL_MOD_DIR_NAME modules_install

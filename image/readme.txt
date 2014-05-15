@@ -1,29 +1,29 @@
 RED Brick Linux Image
 =====================
 
+The RED Brick uses as special Linux image.
+
+Building the Image
+------------------
+
 Requires a recent Debian or Ubuntu installation with Internet connection.
 
 First run
 
  ./prepare-host.sh
 
-to install required tools.
+to install required tools. Next run
 
-Next run
+ ./clone-source.sh
 
- ./reset-source.sh
+to get the kernel and u-boot source code. Now the source can be compiled, run
 
-to get the kernel and u-boot source code. Now the source can be patched and
-compiled, run
-
- ./patch-source.sh <config-name>
  ./compile-source.sh <config-name>
 
 The <config-name> option selects the image configuration to use. See the
 image_<config-name>.conf files in the config directory for available
 configurations. For example:
 
- ./patch-source.sh full
  ./compile-source.sh full
 
 Finally run
