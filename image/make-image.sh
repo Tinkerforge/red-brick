@@ -364,6 +364,8 @@ EOF
 report_info "Setting up fake-hwclock"
 chroot $ROOTFS_DIR<<EOF
 export LC_ALL=C LANGUAGE=C LANG=C
+rm /etc/cron.hourly/fake-hwclock
+chmod a+x /etc/cron.d/fake-hwclock
 insserv -r /etc/init.d/hwclock.sh
 fake-hwclock
 EOF

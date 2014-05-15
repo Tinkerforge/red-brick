@@ -1,0 +1,13 @@
+# /etc/cron.d/fake-hwclock: crontab fragment for fake-hwclock
+# This saves the current time in the file /etc/fake-hwclock.data
+# every minute.
+
+# COL1:Minute
+# COL2:Hour
+# COL3:Day of month
+# COL4:Month
+# COL5:Day of week
+# COL6:Execute as user
+# COL7:Command to execute
+
+* * * * * root /sbin/fake-hwclock save
