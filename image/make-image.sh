@@ -99,8 +99,8 @@ multistrap -d $ROOTFS_DIR -f $MULTISTRAP_CONFIG_FILE
 
 # Patching the root-fs
 report_info "Patching the root-fs"
-rsync -ar $PATCHES_DIR/root-fs/common/ $ROOTFS_DIR/
-rsync -ar $PATCHES_DIR/root-fs/$CONFIG_NAME/ $ROOTFS_DIR/
+rsync -a --no-p $PATCHES_DIR/root-fs/common/ $ROOTFS_DIR/
+rsync -a --no-p $PATCHES_DIR/root-fs/$CONFIG_NAME/ $ROOTFS_DIR/
 
 # Copying qemu-arm-static to root-fs
 report_info "Copying qemu-arm-static to root-fs"
