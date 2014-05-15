@@ -99,6 +99,8 @@ multistrap -d $ROOTFS_DIR -f $MULTISTRAP_CONFIG_FILE
 
 # Patching the root-fs
 report_info "Patching the root-fs"
+chown root.root -R $PATCHES_DIR/root-fs/common/*
+chown root.root -R $PATCHES_DIR/root-fs/$CONFIG_NAME/*
 rsync -arp $PATCHES_DIR/root-fs/common/ $ROOTFS_DIR/
 rsync -arp $PATCHES_DIR/root-fs/$CONFIG_NAME/ $ROOTFS_DIR/
 
