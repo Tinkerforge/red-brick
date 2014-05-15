@@ -380,12 +380,12 @@ hostname -F /etc/hostname
 
 # Creating empty image
 report_info "Creating empty image"
-dd bs=$IMAGE_DD_BS count=$IMAGE_DD_COUNT if=/dev/zero of=$OUTPUT_DIR/$IMAGE_NAME.img
+dd bs=$IMAGE_DD_BS count=$IMAGE_DD_COUNT if=/dev/zero | pv -treb | dd of=$IMAGE_FILE
 
 # Setting up loop device for image
 report_info "Setting up loop device for image"
 loop_dev=$(losetup -f)
-losetup $loop_dev $OUTPUT_DIR/$IMAGE_NAME.img
+losetup $loop_dev $IMAGE_FILE
 
 # Partitioning image
 set +e
@@ -404,7 +404,7 @@ set -e
 # Setting up loop device for image partition
 report_info "Setting up loop device for image partition"
 loop_dev_p1=$(losetup -f)
-losetup -o $((512*20480)) $loop_dev_p1 $OUTPUT_DIR/$IMAGE_NAME.img
+losetup -o $((512*20480)) $loop_dev_p1 $IMAGE_FILE
 
 # Formatting image partition
 report_info "Formatting image partition"
