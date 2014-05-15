@@ -44,7 +44,10 @@ export PATH=$TOOLS_DIR/$TC_DIR_NAME/bin:$PATH
 pushd $UBOOT_SRC_DIR > /dev/null
 make ARCH=arm CROSS_COMPILE=$TC_PREFIX clean
 make ARCH=arm CROSS_COMPILE=$TC_PREFIX $UBOOT_CONFIG_NAME
-make ARCH=arm CROSS_COMPILE=$TC_PREFIX -j16
+# set GAS_BUG_12532 to n. we use gas 2.23, the bug was fixed in 2.22, but due to the
+# managed version output of our gas the version detection in the Makefile fails and
+# we have to force the correct result
+make ARCH=arm CROSS_COMPILE=$TC_PREFIX GAS_BUG_12532=n -j16
 popd > /dev/null
 
 # Building the kernel and kernel modules
