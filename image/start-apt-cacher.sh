@@ -2,6 +2,8 @@
 
 . ./utilities.sh
 
+# Some systems like Debian dont have /usr/sbin in normal user's PATH
+PATH=/usr/sbin/:$PATH
 BASE_DIR=`pwd`
 CONFIG_DIR="$BASE_DIR/config"
 
