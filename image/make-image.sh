@@ -419,7 +419,7 @@ losetup -o $((512*20480)) $loop_dev_p1 $IMAGE_FILE
 
 # Formatting image partition
 report_info "Formatting image partition"
-mkfs.ext3 $loop_dev_p1
+mkfs.ext3 $loop_dev_p1 -L $PARTITION_LABEL
 
 # Installing U-Boot, boot script and the kernel to the image
 report_info "Installing U-Boot to the image"
