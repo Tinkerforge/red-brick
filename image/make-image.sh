@@ -92,12 +92,6 @@ then
 else
     mkdir -p $ROOTFS_DIR
 fi
-if [ -d $TMP_ROOTFS_DIR ]
-then
-    rm -rf $TMP_ROOTFS_DIR/*
-else
-    mkdir -p $TMP_ROOTFS_DIR
-fi
 
 # Starting multistrap
 report_info "Starting multistrap"
@@ -112,13 +106,8 @@ multistrap -d $ROOTFS_DIR -f $MULTISTRAP_CONFIG_FILE
 
 # Patching the root-fs
 report_info "Patching the root-fs"
-
-rsync -a $PATCHES_DIR/root-fs/common/ $TMP_ROOTFS_DIR
-rsync -a $PATCHES_DIR/root-fs/$CONFIG_NAME/ $TMP_ROOTFS_DIR
-
-chown -R root:root $TMP_ROOTFS_DIR
-
-rsync -a $TMP_ROOTFS_DIR/ $ROOTFS_DIR/
+rsync -a --no-p $PATCHES_DIR/root-fs/common/ $ROOTFS_DIR/
+rsync -a --no-p $PATCHES_DIR/root-fs/$CONFIG_NAME/ $ROOTFS_DIR/
 
 # Copying qemu-arm-static to root-fs
 report_info "Copying qemu-arm-static to root-fs"
