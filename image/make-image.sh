@@ -117,6 +117,7 @@ cp $QEMU_BIN $ROOTFS_DIR/usr/bin/
 # Configuring the generated root-fs
 report_info "Configuring the generated root-fs"
 chroot $ROOTFS_DIR<<EOF
+export DEBIAN_FRONTEND=noninteractive DEBCONF_NONINTERACTIVE_SEEN=true
 export LC_ALL=C LANGUAGE=C LANG=C
 echo "nameserver 8.8.8.8" > /etc/resolv.conf
 rm -rf /var/lib/apt/lists
