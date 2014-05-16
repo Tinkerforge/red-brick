@@ -118,6 +118,8 @@ umount /proc
 mount -t proc proc /proc
 /var/lib/dpkg/info/dash.preinst install
 echo "dash dash/sh boolean false" | debconf-set-selections
+echo "tzdata tzdata/Areas select $TZDATA_AREA" | debconf-set-selections
+echo "tzdata tzdata/Zones/Europe select $TZDATA_ZONE" | debconf-set-selections
 dpkg --configure -a
 umount /proc
 EOF
