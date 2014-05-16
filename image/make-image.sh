@@ -53,7 +53,7 @@ then
 fi
 
 # Checking multistrap config
-if [ ! -e $MULTISTRAP_CONFIG_FILE ]
+if [ ! -e $MULTISTRAP_TEMPLATE_FILE ]
 then
     report_error "Multistrap config not found"
     exit 1
@@ -101,6 +101,13 @@ fi
 
 # Starting multistrap
 report_info "Starting multistrap"
+if [ $USE_APT_CACHER = "yes" ]
+then
+	sed -e 's/%apt-cacher-\([0-9]\+\)-prefix%/'`hostname`':315\1\//' $MULTISTRAP_TEMPLATE_FILE > $MULTISTRAP_CONFIG_FILE
+else
+	sed -e 's/%apt-cacher-\([0-9]\+\)-prefix%//' $MULTISTRAP_TEMPLATE_FILE > $MULTISTRAP_CONFIG_FILE
+fi
+
 multistrap -d $ROOTFS_DIR -f $MULTISTRAP_CONFIG_FILE
 
 # Patching the root-fs

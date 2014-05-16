@@ -101,7 +101,7 @@ packages=perl perl-doc cpanminus libyaml-perl libdigest-hmac-perl
 packages=libterm-readline-gnu-perl
 # GROUP-END:perl
 
-source=http://ftp.debian.org/debian
+source=http://%apt-cacher-0-prefix%ftp.debian.org/debian
 keyring=debian-archive-keyring
 suite=stable
 components=main contrib non-free
@@ -109,7 +109,7 @@ omitdebsrc=false
 
 [Debian_Security]
 packages=
-source=http://security.debian.org
+source=http://%apt-cacher-1-prefix%security.debian.org
 keyring=debian-archive-keyring
 suite=stable/updates
 components=main contrib non-free
@@ -117,7 +117,7 @@ omitdebsrc=false
 
 [Debian_Updates]
 packages=
-source=http://ftp.debian.org/debian
+source=http://%apt-cacher-2-prefix%ftp.debian.org/debian
 keyring=debian-archive-keyring
 suite=stable-updates
 components=main contrib non-free
@@ -129,7 +129,7 @@ packages=mono-runtime libmono-2.0-1 mono-mcs
 packages=mono-dmcs mono-gmcs mono-vbnc
 # GROUP-END:mono
 
-source=http://archive.raspbian.org/raspbian 
+source=http://%apt-cacher-3-prefix%archive.raspbian.org/raspbian 
 keyring=raspbian-archive-keyring
 suite=stable
 components=main contrib non-free

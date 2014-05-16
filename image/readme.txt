@@ -27,9 +27,31 @@ configurations. For example:
 
  ./compile-source.sh full
 
-Finally run
+The next step is to create the image file. This will download several Debian
+and Raspbian package to build the root-fs. If you intent to create multiple
+images it's useful to setup apt-cacher daemons to avoid downloading all the
+packages multiple times, see the apt-cacher section below for further details.
+Whether you decided to use apt-cacher or not the next step is the same:
 
  sudo ./make-image.sh <config-name>
 
-which creates the image file in the output directory. This can be transfered
-to an SD card now.
+this creates the image file in the ./build/output directory.
+
+Using apt-cacher
+----------------
+
+The apt-cacher daemon acts as a local cache for an APT server. If you intent
+to create multiple images it's useful to setup apt-cacher daemons to avoid
+downloading all packages multiple times. To do this you have to install the
+apt-cacher package (it's not installed by the prepare-host.sh script):
+
+ sudo apt-get install apt-cacher
+
+If dpkg asks you how apt-cacher should be started, select "manual". Then edit
+./config/developer.conf and change USE_APT_CACHER to "yes". Finally start the
+apt-cacher daemons
+
+ sudo ./start-apt-cacher.sh
+
+Now ./make-image.sh will use the apt-cacher instead of directly downloading
+from the Debian and Raspbian APT servers.
