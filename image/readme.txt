@@ -51,7 +51,7 @@ If dpkg asks you how apt-cacher should be started, select "manual". Then edit
 ./config/developer.conf and change USE_APT_CACHER to "yes". Finally start the
 apt-cacher daemons
 
- sudo ./start-apt-cacher.sh
+ ./start-apt-cacher.sh
 
 Now ./make-image.sh will use the apt-cacher instead of directly downloading
 from the Debian and Raspbian APT servers.
