@@ -17,42 +17,50 @@ report_info "Installing cross compiling toolchain"
 
 if [ ! -d $TOOLS_DIR ]
 then
-    mkdir -p $TOOLS_DIR
+	mkdir -p $TOOLS_DIR
 fi
 
 pushd $TOOLS_DIR > /dev/null
 
 if [ ! -f ./$TC_FILE_NAME ]
 then
-    wget $TC_URL
+	wget $TC_URL
 fi
 
 if [ ! -d ./$TC_DIR_NAME ]
 then
-    tar jxf ./$TC_FILE_NAME
+	tar jxf ./$TC_FILE_NAME
 fi
 
 popd > /dev/null
 
-
-# Installing advanced cp and mv commands
-report_info "Installing advanced cp and mv commands"
+# Compiling advanced cp and mv commands
+report_info "Compiling advanced cp command"
 
 if [ ! -d $TOOLS_DIR ]
 then
-    mkdir -p $TOOLS_DIR
+	mkdir -p $TOOLS_DIR
 fi
 
 pushd $TOOLS_DIR > /dev/null
 
-if [ ! -f ./$ACPMV_FILE_NAME ]
+if [ ! -f ./$COREUTILS_FILE_NAME ]
 then
-    wget $ACPMV_URL
+	wget $COREUTILS_URL
 fi
 
-if [ ! -d ./$ACPMV_DIR_NAME ]
+if [ ! -d ./$COREUTILS_DIR_NAME ]
 then
-    tar xvJf ./$ACPMV_FILE_NAME
+	tar xJf ./$COREUTILS_FILE_NAME
+fi
+
+if [ ! -f $ADVCP_CMD ]
+then
+	pushd ./$COREUTILS_DIR_NAME > /dev/null
+	patch -p1 -i $PATCHES_DIR/tools/advcp-0.1-coreutils-8.21.patch
+	./configure
+	make
+	popd > /dev/null
 fi
 
 popd > /dev/null
