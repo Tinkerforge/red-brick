@@ -1,0 +1,316 @@
+diff --git a/src/copy.c b/src/copy.c
+index 3f2cc2b..5188b94 100644
+--- a/src/copy.c
++++ b/src/copy.c
+@@ -135,6 +135,180 @@ utimens_symlink (char const *file, struct timespec const *timespec)
+   return err;
+ }
+ 
++static double
++pbar_format_size (uintmax_t size, const char **unit)
++{
++  int c = 0;
++  double d = (double) size;
++
++  while (d >= 1000.0)
++    {
++      d /= 1000.0;
++      ++c;
++    }
++
++  switch (c)
++    {
++      case 0:  *unit = "B"; break;
++      case 1:  *unit = "KB"; break;
++      case 2:  *unit = "MB"; break;
++      case 3:  *unit = "GB"; break;
++      case 4:  *unit = "TB"; break;
++      default: *unit = "?B"; break;
++    }
++
++  return d;
++}
++
++bool pbar_enabled = false;
++uintmax_t pbar_bytes_total = 0;
++uintmax_t pbar_bytes_written = 0;
++uintmax_t pbar_bytes_written_last_rate_update = 0;
++double pbar_time_start;
++double pbar_time_last_display;
++double pbar_time_last_rate_update;
++
++static double pbar_rate_value = -1;
++static const char *pbar_rate_unit = "B";
++
++static char *pbar_buf = NULL;
++static size_t pbar_buf_size = 0;
++
++void
++pbar_display(bool summary)
++{
++  struct timeval tv;
++  double time_now;
++  char tail_buf[64];
++
++  gettimeofday (&tv, NULL);
++  time_now = tv.tv_sec + tv.tv_usec / 1000000.0;
++
++  if (time_now - pbar_time_last_display < 1 && !summary)
++    return;
++
++  struct winsize win;
++  int pbar_length = 80;
++
++  if (ioctl (STDOUT_FILENO, TIOCGWINSZ, (char *) &win) == 0 && win.ws_col > 0)
++    pbar_length = win.ws_col;
++
++  if (pbar_length + 2 > pbar_buf_size)
++    {
++      free (pbar_buf);
++
++      pbar_buf = NULL;
++      pbar_buf_size = pbar_length + 2;
++    }
++
++  if (pbar_buf == 0)
++    pbar_buf = malloc (pbar_buf_size);
++
++  const char *written_unit;
++  double written_value = pbar_format_size (pbar_bytes_written, &written_unit);
++
++  if (written_value > 100000)
++    written_value = 100000;
++
++  int elapsed_total_sec = (int)(time_now - pbar_time_start);
++  int elapsed_hour = elapsed_total_sec / 3600;
++  int elapsed_min = (elapsed_total_sec / 60) % 60;
++  int elapsed_sec = elapsed_total_sec % 60;
++
++  if (summary)
++    {
++      double elapsed_total_sec_usec = time_now - pbar_time_start;
++      int rate_bytes = elapsed_total_sec_usec > 0 ? pbar_bytes_total / elapsed_total_sec_usec : 0;
++
++      pbar_rate_value = pbar_format_size (rate_bytes, &pbar_rate_unit);
++
++      if (pbar_rate_value > 100000)
++        pbar_rate_value = 100000;
++    }
++  else
++    {
++      double time_since_last_rate_update = time_now - pbar_time_last_rate_update;
++
++      if (time_since_last_rate_update > 2 || (pbar_rate_value < 0 && time_since_last_rate_update > 0))
++        {
++          int rate_bytes = (pbar_bytes_written - pbar_bytes_written_last_rate_update) / time_since_last_rate_update;
++
++          pbar_rate_value = pbar_format_size (rate_bytes, &pbar_rate_unit);
++
++          if (pbar_rate_value > 100000)
++            pbar_rate_value = 100000;
++
++          pbar_bytes_written_last_rate_update = pbar_bytes_written;
++          pbar_time_last_rate_update = time_now;
++        }
++    }
++
++  snprintf (pbar_buf, pbar_buf_size, "%4.3g%s %d:%02d:%02d [%4.3g%s/s] [",
++            written_value, written_unit,
++            elapsed_hour, elapsed_min, elapsed_sec,
++            pbar_rate_value, pbar_rate_unit);
++
++  double percent = -1;
++
++  if (pbar_bytes_total > 0 && pbar_bytes_written > 0)
++    {
++      uintmax_t bytes_left = pbar_bytes_written < pbar_bytes_total ? pbar_bytes_total - pbar_bytes_written : 0;
++
++      if (summary)
++        bytes_left = 0;
++
++      int eta_total_sec = bytes_left * elapsed_total_sec / pbar_bytes_written;
++      int eta_hour = eta_total_sec / 3600;
++      int eta_min = (eta_total_sec / 60) % 60;
++      int eta_sec = eta_total_sec % 60;
++
++      percent = (double)pbar_bytes_written / pbar_bytes_total;
++
++      if (percent > 1 || summary)
++        percent = 1;
++
++      snprintf (tail_buf, sizeof(tail_buf), "] %2d%% ETA %d:%02d:%02d",
++                (int)(percent * 100), eta_hour, eta_min, eta_sec);
++    }
++  else
++    snprintf (tail_buf, sizeof(tail_buf), "] ??%% ETA ?:??:??");
++
++  int prefix_size = strlen (pbar_buf);
++  int tail_size = strlen (tail_buf);
++
++  if (percent < 0)
++    {
++      int i;
++      for (i = prefix_size; i < pbar_length - tail_size; ++i)
++        pbar_buf[i] = '-';
++    }
++  else
++    {
++      int i;
++      int arrow_size = percent * (pbar_length - prefix_size - tail_size - 1);
++
++      for (i = prefix_size; i < prefix_size + arrow_size; ++i)
++        pbar_buf[i] = '=';
++
++      pbar_buf[prefix_size + arrow_size] = '>';
++
++      for (i = prefix_size + arrow_size + 1; i < pbar_length - tail_size; ++i)
++        pbar_buf[i] = ' ';
++    }
++
++  int i, k;
++  for (i = pbar_length - tail_size, k = 0; i < pbar_length && k < tail_size; ++i, ++k)
++    pbar_buf[i] = tail_buf[k];
++
++  pbar_buf[pbar_length] = summary ? '\n' : '\r';
++  pbar_buf[pbar_length + 1] = '\0';
++
++  printf ("%s", pbar_buf);
++  fflush (stdout);
++
++  pbar_time_last_display = time_now;
++}
++
+ /* Copy the regular file open on SRC_FD/SRC_NAME to DST_FD/DST_NAME,
+    honoring the MAKE_HOLES setting and using the BUF_SIZE-byte buffer
+    BUF for temporary storage.  Copy no more than MAX_N_READ bytes.
+@@ -216,6 +390,13 @@ sparse_copy (int src_fd, int dest_fd, char *buf, size_t buf_size,
+       *last_write_made_hole = make_hole;
+     }
+ 
++  if (pbar_enabled)
++    {
++      pbar_bytes_written += *total_n_read;
++
++      pbar_display(false);
++    }
++
+   return true;
+ }
+ 
+diff --git a/src/cp.c b/src/cp.c
+index e235b32..44e4828 100644
+--- a/src/cp.c
++++ b/src/cp.c
+@@ -141,6 +141,7 @@ static struct option const long_opts[] =
+   {"target-directory", required_argument, NULL, 't'},
+   {"update", no_argument, NULL, 'u'},
+   {"verbose", no_argument, NULL, 'v'},
++  {"progress-bar", no_argument, NULL, 'g'},
+   {GETOPT_HELP_OPTION_DECL},
+   {GETOPT_VERSION_OPTION_DECL},
+   {NULL, 0, NULL, 0}
+@@ -178,6 +179,7 @@ Copy SOURCE to DEST, or multiple SOURCE(s) to DIRECTORY.\n\
+   -f, --force                  if an existing destination file cannot be\n\
+                                  opened, remove it and try again (this option\n\
+                                  is ignored when the -n option is also used)\n\
++  -g, --progress-bar           add progress-bar\n\
+   -i, --interactive            prompt before overwrite (overrides a previous -n\
+ \n\
+                                   option)\n\
+@@ -573,9 +575,55 @@ target_directory_operand (char const *file, struct stat *st, bool *new_dst)
+   return is_a_dir;
+ }
+ 
++extern bool pbar_enabled;
++extern uintmax_t pbar_bytes_total;
++extern uintmax_t pbar_bytes_written;
++extern double pbar_time_start;
++extern double pbar_time_last_display;
++extern double pbar_time_last_rate_update;
++
++static void
++pbar_init(int n_files, char **file)
++{
++  pbar_bytes_total = 0;
++  pbar_bytes_written = 0;
++
++  printf ("Calculating total size...   0%%\r");
++  fflush (stdout);
++
++  int i;
++  for (i = 0; i < n_files; ++i)
++    {
++      char command[1024];
++      snprintf (command, sizeof(command), "du -sb \"%s\"", file[i]); /* FIXME: replace all quote signs in file[i] */
++
++      FILE *fp = popen(command, "r");
++      char output[1024];
++
++      if (fp != NULL && fgets(output, sizeof(output) - 1, fp) != NULL) {
++        strchr (output, '\t')[0] = '\0';
++        pbar_bytes_total += atol (output);
++
++        printf ("Calculating total size... %3d%%\r", (100 * i) / n_files);
++        fflush (stdout);
++      }
++
++      pclose(fp);
++    }
++
++  printf ("Calculating total size... 100%%\r");
++  fflush (stdout);
++
++  struct timeval tv;
++  gettimeofday (&tv, NULL);
++  pbar_time_start = pbar_time_last_display = pbar_time_last_rate_update = tv.tv_sec + tv.tv_usec / 1000000.0;
++}
++
++void
++pbar_display(bool summary);
++
+ /* Scan the arguments, and copy each by calling copy.
+    Return true if successful.  */
+-
+ static bool
+ do_copy (int n_files, char **file, const char *target_directory,
+          bool no_target_directory, struct cp_options *x)
+@@ -618,6 +666,9 @@ do_copy (int n_files, char **file, const char *target_directory,
+                quote (file[n_files - 1]));
+     }
+ 
++  if (pbar_enabled)
++    pbar_init (target_directory ? n_files : n_files - 1, file);
++
+   if (target_directory)
+     {
+       /* cp file1...filen edir
+@@ -760,6 +811,9 @@ do_copy (int n_files, char **file, const char *target_directory,
+       ok = copy (source, new_dest, 0, x, &unused, NULL);
+     }
+ 
++  if (pbar_enabled)
++    pbar_display(true);
++
+   return ok;
+ }
+ 
+@@ -933,7 +987,7 @@ main (int argc, char **argv)
+      we'll actually use backup_suffix_string.  */
+   backup_suffix_string = getenv ("SIMPLE_BACKUP_SUFFIX");
+ 
+-  while ((c = getopt_long (argc, argv, "abdfHilLnprst:uvxPRS:T",
++  while ((c = getopt_long (argc, argv, "abdfgHilLnprst:uvxPRS:T",
+                            long_opts, NULL))
+          != -1)
+     {
+@@ -990,6 +1044,10 @@ main (int argc, char **argv)
+           x.unlink_dest_after_failed_open = true;
+           break;
+ 
++        case 'g':
++          pbar_enabled = true;
++          break;
++
+         case 'H':
+           x.dereference = DEREF_COMMAND_LINE_ARGUMENTS;
+           break;
