@@ -6,7 +6,9 @@ The RED Brick uses as special Linux image.
 Building the Image
 ------------------
 
-Requires a recent Debian or Ubuntu installation with Internet connection.
+This requires a recent Debian or Ubuntu installation with Internet connection.
+Also make sure that the filesystem you're running this on is not mounted with
+the nodev or noexec options as they hinder the root-fs generation process.
 
 First run
 
