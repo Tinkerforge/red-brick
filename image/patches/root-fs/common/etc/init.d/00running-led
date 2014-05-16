@@ -1,6 +1,6 @@
 #! /bin/sh
 ### BEGIN INIT INFO
-# Provides:          running-led
+# Provides:          00running-led
 # Required-Start:
 # Required-Stop:
 # Default-Start:     2 3 4 5
@@ -20,7 +20,7 @@ case "$1" in
         /bin/echo 1 > /sys/class/gpio/export
         /bin/echo "out" > /sys/class/gpio/gpio1_pc5/direction
         /bin/echo 0 > /sys/class/gpio/gpio1_pc5/value
-	/bin/echo 1 > /sys/class/gpio/unexport
+		/bin/echo 1 > /sys/class/gpio/unexport
         ;;
     *)
         echo "Usage: /etc/init.d/running-led start|stop"
