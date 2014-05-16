@@ -381,6 +381,13 @@ insserv -r /etc/init.d/hwclock.sh
 fake-hwclock
 EOF
 
+# Clearing bash history of the root user
+report_info "Clearing bash history of the root user"
+chroot $ROOTFS_DIR<<EOF
+export LC_ALL=C LANGUAGE=C LANG=C
+echo "" > /root/.bash_history
+EOF
+
 # Removing qemu-arm-static from the root file system
 report_info "Removing qemu-arm-static from the root file system"
 rm $ROOTFS_DIR$QEMU_BIN
