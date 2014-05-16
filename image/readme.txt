@@ -47,11 +47,10 @@ apt-cacher package (it's not installed by the prepare-host.sh script):
 
  sudo apt-get install apt-cacher
 
-If dpkg asks you how apt-cacher should be started, select "manual". Then edit
-./config/developer.conf and change USE_APT_CACHER to "yes". Finally start the
-apt-cacher daemons
+If dpkg asks you how apt-cacher should be started, select "manual". Finally,
+start the apt-cacher daemons by running
 
  ./start-apt-cacher.sh
 
-Now ./make-image.sh will use the apt-cacher instead of directly downloading
-from the Debian and Raspbian APT servers.
+Now ./make-image.sh will automatically use the apt-cacher daemons instead of
+directly downloading from the Debian and Raspbian APT servers.

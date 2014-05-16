@@ -94,11 +94,12 @@ else
 fi
 
 # Starting multistrap
-report_info "Starting multistrap"
-if [ $USE_APT_CACHER = "yes" ]
+if [ -f $APTCACHER_RUNNING_FILE ]
 then
+	report_info "Starting multistrap, using apt-cacher"
 	sed -e 's/%apt-cacher-\([0-9]\+\)-prefix%/'`hostname`':315\1\//' $MULTISTRAP_TEMPLATE_FILE > $MULTISTRAP_CONFIG_FILE
 else
+	report_info "Starting multistrap"
 	sed -e 's/%apt-cacher-\([0-9]\+\)-prefix%//' $MULTISTRAP_TEMPLATE_FILE > $MULTISTRAP_CONFIG_FILE
 fi
 
