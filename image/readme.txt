@@ -37,6 +37,17 @@ Whether you decided to use apt-cacher or not the next step is the same:
 
 this creates the image file in the ./build/output directory.
 
+Writing the Image to a SD card
+------------------------------
+
+The image can be transfered to an SD card now with
+
+ sudo ./write-image.sh <config-name> <device>
+
+For example (assuming that /dev/sdb is your SD card):
+
+ sudo ./write-image.sh full /dev/sdb
+
 Using apt-cacher
 ----------------
 
