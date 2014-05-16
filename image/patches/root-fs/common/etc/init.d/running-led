@@ -1,0 +1,31 @@
+#! /bin/sh
+### BEGIN INIT INFO
+# Provides:          running-led
+# Required-Start:
+# Required-Stop:
+# Default-Start:     2 3 4 5
+# Default-Stop:      0 1 6
+# Short-Description: Manages the running LED
+# Description:       Manages the running LED
+### END INIT INFO
+
+
+case "$1" in 
+    start)
+        /bin/echo 1 > /sys/class/gpio/export
+        /bin/echo "out" > /sys/class/gpio/gpio1_pc5/direction
+        /bin/echo 1 > /sys/class/gpio/gpio1_pc5/value
+        ;;
+    stop)
+        /bin/echo 1 > /sys/class/gpio/export
+        /bin/echo "out" > /sys/class/gpio/gpio1_pc5/direction
+        /bin/echo 0 > /sys/class/gpio/gpio1_pc5/value
+	/bin/echo 1 > /sys/class/gpio/unexport
+        ;;
+    *)
+        echo "Usage: /etc/init.d/running-led start|stop"
+        exit 1
+        ;;
+esac
+
+exit 0
