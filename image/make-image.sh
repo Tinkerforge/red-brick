@@ -391,10 +391,7 @@ EOF
 
 # Clearing bash history of the root user
 report_info "Clearing bash history of the root user"
-chroot $ROOTFS_DIR<<EOF
-export LC_ALL=C LANGUAGE=C LANG=C
-echo "" > /root/.bash_history
-EOF
+echo "" > $ROOTFS_DIR/root/.bash_history
 
 # Removing qemu-arm-static from the root file system
 report_info "Removing qemu-arm-static from the root file system"
