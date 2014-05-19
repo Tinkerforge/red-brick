@@ -102,9 +102,14 @@ mount -t proc proc /proc
 echo "dash dash/sh boolean false" | debconf-set-selections
 echo "tzdata tzdata/Areas select $TZDATA_AREA" | debconf-set-selections
 echo "tzdata tzdata/Zones/Europe select $TZDATA_ZONE" | debconf-set-selections
+echo $LOCALE_CHARSET > /etc/locale.gen
+locale-gen $LOCALE
+update-locale LANG=$LOCALE
 dpkg --configure -a
 umount /proc
 EOF
+
+exit 0
 
 # Applying console settings
 report_info "Applying console settings"
