@@ -29,15 +29,19 @@ configurations. For example:
 
  ./compile-source.sh full
 
-The next step is to create the image file. This will download several Debian
-and Raspbian package to build the root-fs. If you intent to create multiple
-images it's useful to setup apt-cacher daemons to avoid downloading all the
-packages multiple times, see the apt-cacher section below for further details.
-Whether you decided to use apt-cacher or not the next step is the same:
+The next step is to create the root-fs. This will download several Debian and
+Raspbian packages. If you intent to create different root-fs it's useful to
+setup apt-cacher daemons to avoid downloading all the packages multiple times,
+see the apt-cacher section below for further details. Whether you decided to
+use apt-cacher or not the next step is the same:
+
+ sudo ./make-root-fs.sh <config-name>
+
+Finally, run
 
  sudo ./make-image.sh <config-name>
 
-this creates the image file in the ./build/output directory.
+which creates the image file in the ./build/output directory.
 
 Writing the Image to a SD card
 ------------------------------
