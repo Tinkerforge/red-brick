@@ -94,7 +94,9 @@ else
 fi
 
 # Starting multistrap
-if [ -f $APTCACHER_RUNNING_FILE ]
+aptcacher=`netstat -lnt | awk '$6 == "LISTEN" && $4 ~ ".3150"'`
+
+if [ -n "$aptcacher" ]
 then
 	report_info "Starting multistrap, using apt-cacher"
 	sed -e 's/%apt-cacher-\([0-9]\+\)-prefix%/'`hostname`':315\1\//' $MULTISTRAP_TEMPLATE_FILE > $MULTISTRAP_CONFIG_FILE
