@@ -204,6 +204,7 @@ cd /usr/tinkerforge/bindings
 wget http://download.tinkerforge.com/bindings/ruby/tinkerforge_ruby_bindings_latest.zip
 unzip -d ruby tinkerforge_ruby_bindings_latest.zip
 cd ruby
+gem update rdoc
 gem install tinkerforge.gem
 cd /usr/tinkerforge/bindings
 wget http://download.tinkerforge.com/bindings/shell/tinkerforge_shell_bindings_latest.zip
