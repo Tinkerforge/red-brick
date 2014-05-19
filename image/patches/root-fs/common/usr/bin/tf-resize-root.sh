@@ -23,18 +23,32 @@ $PART_START
 w
 EOF
 
-# Generate and setup ´S00resize_partition´ script
+# Generate and setup ´tmp-tf-resize-root´ script
 /bin/echo -e "#! /bin/sh
+### BEGIN INIT INFO
+# Provides:          tmp-tf-resize-rootfs
+# Required-Start:
+# Required-Stop:
+# Default-Start:     2
+# Default-Stop:
+# Short-Description: Resizes the root file system
+# Description:       Resizes the root file system
+### END INIT INFO
 
-/bin/echo \"
-Info: Resizing root partition...
-\"
-/sbin/resize2fs -p /dev/mmcblk0p1
-rm \$0
-" > /etc/rc2.d/S00resize_partition
-chmod a+x /etc/rc2.d/S00resize_partition
+case \"\$1\" in 
+    start)
+        /sbin/resize2fs -p /dev/mmcblk0p1
+        /sbin/insserv -r /etc/init.d/tmp-tf-resize-root
+        rm \$0
+        ;;
+esac
 
-read -p "Prompt: You need to reboot the system to complete the resize.
+exit 0" > /etc/init.d/tmp-tf-resize-root
+/bin/chmod a+x /etc/init.d/tmp-tf-resize-root
+/sbin/insserv /etc/init.d/tmp-tf-resize-root
+
+read -p "
+Prompt: You need to reboot the system to complete the resize.
 Reboot now? (Type 'y' to reboot instantly) >> " PROMPT_RESP
 
 if [ "$PROMPT_RESP" = "y" ];
