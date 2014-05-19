@@ -109,8 +109,6 @@ dpkg --configure -a
 umount /proc
 EOF
 
-exit 0
-
 # Applying console settings
 report_info "Applying console settings"
 chroot $ROOTFS_DIR<<EOF
