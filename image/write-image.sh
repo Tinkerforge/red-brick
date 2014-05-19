@@ -41,3 +41,7 @@ then
 fi
 
 pv -tpreb $IMAGE_FILE | dd of=$DEVICE bs=64M
+
+report_info "Process finished"
+
+exit 0
