@@ -347,12 +347,12 @@ export LC_ALL=C LANGUAGE=C LANG=C
 echo "" > /etc/resolv.conf
 EOF
 
-# Setting up 00running-led
-report_info "Setting up 00running-led"
+# Setting up running-led
+report_info "Setting up running-led"
 chroot $ROOTFS_DIR<<EOF
 export LC_ALL=C LANGUAGE=C LANG=C
-chmod a+x /etc/init.d/00running-led
-insserv /etc/init.d/00running-led
+chmod a+x /etc/init.d/running-led
+insserv /etc/init.d/running-led
 EOF
 
 # Setting up fake-hwclock
