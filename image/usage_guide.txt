@@ -1,0 +1,3 @@
+- to be able to use networking with the provided network manager (wicd)
+  one must first define the network interfaces (wlan0, eth0 etc) in the
+  settings of the network manager
