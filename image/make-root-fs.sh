@@ -174,7 +174,7 @@ EOF
 # Setting up all the bindings
 report_info "Setting up all the bindings"
 chroot $ROOTFS_DIR<<EOF
-export LC_ALL=C LANGUAGE=C LANG=C
+export LC_ALL=C LANGUAGE=C LANG=C LC_CTYPE=$LOCALE
 mkdir -p /usr/tinkerforge/bindings
 cd /usr/tinkerforge/bindings
 wget http://download.tinkerforge.com/bindings/c/tinkerforge_c_bindings_latest.zip
@@ -216,7 +216,6 @@ cd /usr/tinkerforge/bindings
 wget http://download.tinkerforge.com/bindings/ruby/tinkerforge_ruby_bindings_latest.zip
 unzip -d ruby tinkerforge_ruby_bindings_latest.zip
 cd ruby
-gem update rdoc
 gem install tinkerforge.gem
 cd /usr/tinkerforge/bindings
 wget http://download.tinkerforge.com/bindings/shell/tinkerforge_shell_bindings_latest.zip
