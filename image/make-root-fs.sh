@@ -104,7 +104,19 @@ echo "tzdata tzdata/Areas select $TZDATA_AREA" | debconf-set-selections
 echo "tzdata tzdata/Zones/Europe select $TZDATA_ZONE" | debconf-set-selections
 echo $LOCALE_CHARSET > /etc/locale.gen
 locale-gen $LOCALE
-update-locale LANG=$LOCALE
+update-locale LANG=$LOCALE LANGUAGE
+echo -e "# KEYBOARD CONFIGURATION FILE
+
+# Consult the keyboard(5) manual page.
+
+XKBMODEL=\"$KB_MODEL\"
+XKBLAYOUT=\"$KB_LAYOUT\"
+XKBVARIANT=\"$KB_VARIANT\"
+XKBOPTIONS=\"$KB_OPTIONS\"
+
+BACKSPACE=\"$KB_BACKSPACE\"
+" > /etc/default/keyboard
+setupcon
 dpkg --configure -a
 umount /proc
 EOF
@@ -118,7 +130,7 @@ EOF
 
 # Setting up memory information tool
 report_info "Setting up memory information tool"
-chmod 777 $ROOTFS_DIR/usr/bin/a10-meminfo-static
+chmod a+x $ROOTFS_DIR/usr/bin/a10-meminfo-static
 
 # Installing Java 8
 report_info "Installing Java 8"
