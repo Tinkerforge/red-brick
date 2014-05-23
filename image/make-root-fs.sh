@@ -279,6 +279,16 @@ usermod -a -G crontab rbuser
 usermod -a -G netdev rbuser
 EOF
 
+# Configuring boot splash image
+report_info "Configuring boot splash image"
+chroot $ROOTFS_DIR<<EOF
+export LC_ALL=C LANGUAGE=C LANG=C
+chmod a+x /etc/init.d/asplashscreen
+chmod a+x /etc/init.d/killasplashscreen
+insserv /etc/init.d/asplashscreen
+insserv /etc/init.d/killasplashscreen
+EOF
+
 # Add image specific tasks
 
 # Specific tasks for the full image
@@ -299,16 +309,6 @@ dpkg -i ./sunxi-disp-test_1.0-1_armhf.deb
 dpkg -i ./udevil_0.4.1-3_armhf.deb
 dpkg -i ./xserver-xorg-video-sunximali_1.0-3_armhf.deb
 dpkg --configure -a
-EOF
-
-	# Configuring boot splash image
-	report_info "Configuring boot splash image"
-	chroot $ROOTFS_DIR<<EOF
-export LC_ALL=C LANGUAGE=C LANG=C
-chmod a+x /etc/init.d/asplashscreen
-chmod a+x /etc/init.d/killasplashscreen
-insserv /etc/init.d/asplashscreen
-insserv /etc/init.d/killasplashscreen
 EOF
 
 	# Setting up XDM logo and desktop wallpaper
