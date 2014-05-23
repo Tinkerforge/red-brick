@@ -6,5 +6,3 @@
   this might be related to a problem in the prepared root-fs, as rebuilding
   it seems to fix it. but there was one case were an already working image got
   into this state
-
-- a print message during the root file system is being resized
