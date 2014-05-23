@@ -197,7 +197,7 @@ spi_mosi = port:PB13<2><default><default><default>
 spi_miso = port:PB14<2><default><default><default>
 
 [rtp_para]
-rtp_used = 1
+rtp_used = 0
 rtp_screen_size = 5
 rtp_regidity_level = 5
 rtp_press_threshold_enable = 0
@@ -604,7 +604,7 @@ spdif_dout = port:PB10<3><1><default><default>
 spdif_din =
 
 [audio_para]
-audio_used = 1
+audio_used = 0
 capture_used = 1
 audio_lr_change = 0
 audio_pa_ctrl = port:PB05<1><default><default><0>
