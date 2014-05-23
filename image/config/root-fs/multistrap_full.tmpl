@@ -47,12 +47,16 @@ packages=tasksel xorg fakeroot ca-certificates lxlauncher lxtask
 packages=lxpolkit policykit-1 menu-xdg curl checkinstall synaptic locate git
 packages=module-init-tools midori fake-hwclock cron ntp unzip
 packages=freeglut3 libblas3 libgfortran3 liblapack3
-packages=console-setup kernel-package debconf-utils stress
+packages=console-setup kernel-package debconf-utils
 # GROUP-END:system
+
+# GROUP-START:test-tools
+packages=stress memtester hdparm sysbench
+# GROUP-END:test-tools
 
 # GROUP-START:libusb
 packages=libusb-1.0-0 libusb-1.0-0-dev
-# GROUP-START:libusb
+# GROUP-END:libusb
 
 # GROUP-START:qt
 packages=libqt4-qt3support libqt4-core libqt4-dbus libqt4-xml
