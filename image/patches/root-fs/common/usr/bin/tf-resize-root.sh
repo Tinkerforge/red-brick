@@ -37,6 +37,9 @@ EOF
 
 case \"\$1\" in 
     start)
+	echo \"
+Info: Expanding the root filesystem (this might take sometime)...
+\"
         /sbin/resize2fs -p /dev/mmcblk0p1
         /sbin/insserv -r /etc/init.d/tmp-tf-resize-root
         rm \$0
