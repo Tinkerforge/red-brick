@@ -1,0 +1,139 @@
+[General]
+# arch and directory can be specified on the command line.
+arch=armhf
+
+# the directory where the root file system will be generated.
+# or override with the --dir option.
+directory=
+
+# same as --tidy-up option if set to true
+cleanup=true
+
+# retain the sources outside the rootfs for distribution
+# specify a directory to which all the .debs can be moved.
+# or override with the --source-dir option.
+retainsources=
+
+# same as --no-auth option if set to true
+# keyring packages listed in each debootstrap will
+# still be installed.
+noauth=true
+
+# retry five times
+retries=5
+
+# extract all downloaded archives
+unpack=true
+
+# the order of sections is no longer important.
+# debootstrap determines which repository is used to
+# calculate the list of Priority: required packages
+bootstrap=Debian Debian_Security Debian_Updates Raspbian
+
+# the order of sections is no longer important.
+# aptsources is a list of sections to be listed
+# in the /etc/apt/sources.list.d/multistrap.sources.list
+# of the target.
+aptsources=Debian Debian_Security Debian_Updates Raspbian
+
+[Debian]
+# GROUP-START:system
+packages=console-setup-linux pm-utils gdebi udev usbutils
+packages=readline-common dbus dialog sudo net-tools fakeroot
+packages=wicd wicd-cli wicd-curses netbase isc-dhcp-client
+packages=apt apt-utils vim nano iputils-ping less wget preload
+packages=locales man-db console-data fbi ca-certificates
+packages=policykit-1 curl checkinstall locate git zip unzip
+packages=module-init-tools fake-hwclock cron ntp freeglut3
+packages=libblas3 libgfortran3 liblapack3 console-setup
+packages=debconf-utils stress elinks
+# GROUP-END:system
+
+# GROUP-START:kernel_development
+packages=libncurses5-dev u-boot-tools kernel-package
+# GROUP-END:kernel_development
+
+# GROUP-START:libusb
+packages=libusb-1.0-0 libusb-1.0-0-dev
+# GROUP-START:libusb
+
+# GROUP-START:qt
+packages=libqt4-qt3support libqt4-core libqt4-dbus libqt4-xml
+packages=libqt4-gui libqt4-opengl libqt4-network
+packages=libqt4-declarative libqt4-dev libqt4-dev-bin libqt4-help
+packages=libqt4-opengl-dev libqt4-scripttools libqt4-xmlpatterns
+packages=libqtassistantclient4 libqtwebkit-dev libqtwebkit4 libqwt-dev
+packages=libqwt5-qt4 libqwt6 qt4-linguist-tools qt4-qmake
+# GROUP-END:qt
+
+# GROUP-START:c_c++
+packages=build-essential autoconf automake libtool flex bison
+# GROUP-END:c_c++
+
+# GROUP-START:ruby
+packages=ruby
+# GROUP-END:ruby
+
+# GROUP-START:python
+packages=python python-pip python-setuptools
+packages=bash-completion python-software-properties libpython2.7
+packages=python-numpy python-opengl python-qt4 python-qt4-gl
+packages=python-qwt5-qt4 python-serial python-sip
+# GROUP-END:python
+
+# GROUP-START:octave
+packages=octave octave-java
+# GROUP-END:octave
+
+# GROUP-START:delphi
+packages=fpc fp-utils
+# GROUP-END:delphi
+
+# GROUP-START:java
+packages=openjdk-6-jdk openjdk-7-jdk icedtea-netx icedtea-6-plugin
+packages=icedtea-7-plugin icedtea-6-jre-cacao icedtea-6-jre-jamvm
+packages=icedtea-7-jre-jamvm
+# GROUP-END:java
+
+# GROUP-START:php
+packages=php5-common php5-cli php-pear
+# GROUP-END:php
+
+# GROUP-START:perl
+packages=perl perl-doc cpanminus libyaml-perl libdigest-hmac-perl
+packages=libterm-readline-gnu-perl
+# GROUP-END:perl
+
+source=http://%apt-cacher-0-prefix%ftp.debian.org/debian
+keyring=debian-archive-keyring
+suite=stable
+components=main contrib non-free
+omitdebsrc=false
+
+[Debian_Security]
+packages=
+source=http://%apt-cacher-1-prefix%security.debian.org
+keyring=debian-archive-keyring
+suite=stable/updates
+components=main contrib non-free
+omitdebsrc=false
+
+[Debian_Updates]
+packages=
+source=http://%apt-cacher-2-prefix%ftp.debian.org/debian
+keyring=debian-archive-keyring
+suite=stable-updates
+components=main contrib non-free
+omitdebsrc=false
+
+[Raspbian]
+# GROUP-START:mono
+packages=mono-runtime libmono-2.0-1 mono-mcs
+packages=mono-dmcs mono-gmcs mono-vbnc
+# GROUP-END:mono
+
+source=http://%apt-cacher-3-prefix%archive.raspbian.org/raspbian 
+keyring=raspbian-archive-keyring
+suite=stable
+components=main contrib non-free
+omitdebsrc=false

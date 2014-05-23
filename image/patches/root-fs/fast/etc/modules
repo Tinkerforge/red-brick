@@ -1,0 +1,4 @@
+# /etc/modules
+
+loop
+g_serial
