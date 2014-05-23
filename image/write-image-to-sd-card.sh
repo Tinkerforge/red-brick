@@ -36,9 +36,12 @@ fi
 # Checking device
 if [ ! -e $DEVICE ]
 then
-    report_error "Device does not exist"
+    report_error "SD card does not exist"
     exit 1
 fi
+
+# Wrinting image to the SD card
+report_info "Wrinting image to the SD card"
 
 pv -tpreb $IMAGE_FILE | dd of=$DEVICE bs=64M
 

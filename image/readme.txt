@@ -48,11 +48,11 @@ Writing the Image to a SD card
 
 The image can be transfered to an SD card now with
 
- sudo ./write-image.sh <config-name> <device>
+ sudo ./write-image-to-sd-card.sh <config-name> <device>
 
 For example (assuming that /dev/sdb is your SD card):
 
- sudo ./write-image.sh full /dev/sdb
+ sudo ./write-image-to-sd-card.sh full /dev/sdb
 
 Using apt-cacher
 ----------------
