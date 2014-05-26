@@ -122,10 +122,9 @@ else
     set -e
 fi
 mount $loop_dev_p1 $MOUNT_DIR
-$ADVCP_CMD -garp $ROOTFS_DIR/* $MOUNT_DIR/
-#cp -arp $ROOTFS_DIR/* $MOUNT_DIR/
-rsync -arp $KERNEL_SRC_DIR/$KERNEL_MOD_DIR_NAME/lib/modules $MOUNT_DIR/lib/
-rsync -arp $KERNEL_SRC_DIR/$KERNEL_MOD_DIR_NAME/lib/firmware $MOUNT_DIR/lib/
+$ADVCP_CMD -gr $ROOTFS_DIR/* $MOUNT_DIR/
+rsync -a --no-o --no-g $KERNEL_SRC_DIR/$KERNEL_MOD_DIR_NAME/lib/modules $MOUNT_DIR/lib/
+rsync -a --no-o --no-g $KERNEL_SRC_DIR/$KERNEL_MOD_DIR_NAME/lib/firmware $MOUNT_DIR/lib/
 umount $loop_dev_p1
 
 # Releasing loop device
