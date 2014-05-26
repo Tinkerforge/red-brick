@@ -66,13 +66,13 @@ jtag_di = port:PB14<3><1><default><default>
 
 [dram_para]
 dram_baseaddr = 0x40000000
-dram_clk = 480
+dram_clk = 432
 dram_type = 3
 dram_rank_num = 1
 dram_chip_density = 2048
 dram_io_width = 8
 dram_bus_width = 16
-dram_cas = 6
+dram_cas = 9
 dram_zq = 0x79
 dram_odt_en = 0
 dram_size = 512
