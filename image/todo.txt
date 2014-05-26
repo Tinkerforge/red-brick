@@ -1,2 +1,5 @@
 - find a way to fix the apt sources in the final image when the image is being
   generated with apt-cacher on
+
+- compat ID detection for WinUSB with a USB composite device with more than one
+  interface dosn't work on Windows XP
