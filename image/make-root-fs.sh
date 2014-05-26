@@ -289,6 +289,15 @@ insserv /etc/init.d/asplashscreen
 insserv /etc/init.d/killasplashscreen
 EOF
 
+# Removing plymouth
+report_info "Removing plymouth"
+chroot $ROOTFS_DIR<<EOF
+export LC_ALL=C LANGUAGE=C LANG=C
+apt-get purge plymouth -y
+dpkg --configure -a
+EOF
+fi
+
 # Add image specific tasks
 
 # Specific tasks for the full image
@@ -327,15 +336,6 @@ wget http://download.tinkerforge.com/tools/brickv/linux/brickv_linux_latest.deb
 dpkg -i brickv_linux_latest.deb
 dpkg --configure -a
 EOF
-
-	# Removing plymouth
-	report_info "Removing plymouth"
-	chroot $ROOTFS_DIR<<EOF
-export LC_ALL=C LANGUAGE=C LANG=C
-apt-get purge plymouth -y
-dpkg --configure -a
-EOF
-fi
 
 # Cleaning /tmp directory
 report_info "Emptying /tmp directory"
