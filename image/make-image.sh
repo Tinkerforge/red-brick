@@ -112,9 +112,18 @@ dd bs=512 seek=$KERNEL_DD_SEEK if=$KERNEL_IMAGE_FILE of=$loop_dev
 
 # Copying root-fs and kernel modules to the image
 report_info "Copying root-fs and kernel modules to the image"
-mkdir -p $MOUNT_DIR
+# Checking kernel modules
+if [ ! -d $MOUNT_DIR ]
+then
+    mkdir -p $MOUNT_DIR
+else
+    set +e
+    umount $MOUNT_DIR > /dev/null
+    set -e
+fi
 mount $loop_dev_p1 $MOUNT_DIR
 $ADVCP_CMD -garp $ROOTFS_DIR/* $MOUNT_DIR/
+#cp -arp $ROOTFS_DIR/* $MOUNT_DIR/
 rsync -arp $KERNEL_SRC_DIR/$KERNEL_MOD_DIR_NAME/lib/modules $MOUNT_DIR/lib/
 rsync -arp $KERNEL_SRC_DIR/$KERNEL_MOD_DIR_NAME/lib/firmware $MOUNT_DIR/lib/
 umount $loop_dev_p1
