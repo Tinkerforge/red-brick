@@ -1,11 +1,2 @@
-- kernel boot can hang between this two lines:
-
-  <30>udevd[161]: starting version 175
-  <6>EXT3-fs (mmcblk0p1): using internal journal
-
-  this might be related to a problem in the prepared root-fs, as rebuilding
-  it seems to fix it. but there was one case were an already working image got
-  into this state
-
 - find a way to fix the apt sources in the final image when the image is being
   generated with apt-cacher on
