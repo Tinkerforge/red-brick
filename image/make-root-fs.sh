@@ -389,8 +389,6 @@ rm $ROOTFS_DIR$QEMU_BIN
 report_info "Ensure host name integrity"
 hostname -F /etc/hostname
 
-chown -R `logname`:`logname` $BUILD_DIR
-
 report_info "Process finished"
 
 exit 0

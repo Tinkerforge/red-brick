@@ -132,8 +132,6 @@ report_info "Releasing loop device"
 losetup -d $loop_dev
 losetup -d $loop_dev_p1
 
-chown -R `logname`:`logname` $BUILD_DIR
-
 report_info "Process finished"
 
 exit 0
