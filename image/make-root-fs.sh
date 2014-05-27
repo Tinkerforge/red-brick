@@ -283,8 +283,8 @@ EOF
 report_info "Configuring boot splash image"
 chroot $ROOTFS_DIR<<EOF
 export LC_ALL=C LANGUAGE=C LANG=C
-chmod a+x /etc/init.d/asplashscreen
-chmod a+x /etc/init.d/killasplashscreen
+chmod 755 /etc/init.d/asplashscreen
+chmod 755 /etc/init.d/killasplashscreen
 insserv /etc/init.d/asplashscreen
 insserv /etc/init.d/killasplashscreen
 EOF
