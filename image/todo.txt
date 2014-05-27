@@ -3,3 +3,6 @@
 
 - compat ID detection for WinUSB with a USB composite device with more than one
   interface dosn't work on Windows XP
+
+- auto reconnect to previously configured network upon boot without manually running
+  the network manager
