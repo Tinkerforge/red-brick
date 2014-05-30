@@ -343,10 +343,19 @@ chroot $ROOTFS_DIR<<EOF
 rm -rf /tmp/*
 EOF
 
-# Cleaning, updating and fixing APT
-report_info "Cleaning and updating APT"
+# Fixing, cleaning and updating APT
+report_info "Fixing, cleaning and updating APT"
 chroot $ROOTFS_DIR<<EOF
 export LC_ALL=C LANGUAGE=C LANG=C
+cat /etc/apt/sources.list.d/* > /tmp/sources.list.tmp
+rm -rf /etc/apt/sources.list.d/*
+if [ -n "$aptcacher" ]
+then
+    sed -e 's/'`hostname`':315\([0-9]\+\)\///' /tmp/sources.list.tmp > /etc/apt/sources.list
+else
+	cat /tmp/sources.list.tmp > /etc/apt/sources.list
+fi
+rm -rf /tmp/*
 apt-get clean
 apt-get update
 apt-get -f install
