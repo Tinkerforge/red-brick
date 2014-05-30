@@ -66,7 +66,7 @@ set +e
 report_info "Checking stray /proc mount on root-fs directory"
 if [ -d $ROOTFS_DIR/proc ]
 then
-    umount $ROOTFS_DIR/proc > /dev/null
+    umount $ROOTFS_DIR/proc &> /dev/null
 fi
 set -e
 
@@ -87,7 +87,7 @@ o
 n
 p
 1
-20480
+$ROOT_PART_START_SECTOR
 
 w
 EOF
@@ -96,7 +96,7 @@ set -e
 # Setting up loop device for image partition
 report_info "Setting up loop device for image partition"
 loop_dev_p1=$(losetup -f)
-losetup -o $((512*20480)) $loop_dev_p1 $IMAGE_FILE
+losetup -o $((512*$ROOT_PART_START_SECTOR)) $loop_dev_p1 $IMAGE_FILE
 
 # Formatting image partition
 report_info "Formatting image partition"
@@ -118,7 +118,7 @@ then
     mkdir -p $MOUNT_DIR
 else
     set +e
-    umount $MOUNT_DIR > /dev/null
+    umount $MOUNT_DIR &> /dev/null
     set -e
 fi
 mount $loop_dev_p1 $MOUNT_DIR
