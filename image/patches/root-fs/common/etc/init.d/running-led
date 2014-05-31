@@ -12,15 +12,13 @@
 
 case "$1" in 
     start)
-        /bin/echo 1 > /sys/class/gpio/export &> /dev/null
-        /bin/echo "out" > /sys/class/gpio/gpio1_pc5/direction &> /dev/null
-        /bin/echo 1 > /sys/class/gpio/gpio1_pc5/value &> /dev/null
+        /bin/echo 1 > /sys/class/gpio/export
+        /bin/echo "out" > /sys/class/gpio/gpio1_pc5/direction
+        /bin/echo 1 > /sys/class/gpio/gpio1_pc5/value
         ;;
     stop)
-        /bin/echo 1 > /sys/class/gpio/export &> /dev/null
-        /bin/echo "out" > /sys/class/gpio/gpio1_pc5/direction &> /dev/null
-        /bin/echo 0 > /sys/class/gpio/gpio1_pc5/value &> /dev/null
-        /bin/echo 1 > /sys/class/gpio/unexport &> /dev/null
+        /bin/echo 0 > /sys/class/gpio/gpio1_pc5/value
+        /bin/echo 1 > /sys/class/gpio/unexport
         ;;
     *)
         echo "Usage: /etc/init.d/running-led start|stop"
