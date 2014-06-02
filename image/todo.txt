@@ -1,2 +1,5 @@
 - compat ID detection for WinUSB with a USB composite device with more than one
   interface dosn't work on Windows XP
+
+- a Brick connected to the USB host port on the RED Brick only works if it was
+  connected before boot. it doesn't work if it was hotplugged after boot
