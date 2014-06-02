@@ -55,7 +55,7 @@ packages=libncurses5-dev u-boot-tools kernel-package
 
 # GROUP-START:libusb
 packages=libusb-1.0-0 libusb-1.0-0-dev
-# GROUP-START:libusb
+# GROUP-END:libusb
 
 # GROUP-START:qt
 packages=libqt4-qt3support libqt4-core libqt4-dbus libqt4-xml
@@ -63,12 +63,20 @@ packages=libqt4-gui libqt4-opengl libqt4-network
 packages=libqt4-declarative libqt4-dev libqt4-dev-bin libqt4-help
 packages=libqt4-opengl-dev libqt4-scripttools libqt4-xmlpatterns
 packages=libqtassistantclient4 libqtwebkit-dev libqtwebkit4 libqwt-dev
-packages=libqwt5-qt4 libqwt6 qt4-linguist-tools qt4-qmake
+packages=libqwt5-qt4 libqwt6 qt4-linguist-tools qt4-qmake qt4-dev-tools
 # GROUP-END:qt
 
 # GROUP-START:c_c++
-packages=build-essential autoconf automake libtool flex bison
+packages=build-essential autoconf automake libtool flex bison sqlite
+packages=sqlite3 libmysqlclient-dev libgtk2.0-dev libgtk-3-dev
+packages=libboost-all-dev libopencv-dev libgsl0-dev libgcrypt11-dev
+packages=libssl-dev libcrypto++-dev libpcap-dev libmsgpack-dev libxml2-dev
+packages=libexpat1-dev libcurl-dev
 # GROUP-END:c_c++
+
+# GROUP-START:mono
+packages=gtk-sharp2
+# GROUP-END:mono
 
 # GROUP-START:ruby
 packages=ruby

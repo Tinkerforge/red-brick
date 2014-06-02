@@ -231,6 +231,33 @@ cd /usr/tinkerforge/bindings
 rm -rf *_bindings_latest.zip
 EOF
 
+# Installing .NET features
+report_info "Installing .NET features"
+chroot $ROOTFS_DIR<<EOF
+export LC_ALL=C LANGUAGE=C LANG=C
+cd /tmp
+unzip ./mysql-connector-net-6.8.3-noinstall.zip -d mysql-connector-net
+unzip ./dnAnalytics_managed.zip -d dnAnalytics
+unzip ./SharpPcap-4.2.0.bin.zip
+gacutil -i ./mysql-connector-net/v4.5/mysql.data.dll
+gacutil -i ./dnAnalytics/bin/dnAnalytics.dll
+gacutil -i ./SharpPcap-4.2.0/Release/SharpPcap.dll
+gacutil -i ./NPlot/NPlot.dll
+EOF
+
+# Installing JAVA features
+report_info "Installing JAVA features"
+chroot $ROOTFS_DIR<<EOF
+export LC_ALL=C LANGUAGE=C LANG=C
+cd /tmp
+cp ./*.jar /usr/lib/jvm/java-6-openjdk-armhf/jre/lib/
+cp ./*.jar /usr/lib/jvm/java-7-openjdk-armhf/jre/lib/
+cp ./*.jar /usr/lib/jvm/jdk1.8.0/jre/lib/
+cp ./jfreechart/*.jar /usr/lib/jvm/java-6-openjdk-armhf/jre/lib/
+cp ./jfreechart/*.jar /usr/lib/jvm/java-7-openjdk-armhf/jre/lib/
+cp ./jfreechart/*.jar /usr/lib/jvm/jdk1.8.0/jre/lib/
+EOF
+
 # Enable BASH completion
 report_info "Enabling BASH completion"
 chroot $ROOTFS_DIR<<EOF
