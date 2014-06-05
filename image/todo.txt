@@ -1,3 +1,8 @@
+- for a bug in the `qemu-arm-static` binary, Mono installtion hangs in the chroot
+  environment. Mono is enabled currently by selecting essential packages manually
+  but `mono-complete` installation will fail in chroot environment. Same for GTK#
+  libraries for Mono
+
 - compat ID detection for WinUSB with a USB composite device with more than one
   interface dosn't work on Windows XP
 
