@@ -92,12 +92,13 @@ report_info "Configuring the generated root-fs"
 chroot $ROOTFS_DIR<<EOF
 export DEBIAN_FRONTEND=noninteractive DEBCONF_NONINTERACTIVE_SEEN=true
 export LC_ALL=C LANGUAGE=C LANG=C
-echo "nameserver 8.8.8.8" > /etc/resolv.conf
-rm -rf /var/lib/apt/lists
-wget http://archive.raspbian.org/raspbian.public.key -O - | apt-key add -
-wget http://archive.raspberrypi.org/debian/raspberrypi.gpg.key -O - | apt-key add -
+umount /proc
+dpkg --configure -a
 umount /proc
 mount -t proc proc /proc
+echo "nameserver 8.8.8.8" > /etc/resolv.conf
+wget http://archive.raspbian.org/raspbian.public.key -O - | apt-key add -
+wget http://archive.raspberrypi.org/debian/raspberrypi.gpg.key -O - | apt-key add -
 /var/lib/dpkg/info/dash.preinst install
 echo "dash dash/sh boolean false" | debconf-set-selections
 echo "tzdata tzdata/Areas select $TZDATA_AREA" | debconf-set-selections
@@ -232,18 +233,18 @@ rm -rf *_bindings_latest.zip
 EOF
 
 # Installing .NET features
-report_info "Installing .NET features"
-chroot $ROOTFS_DIR<<EOF
-export LC_ALL=C LANGUAGE=C LANG=C
-cd /tmp
-unzip ./mysql-connector-net-6.8.3-noinstall.zip -d mysql-connector-net
-unzip ./dnAnalytics_managed.zip -d dnAnalytics
-unzip ./SharpPcap-4.2.0.bin.zip
-gacutil -i ./mysql-connector-net/v4.5/mysql.data.dll
-gacutil -i ./dnAnalytics/bin/dnAnalytics.dll
-gacutil -i ./SharpPcap-4.2.0/Release/SharpPcap.dll
-gacutil -i ./NPlot/NPlot.dll
-EOF
+#report_info "Installing .NET features"
+#chroot $ROOTFS_DIR<<EOF
+#export LC_ALL=C LANGUAGE=C LANG=C
+#cd /tmp
+#unzip ./mysql-connector-net-6.8.3-noinstall.zip -d mysql-connector-net
+#unzip ./dnAnalytics_managed.zip -d dnAnalytics
+#unzip ./SharpPcap-4.2.0.bin.zip
+#gacutil -i ./mysql-connector-net/v4.5/mysql.data.dll
+#gacutil -i ./dnAnalytics/bin/dnAnalytics.dll
+#gacutil -i ./SharpPcap-4.2.0/Release/SharpPcap.dll
+#gacutil -i ./NPlot/NPlot.dll
+#EOF
 
 # Installing JAVA features
 report_info "Installing JAVA features"
