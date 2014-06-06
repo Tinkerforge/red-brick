@@ -180,6 +180,26 @@ uart_type = 2
 uart_tx = port:PC16<4><1><default><default>
 uart_rx = port:PC17<4><1><default><default>
 
+[spi0_para]
+spi_used = 1
+spi_cs_bitmap = 0
+spi_mosi = port:PC00<2><default><default><default>
+spi_miso = port:PC01<2><default><default><default>
+spi_sclk = port:PC02<2><default><default><default>
+spi_cs0 = port:PC03<2><default><default><default>
+
+[spi_devices]
+spi_dev_num = 1
+
+[spi_board0]
+modalias = "spidev"
+max_speed_hz = 12000000
+bus_num = 0
+chip_select = 0
+mode = 0
+full_duplex = 1
+manual_cs = 0
+
 [spi1_para]
 spi_used = 0
 spi_cs0 = port:PG09<2><default><default><default>
