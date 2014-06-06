@@ -10,9 +10,7 @@ report_info "Stopping apt-cacher daemons"
 
 if [ -f $APTCACHER_DIR/pid-0 ]
 then
-	r=`netstat -lnt | awk '$6 == "LISTEN" && $4 ~ ".3150"'`
-
-	if [ -n "$r" ]
+	if [ `netstat -lnt | awk '$6 == "LISTEN" && $4 ~ ".3150"' | wc -l` -ne 0 ]
 	then
 		kill `cat $APTCACHER_DIR/pid-0`
 	fi
@@ -22,9 +20,7 @@ fi
 
 if [ -f $APTCACHER_DIR/pid-1 ]
 then
-	r=`netstat -lnt | awk '$6 == "LISTEN" && $4 ~ ".3151"'`
-
-	if [ -n "$r" ]
+	if [ `netstat -lnt | awk '$6 == "LISTEN" && $4 ~ ".3151"' | wc -l` -ne 0 ]
 	then
 		kill `cat $APTCACHER_DIR/pid-1`
 	fi
@@ -34,9 +30,7 @@ fi
 
 if [ -f $APTCACHER_DIR/pid-2 ]
 then
-	r=`netstat -lnt | awk '$6 == "LISTEN" && $4 ~ ".3152"'`
-
-	if [ -n "$r" ]
+	if [ `netstat -lnt | awk '$6 == "LISTEN" && $4 ~ ".3152"' | wc -l` -ne 0 ]
 	then
 		kill `cat $APTCACHER_DIR/pid-2`
 	fi
@@ -46,9 +40,7 @@ fi
 
 if [ -f $APTCACHER_DIR/pid-3 ]
 then
-	r=`netstat -lnt | awk '$6 == "LISTEN" && $4 ~ ".3153"'`
-
-	if [ -n "$r" ]
+	if [ `netstat -lnt | awk '$6 == "LISTEN" && $4 ~ ".3153"' | wc -l` -ne 0 ]
 	then
 		kill `cat $APTCACHER_DIR/pid-3`
 	fi
