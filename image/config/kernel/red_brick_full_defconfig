@@ -1105,7 +1105,7 @@ CONFIG_I2C_SUNXI=y
 # CONFIG_I2C_DEBUG_ALGO is not set
 # CONFIG_I2C_DEBUG_BUS is not set
 CONFIG_SPI=y
-# CONFIG_SPI_DEBUG is not set
+CONFIG_SPI_DEBUG=y # TODO: Uncomment in final release
 CONFIG_SPI_MASTER=y
 
 #
@@ -1125,7 +1125,7 @@ CONFIG_SPI_SUNXI_NDMA=y
 #
 # SPI Protocol Masters
 #
-# CONFIG_SPI_SPIDEV is not set
+CONFIG_SPI_SPIDEV=y
 # CONFIG_SPI_TLE62X0 is not set
 # CONFIG_HSI is not set
 
