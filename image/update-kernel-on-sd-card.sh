@@ -43,6 +43,8 @@ fi
 # Copying the kernel to the SD card
 report_info "Copying the kernel to the SD card"
 dd bs=512 seek=$KERNEL_DD_SEEK if=$KERNEL_IMAGE_FILE of=$DEVICE
+report_info "Copying the fex bin to the SD card"
+dd bs=512 seek=$SCRIPT_DD_SEEK if=$SCRIPT_BIN_FILE of=$DEVICE
 
 # Copying kernel modules to the SD card
 report_info "Copying kernel modules to the SD card"
