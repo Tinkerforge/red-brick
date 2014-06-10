@@ -183,10 +183,10 @@ uart_rx = port:PC17<4><1><default><default>
 [spi0_para]
 spi_used = 1
 spi_cs_bitmap = 0
-spi_mosi = port:PC00<2><default><default><default>
-spi_miso = port:PC01<2><default><default><default>
-spi_sclk = port:PC02<2><default><default><default>
-spi_cs0 = port:PC03<2><default><default><default>
+spi_mosi = port:PC00<3><default><default><default>
+spi_miso = port:PC01<3><default><default><default>
+spi_sclk = port:PC02<3><default><default><default>
+spi_cs0 = port:PC03<3><default><default><default>
 
 [spi_devices]
 spi_dev_num = 1
