@@ -44,9 +44,8 @@ packages=wicd wicd-cli wicd-curses netbase isc-dhcp-client
 packages=apt apt-utils vim nano iputils-ping less wget preload
 packages=locales man-db console-data fbi ca-certificates
 packages=policykit-1 curl checkinstall locate git zip unzip
-packages=module-init-tools fake-hwclock cron ntp freeglut3
-packages=libblas3 libgfortran3 liblapack3 console-setup
-packages=debconf-utils stress elinks
+packages=module-init-tools fake-hwclock cron ntp
+packages=console-setup debconf-utils stress elinks
 # GROUP-END:system
 
 # GROUP-START:kernel_development
@@ -67,22 +66,25 @@ packages=libqwt5-qt4 libqwt6 qt4-linguist-tools qt4-qmake qt4-dev-tools
 # GROUP-END:qt
 
 # GROUP-START:c_c++
-packages=build-essential autoconf automake libtool flex bison sqlite
-packages=sqlite3 libmysqlclient-dev libgtk2.0-dev libgtk-3-dev
-packages=libboost-all-dev libopencv-dev libgsl0-dev libgcrypt11-dev
+packages=build-essential autoconf automake libtool flex bison sqlite libblas3
+packages=sqlite3 libmysqlclient-dev libgtk2.0-dev libgtk-3-dev libatlas-base-dev
+packages=libboost-all-dev libopencv-dev libgsl0-dev libgcrypt11-dev freeglut3
 packages=libssl-dev libcrypto++-dev libpcap-dev libmsgpack-dev libxml2-dev
 packages=libexpat1-dev libcurl4-openssl-dev libgtkmm-2.4-dev libgtkmm-3.0-dev
+packages=libgfortran3
 # GROUP-END:c_c++
 
 # GROUP-START:ruby
-packages=ruby
+packages=ruby-full
 # GROUP-END:ruby
 
 # GROUP-START:python
-packages=python python-pip python-setuptools
-packages=bash-completion python-software-properties libpython2.7
-packages=python-numpy python-opengl python-qt4 python-qt4-gl
-packages=python-qwt5-qt4 python-serial python-sip
+packages=python python-pip python-setuptools python-mysql.connector python-mysqldb
+packages=bash-completion python-software-properties libpython2.7 python-pcapy python-psutil
+packages=python-numpy python-opengl python-qt4 python-qt4-gl python-gtk2 python-gtk2-dev
+packages=python-qwt5-qt4 python-serial python-sip python-sqlite python-sqlitecachec
+packages=python-scientific python-scipy python-sciscipy python-scitools python-pycurl
+packages=python-opencv python-matplotlib python-matplotlib-data msgpack-python python-pypdf
 # GROUP-END:python
 
 # GROUP-START:octave
@@ -100,12 +102,19 @@ packages=icedtea-7-jre-jamvm
 # GROUP-END:java
 
 # GROUP-START:php
-packages=php5-common php5-cli php-pear
+packages=php5 php5-common php5-cli php-pear php-mdb2
 # GROUP-END:php
 
 # GROUP-START:perl
-packages=perl perl-doc cpanminus libyaml-perl libdigest-hmac-perl
-packages=libterm-readline-gnu-perl
+packages=perl perl-doc cpanminus libyaml-perl libdigest-hmac-perl libdbd-mysql-perl 
+packages=libterm-readline-gnu-perl libdbd-sqlite2-perl libdbd-sqlite3-perl
+packages=libgtk2-perl libgtk3-perl libqtcore4-perl libqtnetwork4-perl libqtxml4-perl
+packages=libqttest4-perl libqtgui4-perl libopengl-perl libnet-pcap-perl libwww-curl-perl
+packages=libcrypt-hcesha-perl libcrypt-openssl-rsa-perl libcrypt-des-perl libcrypt-dsa-perl
+packages=libcrypt-openssl-dsa-perl libcrypt-blowfish-perl libcrypt-passwdmd5-perl
+packages=libcrypt-openssl-random-perl libcrypt-util-perl libcrypt-gpg-perl
+packages=libcrypt-generatepassword-perl librpc-xml-perl librpc-xml-perl libgd-graph3d-perl
+packages=libgd-graph-perl libxml-simple-perl libpdf-create-perl libsys-statistics-linux-perl
 # GROUP-END:perl
 
 source=http://%apt-cacher-0-prefix%ftp.debian.org/debian

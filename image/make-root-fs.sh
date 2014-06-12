@@ -176,6 +176,8 @@ EOF
 report_info "Setting up all the bindings"
 chroot $ROOTFS_DIR<<EOF
 export LC_ALL=C LANGUAGE=C LANG=C LC_CTYPE=$LOCALE
+umount /proc
+mount -t proc proc /proc
 mkdir -p /usr/tinkerforge/bindings
 cd /usr/tinkerforge/bindings
 wget http://download.tinkerforge.com/bindings/c/tinkerforge_c_bindings_latest.zip
@@ -232,19 +234,29 @@ cd /usr/tinkerforge/bindings
 rm -rf *_bindings_latest.zip
 EOF
 
-# Installing .NET features
-#report_info "Installing .NET features"
-#chroot $ROOTFS_DIR<<EOF
-#export LC_ALL=C LANGUAGE=C LANG=C
-#cd /tmp
-#unzip ./mysql-connector-net-6.8.3-noinstall.zip -d mysql-connector-net
-#unzip ./dnAnalytics_managed.zip -d dnAnalytics
-#unzip ./SharpPcap-4.2.0.bin.zip
-#gacutil -i ./mysql-connector-net/v4.5/mysql.data.dll
-#gacutil -i ./dnAnalytics/bin/dnAnalytics.dll
-#gacutil -i ./SharpPcap-4.2.0/Release/SharpPcap.dll
-#gacutil -i ./NPlot/NPlot.dll
-#EOF
+# Installing Mono features
+report_info "Installing Mono features"
+chroot $ROOTFS_DIR<<EOF
+export LC_ALL=C LANGUAGE=C LANG=C
+cd /tmp
+unzip ./mysql-connector-net-6.8.3-noinstall.zip -d mysql-connector-net
+unzip ./dnAnalytics_managed.zip -d dnAnalytics
+unzip ./SharpPcap-4.2.0.bin.zip
+cd ./mysql-connector-net/v2.0/
+mv mysql.data.cf.dll MySql.Data.Cf.dll
+mv mysql.data.dll MySql.Data.dll
+mv mysql.data.entity.dll MySql.Data.Entity.dll
+mv mysql.web.dll MySql.Web.dll
+cp MySql.* /usr/lib/mono/2.0/
+cd /usr/lib/mono/2.0/
+gacutil -i ./MySql.Data.Cf.dll
+gacutil -i ./MySql.Data.dll
+gacutil -i ./MySql.Data.Entity.dll
+gacutil -i ./MySql.Web.dll
+gacutil -i ./dnAnalytics/bin/dnAnalytics.dll
+gacutil -i ./SharpPcap-4.2.0/Release/SharpPcap.dll
+gacutil -i ./NPlot/NPlot.dll
+EOF
 
 # Installing JAVA features
 report_info "Installing JAVA features"
@@ -257,6 +269,50 @@ cp ./*.jar /usr/lib/jvm/jdk1.8.0/jre/lib/
 cp ./jfreechart/*.jar /usr/lib/jvm/java-6-openjdk-armhf/jre/lib/
 cp ./jfreechart/*.jar /usr/lib/jvm/java-7-openjdk-armhf/jre/lib/
 cp ./jfreechart/*.jar /usr/lib/jvm/jdk1.8.0/jre/lib/
+EOF
+
+
+# Installing Ruby features
+report_info "Installing Ruby features"
+chroot $ROOTFS_DIR<<EOF
+export LC_ALL=C LANGUAGE=C LANG=C
+gem install mysql2 sqlite3-ruby
+gem install gtk2 gtk3 qtbindings opengl
+gem install nmatrix rubyvis plotrb statsample distribution minimization integration nmatrix
+gem install ruby-pcap curb
+gem install ruby-opencv
+gem install msgpack-rpc
+gem install prawn god
+EOF
+
+# Installing Python features
+report_info "Installing Python features"
+chroot $ROOTFS_DIR<<EOF
+export LC_ALL=C LANGUAGE=C LANG=C
+easy_install --upgrade pip
+pip install pycrypto
+EOF
+
+# Installing Perl features
+report_info "Installing Perl features"
+chroot $ROOTFS_DIR<<EOF
+export LC_ALL=C LANGUAGE=C LANG=C
+cpanm install Cv
+cpanm install RPC::Simple
+EOF
+
+# Installing Node.JS features
+report_info "Installing Node.JS features"
+chroot $ROOTFS_DIR<<EOF
+export LC_ALL=C LANGUAGE=C LANG=C
+npm -g install node-dbi
+npm -g install gui node-qt node-opengl
+npm -g install science gsl numbers ico
+npm -g install crypto
+npm -g install node-pcap node-curl
+npm -g install htmlparser
+npm -g install opencv
+npm -g dnode now pdfkit
 EOF
 
 # Enable BASH completion
@@ -369,6 +425,16 @@ fi
 report_info "Emptying /tmp directory"
 chroot $ROOTFS_DIR<<EOF
 rm -rf /tmp/*
+EOF
+
+# Setting JAVA class path
+report_info "Setting JAVA class path"
+chroot $ROOTFS_DIR<<EOF
+echo "
+# Setting JAVA class path
+CLASSPATH=$CLASSPATH:/usr/lib/jvm/java-6-openjdk-armhf/jre/lib/:/usr/lib/jvm/java-7-openjdk-armhf/jre/lib/:/usr/lib/jvm/jdk1.8.0/jre/lib/
+export CLASSPATH
+" >> /etc/profile
 EOF
 
 # Fixing, cleaning and updating APT
