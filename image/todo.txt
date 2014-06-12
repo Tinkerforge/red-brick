@@ -7,4 +7,8 @@
   interface dosn't work on Windows XP
 
 - a Brick connected to the USB host port on the RED Brick only works if it was
-  connected before boot. it doesn't work if it was hotplugged after boot
+  connected before boot. it doesn't work if it was hotplugged after boot. is
+  this still true?
+
+- acpid is complaining about not working netlink communication with the kernel.
+  are we missing a kernle module for this?
