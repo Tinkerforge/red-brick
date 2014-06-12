@@ -240,7 +240,6 @@ chroot $ROOTFS_DIR<<EOF
 export LC_ALL=C LANGUAGE=C LANG=C
 cd /tmp
 unzip ./mysql-connector-net-6.8.3-noinstall.zip -d mysql-connector-net
-unzip ./dnAnalytics_managed.zip -d dnAnalytics
 unzip ./SharpPcap-4.2.0.bin.zip
 cd ./mysql-connector-net/v2.0/
 mv mysql.data.cf.dll MySql.Data.Cf.dll
@@ -253,7 +252,6 @@ gacutil -i ./MySql.Data.Cf.dll
 gacutil -i ./MySql.Data.dll
 gacutil -i ./MySql.Data.Entity.dll
 gacutil -i ./MySql.Web.dll
-gacutil -i ./dnAnalytics/bin/dnAnalytics.dll
 gacutil -i ./SharpPcap-4.2.0/Release/SharpPcap.dll
 EOF
 
