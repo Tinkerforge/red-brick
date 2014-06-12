@@ -255,7 +255,6 @@ gacutil -i ./MySql.Data.Entity.dll
 gacutil -i ./MySql.Web.dll
 gacutil -i ./dnAnalytics/bin/dnAnalytics.dll
 gacutil -i ./SharpPcap-4.2.0/Release/SharpPcap.dll
-gacutil -i ./NPlot/NPlot.dll
 EOF
 
 # Installing JAVA features
