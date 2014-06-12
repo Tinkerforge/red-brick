@@ -262,12 +262,15 @@ report_info "Installing JAVA features"
 chroot $ROOTFS_DIR<<EOF
 export LC_ALL=C LANGUAGE=C LANG=C
 cd /tmp
+unzip ./jfreechart.zip
+cd ./jfreechart
 cp ./*.jar /usr/lib/jvm/java-6-openjdk-armhf/jre/lib/
 cp ./*.jar /usr/lib/jvm/java-7-openjdk-armhf/jre/lib/
 cp ./*.jar /usr/lib/jvm/jdk1.8.0/jre/lib/
-cp ./jfreechart/*.jar /usr/lib/jvm/java-6-openjdk-armhf/jre/lib/
-cp ./jfreechart/*.jar /usr/lib/jvm/java-7-openjdk-armhf/jre/lib/
-cp ./jfreechart/*.jar /usr/lib/jvm/jdk1.8.0/jre/lib/
+cd /tmp
+cp ./*.jar /usr/lib/jvm/java-6-openjdk-armhf/jre/lib/
+cp ./*.jar /usr/lib/jvm/java-7-openjdk-armhf/jre/lib/
+cp ./*.jar /usr/lib/jvm/jdk1.8.0/jre/lib/
 EOF
 
 
