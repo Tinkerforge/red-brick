@@ -238,39 +238,64 @@ EOF
 report_info "Installing Mono features"
 chroot $ROOTFS_DIR<<EOF
 export LC_ALL=C LANGUAGE=C LANG=C
-cd /tmp
+cd /tmp/Mono_Features/
+unzip ./MathNet.Numerics-2.6.1.30.zip -d MathNet.Numerics
 unzip ./mysql-connector-net-6.8.3-noinstall.zip -d mysql-connector-net
 unzip ./SharpPcap-4.2.0.bin.zip
-cd ./mysql-connector-net/v2.0/
-mv mysql.data.cf.dll MySql.Data.Cf.dll
+cd ./MathNet.Numerics/Net40/
+cp *.dll /usr/lib/mono/4.0/
+cd /tmp/Mono_Features/mysql-connector-net/v2.0/
+mv mysql.data.cf.dll MySql.Data.CF.dll
 mv mysql.data.dll MySql.Data.dll
 mv mysql.data.entity.dll MySql.Data.Entity.dll
 mv mysql.web.dll MySql.Web.dll
 cp MySql.* /usr/lib/mono/2.0/
 cd /usr/lib/mono/2.0/
-gacutil -i ./MySql.Data.Cf.dll
+gacutil -i ./MySql.Data.CF.dll
 gacutil -i ./MySql.Data.dll
 gacutil -i ./MySql.Data.Entity.dll
 gacutil -i ./MySql.Web.dll
-gacutil -i ./SharpPcap-4.2.0/Release/SharpPcap.dll
+cd /tmp/Mono_Features/mysql-connector-net/v4.0/
+mv mysql.data.dll MySql.Data.dll
+mv mysql.data.entity.dll MySql.Data.Entity.dll
+mv mysql.data.entity.EF6.dll MySql.Data.Entity.EF6.dll
+mv mysql.web.dll MySql.Web.dll
+cp MySql.* /usr/lib/mono/4.0/
+cd /usr/lib/mono/4.0/
+gacutil -i ./MySql.Data.dll
+gacutil -i ./MySql.Data.Entity.dll
+gacutil -i ./MySql.Data.Entity.EF6.dll
+gacutil -i ./MySql.Web.dll
+cd /tmp/Mono_Features/mysql-connector-net/v4.5/
+mv mysql.data.dll MySql.Data.dll
+mv mysql.data.entity.EF5.dll MySql.Data.Entity.EF5.dll
+mv mysql.data.entity.EF6.dll MySql.Data.Entity.EF6.dll
+mv mysql.web.dll MySql.Web.dll
+cp MySql.* /usr/lib/mono/4.5/
+cd /usr/lib/mono/4.5/
+gacutil -i ./MySql.Data.dll
+gacutil -i ./MySql.Data.Entity.EF5.dll
+gacutil -i ./MySql.Data.Entity.EF6.dll
+gacutil -i ./MySql.Web.dll
+cd /tmp/Mono_Features/SharpPcap-4.2.0/Release/
+cp *.dll /usr/lib/mono/2.0/
 EOF
 
 # Installing JAVA features
 report_info "Installing JAVA features"
 chroot $ROOTFS_DIR<<EOF
 export LC_ALL=C LANGUAGE=C LANG=C
-cd /tmp
+cd /tmp/Java_Features/
 unzip ./jfreechart.zip
 cd ./jfreechart
 cp ./*.jar /usr/lib/jvm/java-6-openjdk-armhf/jre/lib/
 cp ./*.jar /usr/lib/jvm/java-7-openjdk-armhf/jre/lib/
 cp ./*.jar /usr/lib/jvm/jdk1.8.0/jre/lib/
-cd /tmp
+cd /tmp/Java_Features/
 cp ./*.jar /usr/lib/jvm/java-6-openjdk-armhf/jre/lib/
 cp ./*.jar /usr/lib/jvm/java-7-openjdk-armhf/jre/lib/
 cp ./*.jar /usr/lib/jvm/jdk1.8.0/jre/lib/
 EOF
-
 
 # Installing Ruby features
 report_info "Installing Ruby features"
