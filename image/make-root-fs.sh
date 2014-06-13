@@ -242,6 +242,8 @@ cd /tmp/Mono_Features/
 unzip ./MathNet.Numerics-2.6.1.30.zip -d MathNet.Numerics
 unzip ./mysql-connector-net-6.8.3-noinstall.zip -d mysql-connector-net
 unzip ./SharpPcap-4.2.0.bin.zip
+unzip ./sharpPDF_2_0_Beta2_dll.zip -d sharpPDF
+unzip ./xml-rpc.net.2.5.0.zip -d xml-rpc.net
 cd ./MathNet.Numerics/Net40/
 cp *.dll /usr/lib/mono/4.0/
 cd /tmp/Mono_Features/mysql-connector-net/v2.0/
@@ -263,6 +265,10 @@ mv mysql.data.entity.EF6.dll MySql.Data.Entity.EF6.dll
 mv mysql.web.dll MySql.Web.dll
 cp MySql.* /usr/lib/mono/4.5/
 cd /tmp/Mono_Features/SharpPcap-4.2.0/Release/
+cp *.dll /usr/lib/mono/2.0/
+cd /tmp/Mono_Features/sharpPDF/
+cp *.dll /usr/lib/mono/2.0/
+cd /tmp/Mono_Features/xml-rpc.net/
 cp *.dll /usr/lib/mono/2.0/
 EOF
 
