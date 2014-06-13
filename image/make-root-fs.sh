@@ -250,33 +250,18 @@ mv mysql.data.dll MySql.Data.dll
 mv mysql.data.entity.dll MySql.Data.Entity.dll
 mv mysql.web.dll MySql.Web.dll
 cp MySql.* /usr/lib/mono/2.0/
-cd /usr/lib/mono/2.0/
-gacutil -i ./MySql.Data.CF.dll
-gacutil -i ./MySql.Data.dll
-gacutil -i ./MySql.Data.Entity.dll
-gacutil -i ./MySql.Web.dll
 cd /tmp/Mono_Features/mysql-connector-net/v4.0/
 mv mysql.data.dll MySql.Data.dll
 mv mysql.data.entity.dll MySql.Data.Entity.dll
 mv mysql.data.entity.EF6.dll MySql.Data.Entity.EF6.dll
 mv mysql.web.dll MySql.Web.dll
 cp MySql.* /usr/lib/mono/4.0/
-cd /usr/lib/mono/4.0/
-gacutil -i ./MySql.Data.dll
-gacutil -i ./MySql.Data.Entity.dll
-gacutil -i ./MySql.Data.Entity.EF6.dll
-gacutil -i ./MySql.Web.dll
 cd /tmp/Mono_Features/mysql-connector-net/v4.5/
 mv mysql.data.dll MySql.Data.dll
 mv mysql.data.entity.EF5.dll MySql.Data.Entity.EF5.dll
 mv mysql.data.entity.EF6.dll MySql.Data.Entity.EF6.dll
 mv mysql.web.dll MySql.Web.dll
 cp MySql.* /usr/lib/mono/4.5/
-cd /usr/lib/mono/4.5/
-gacutil -i ./MySql.Data.dll
-gacutil -i ./MySql.Data.Entity.EF5.dll
-gacutil -i ./MySql.Data.Entity.EF6.dll
-gacutil -i ./MySql.Web.dll
 cd /tmp/Mono_Features/SharpPcap-4.2.0/Release/
 cp *.dll /usr/lib/mono/2.0/
 EOF
@@ -458,8 +443,16 @@ chroot $ROOTFS_DIR<<EOF
 echo "
 # Setting JAVA class path
 CLASSPATH=$CLASSPATH:/usr/lib/jvm/java-6-openjdk-armhf/jre/lib/:/usr/lib/jvm/java-7-openjdk-armhf/jre/lib/:/usr/lib/jvm/jdk1.8.0/jre/lib/
-export CLASSPATH
-" >> /etc/profile
+export CLASSPATH" >> /etc/profile
+EOF
+
+# Setting Mono path
+report_info "Setting Mono path"
+chroot $ROOTFS_DIR<<EOF
+echo "
+# Setting Mono path
+MONO_PATH=$MONO_PATH:/usr/lib/mono/2.0/:/usr/lib/mono/3.5/:/usr/lib/mono/4.0/:/usr/lib/mono/4.5/
+export MONO_PATH" >> /etc/profile
 EOF
 
 # Fixing, cleaning and updating APT
