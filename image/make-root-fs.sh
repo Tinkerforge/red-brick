@@ -184,8 +184,6 @@ EOF
 report_info "Setting up all the bindings"
 chroot $ROOTFS_DIR<<EOF
 export LC_ALL=C LANGUAGE=C LANG=C LC_CTYPE=$LOCALE LC_CTYPE=$LOCALE
-locale-gen $LOCALE
-dpkg-reconfigure locales
 umount /proc
 mount -t proc proc /proc
 mkdir -p /usr/tinkerforge/bindings
@@ -302,8 +300,6 @@ EOF
 report_info "Installing Ruby features"
 chroot $ROOTFS_DIR<<EOF
 export LC_ALL=C LANGUAGE=C LANG=C LC_CTYPE=$LOCALE
-locale-gen $LOCALE
-dpkg-reconfigure locales
 gem install --no-ri --no-rdoc mysql2 sqlite3
 gem install --no-ri --no-rdoc gtk2 gtk3 qtbindings opengl
 gem install --no-ri --no-rdoc rubyvis plotrb statsample distribution minimization integration
