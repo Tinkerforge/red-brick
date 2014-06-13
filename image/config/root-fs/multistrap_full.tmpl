@@ -46,7 +46,7 @@ packages=locales man-db console-data fbi xdm lxde task-desktop
 packages=tasksel xorg fakeroot ca-certificates lxlauncher lxtask
 packages=lxpolkit policykit-1 menu-xdg curl checkinstall synaptic locate git
 packages=module-init-tools midori fake-hwclock cron ntp zip unzip
-packages=console-setup kernel-package debconf-utils
+packages=console-setup debconf-utils
 # GROUP-END:system
 
 # GROUP-START:test-tools
@@ -54,7 +54,7 @@ packages=stress memtester hdparm sysbench
 # GROUP-END:test-tools
 
 # GROUP-START:kernel_development
-packages=libncurses5-dev u-boot-tools
+packages=kernel-package u-boot-tools
 # GROUP-END:kernel_development
 
 # GROUP-START:libusb
@@ -71,12 +71,12 @@ packages=libqwt5-qt4 libqwt6 qt4-linguist-tools qt4-qmake qt4-dev-tools
 # GROUP-END:qt
 
 # GROUP-START:c_c++
-packages=build-essential autoconf automake libtool flex bison sqlite libblas3
-packages=sqlite3 libmysqlclient-dev libgtk2.0-dev libgtk-3-dev libatlas-base-dev
+packages=build-essential cmake autoconf automake libtool flex bison sqlite libblas3
+packages=sqlite sqlite3 libmysqlclient-dev libgtk2.0-dev libgtk-3-dev libatlas-base-dev
 packages=libboost-all-dev libopencv-dev libgsl0-dev libgcrypt11-dev freeglut3
-packages=libssl-dev libcrypto++-dev libpcap-dev libmsgpack-dev libxml2-dev
+packages=libssl-dev libcrypto++-dev libpcap-dev libmsgpack-dev libxml2-dev libgd2-xpm-dev
 packages=libexpat1-dev libcurl4-openssl-dev libgtkmm-2.4-dev libgtkmm-3.0-dev
-packages=libgfortran3 libsqlite0-dev libsqlite3-dev
+packages=libgfortran3 libsqlite0-dev libsqlite3-dev gnuplot mathgl libncurses5-dev
 # GROUP-END:c_c++
 
 # GROUP-START:ruby

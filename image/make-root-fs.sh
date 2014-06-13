@@ -91,7 +91,7 @@ cp $QEMU_BIN $ROOTFS_DIR/usr/bin/
 report_info "Configuring the generated root-fs"
 chroot $ROOTFS_DIR<<EOF
 export DEBIAN_FRONTEND=noninteractive DEBCONF_NONINTERACTIVE_SEEN=true
-export LC_ALL=C LANGUAGE=C LANG=C
+export LC_ALL=C LANGUAGE=C LANG=C LC_CTYPE=$LOCALE
 umount /proc
 dpkg --configure -a
 umount /proc
@@ -105,6 +105,7 @@ echo "tzdata tzdata/Areas select $TZDATA_AREA" | debconf-set-selections
 echo "tzdata tzdata/Zones/Europe select $TZDATA_ZONE" | debconf-set-selections
 echo $LOCALE_CHARSET > /etc/locale.gen
 locale-gen $LOCALE
+dpkg-reconfigure locales
 update-locale LANG=$LOCALE LANGUAGE
 echo -e "# KEYBOARD CONFIGURATION FILE
 
@@ -125,7 +126,7 @@ EOF
 # Applying console settings
 report_info "Applying console settings"
 chroot $ROOTFS_DIR<<EOF
-export LC_ALL=C LANGUAGE=C LANG=C
+export LC_ALL=C LANGUAGE=C LANG=C LC_CTYPE=$LOCALE
 setupcon
 EOF
 
@@ -148,7 +149,7 @@ EOF
 # Installing brickd
 report_info "Installing brickd"
 chroot $ROOTFS_DIR<<EOF
-export LC_ALL=C LANGUAGE=C LANG=C
+export LC_ALL=C LANGUAGE=C LANG=C LC_CTYPE=$LOCALE
 cd /tmp
 wget http://download.tinkerforge.com/tools/brickd/linux/brickd_linux_latest_armhf.deb
 dpkg -i brickd_linux_latest_armhf.deb
@@ -158,16 +159,23 @@ EOF
 # Installing Node.JS and NPM
 report_info "Installing Node.JS and NPM"
 chroot $ROOTFS_DIR<<EOF
-export LC_ALL=C LANGUAGE=C LANG=C
-cd /tmp
-dpkg -i node_*
-dpkg --configure -a
+export LC_ALL=C LANGUAGE=C LANG=C LC_CTYPE=$LOCALE
+src=$(mktemp -d) && cd $src
+wget -N http://nodejs.org/dist/node-latest.tar.gz
+tar xzvf node-latest.tar.gz && cd node-v*
+./configure
+sudo fakeroot checkinstall -y --install=no --pkgversion $(echo $(pwd) | sed -n -re's/.+node-v(.+)$/\1/p') make -j$(($(nproc)+1)) install
+sudo dpkg -i node_*
+curl https://www.npmjs.org/install.sh | sh
+#cd /tmp
+#dpkg -i node_*
+#dpkg --configure -a
 EOF
 
 # Setting up CPAN
 report_info "Setting up CPANminus"
 chroot $ROOTFS_DIR<<EOF
-export LC_ALL=C LANGUAGE=C LANG=C
+export LC_ALL=C LANGUAGE=C LANG=C LC_CTYPE=$LOCALE
 rm -rf /root/.cpanm/
 cpanm -n Thread::Queue
 EOF
@@ -175,7 +183,9 @@ EOF
 # Setting up all the bindings
 report_info "Setting up all the bindings"
 chroot $ROOTFS_DIR<<EOF
-export LC_ALL=C LANGUAGE=C LANG=C LC_CTYPE=$LOCALE
+export LC_ALL=C LANGUAGE=C LANG=C LC_CTYPE=$LOCALE LC_CTYPE=$LOCALE
+locale-gen $LOCALE
+dpkg-reconfigure locales
 umount /proc
 mount -t proc proc /proc
 mkdir -p /usr/tinkerforge/bindings
@@ -237,7 +247,7 @@ EOF
 # Installing Mono features
 report_info "Installing Mono features"
 chroot $ROOTFS_DIR<<EOF
-export LC_ALL=C LANGUAGE=C LANG=C
+export LC_ALL=C LANGUAGE=C LANG=C LC_CTYPE=$LOCALE
 cd /tmp/Mono_Features/
 unzip ./MathNet.Numerics-2.6.1.30.zip -d MathNet.Numerics
 unzip ./mysql-connector-net-6.8.3-noinstall.zip -d mysql-connector-net
@@ -275,7 +285,7 @@ EOF
 # Installing JAVA features
 report_info "Installing JAVA features"
 chroot $ROOTFS_DIR<<EOF
-export LC_ALL=C LANGUAGE=C LANG=C
+export LC_ALL=C LANGUAGE=C LANG=C LC_CTYPE=$LOCALE
 cd /tmp/Java_Features/
 unzip ./jfreechart.zip
 cd ./jfreechart
@@ -291,20 +301,21 @@ EOF
 # Installing Ruby features
 report_info "Installing Ruby features"
 chroot $ROOTFS_DIR<<EOF
-export LC_ALL=C LANGUAGE=C LANG=C
-gem install mysql2 sqlite3-ruby
-gem install gtk2 gtk3 qtbindings opengl
-gem install nmatrix rubyvis plotrb statsample distribution minimization integration nmatrix
-gem install ruby-pcap curb
-gem install ruby-opencv
-gem install msgpack-rpc
-gem install prawn god
+export LC_ALL=C LANGUAGE=C LANG=C LC_CTYPE=$LOCALE
+locale-gen $LOCALE
+dpkg-reconfigure locales
+gem install --no-ri --no-rdoc mysql2 sqlite3
+gem install --no-ri --no-rdoc gtk2 gtk3 qtbindings opengl
+gem install --no-ri --no-rdoc rubyvis plotrb statsample distribution minimization integration
+gem install --no-ri --no-rdoc ruby-pcap curb
+gem install --no-ri --no-rdoc msgpack-rpc
+gem install --no-ri --no-rdoc prawn god
 EOF
 
 # Installing Python features
 report_info "Installing Python features"
 chroot $ROOTFS_DIR<<EOF
-export LC_ALL=C LANGUAGE=C LANG=C
+export LC_ALL=C LANGUAGE=C LANG=C LC_CTYPE=$LOCALE
 easy_install --upgrade pip
 pip install pycrypto
 EOF
@@ -312,15 +323,15 @@ EOF
 # Installing Perl features
 report_info "Installing Perl features"
 chroot $ROOTFS_DIR<<EOF
-export LC_ALL=C LANGUAGE=C LANG=C
-cpanm install Cv
-cpanm install RPC::Simple
+export LC_ALL=C LANGUAGE=C LANG=C LC_CTYPE=$LOCALE
+cpanm install -n Cv
+cpanm install -n RPC::Simple
 EOF
 
 # Installing Node.JS features
 report_info "Installing Node.JS features"
 chroot $ROOTFS_DIR<<EOF
-export LC_ALL=C LANGUAGE=C LANG=C
+export LC_ALL=C LANGUAGE=C LANG=C LC_CTYPE=$LOCALE
 npm -g install node-dbi
 npm -g install gui node-qt node-opengl
 npm -g install science gsl numbers ico
@@ -334,14 +345,14 @@ EOF
 # Enable BASH completion
 report_info "Enabling BASH completion"
 chroot $ROOTFS_DIR<<EOF
-export LC_ALL=C LANGUAGE=C LANG=C
+export LC_ALL=C LANGUAGE=C LANG=C LC_CTYPE=$LOCALE
 . /etc/bash_completion
 EOF
 
 # Setting root password
 report_info "Setting root password"
 chroot $ROOTFS_DIR<<EOF
-export LC_ALL=C LANGUAGE=C LANG=C
+export LC_ALL=C LANGUAGE=C LANG=C LC_CTYPE=$LOCALE
 passwd root
 tinkerforge
 tinkerforge
@@ -350,7 +361,7 @@ EOF
 # Adding new user
 report_info "Adding new user"
 chroot $ROOTFS_DIR<<EOF
-export LC_ALL=C LANGUAGE=C LANG=C
+export LC_ALL=C LANGUAGE=C LANG=C LC_CTYPE=$LOCALE
 adduser rbuser
 tinkerforge
 tinkerforge
@@ -382,7 +393,7 @@ EOF
 # Configuring boot splash image
 report_info "Configuring boot splash image"
 chroot $ROOTFS_DIR<<EOF
-export LC_ALL=C LANGUAGE=C LANG=C
+export LC_ALL=C LANGUAGE=C LANG=C LC_CTYPE=$LOCALE
 chmod 755 /etc/init.d/asplashscreen
 chmod 755 /etc/init.d/killasplashscreen
 insserv /etc/init.d/asplashscreen
@@ -392,7 +403,7 @@ EOF
 # Removing plymouth
 report_info "Removing plymouth"
 chroot $ROOTFS_DIR<<EOF
-export LC_ALL=C LANGUAGE=C LANG=C
+export LC_ALL=C LANGUAGE=C LANG=C LC_CTYPE=$LOCALE
 apt-get purge plymouth -y
 dpkg --configure -a
 EOF
@@ -407,7 +418,7 @@ then
 	# Configuring Mali GPU
 	report_info "Configuring Mali GPU"
 	chroot $ROOTFS_DIR<<EOF
-export LC_ALL=C LANGUAGE=C LANG=C
+export LC_ALL=C LANGUAGE=C LANG=C LC_CTYPE=$LOCALE
 cd /tmp/mali-gpu
 dpkg -i ./libdri2-1_1.0-2_armhf.deb
 dpkg -i ./libsunxi-mali-x11_1.0-4_armhf.deb
@@ -429,7 +440,7 @@ EOF
 	# Installing brickv
 	report_info "Installing brickv"
 	chroot $ROOTFS_DIR<<EOF
-export LC_ALL=C LANGUAGE=C LANG=C
+export LC_ALL=C LANGUAGE=C LANG=C LC_CTYPE=$LOCALE
 cd /tmp
 wget http://download.tinkerforge.com/tools/brickv/linux/brickv_linux_latest.deb
 dpkg -i brickv_linux_latest.deb
@@ -464,7 +475,7 @@ EOF
 # Fixing, cleaning and updating APT
 report_info "Fixing, cleaning and updating APT"
 chroot $ROOTFS_DIR<<EOF
-export LC_ALL=C LANGUAGE=C LANG=C
+export LC_ALL=C LANGUAGE=C LANG=C LC_CTYPE=$LOCALE
 cat /etc/apt/sources.list.d/* > /tmp/sources.list.tmp
 rm -rf /etc/apt/sources.list.d/*
 if [ -n "$aptcacher" ]
@@ -482,14 +493,14 @@ EOF
 # Emptying /etc/resolv.conf
 report_info "Emptying /etc/resolv.conf"
 chroot $ROOTFS_DIR<<EOF
-export LC_ALL=C LANGUAGE=C LANG=C
+export LC_ALL=C LANGUAGE=C LANG=C LC_CTYPE=$LOCALE
 echo "" > /etc/resolv.conf
 EOF
 
 # Setting up running-led
 report_info "Setting up running-led"
 chroot $ROOTFS_DIR<<EOF
-export LC_ALL=C LANGUAGE=C LANG=C
+export LC_ALL=C LANGUAGE=C LANG=C LC_CTYPE=$LOCALE
 chmod a+x /etc/init.d/running-led
 insserv /etc/init.d/running-led
 EOF
@@ -497,7 +508,7 @@ EOF
 # Setting up fake-hwclock
 report_info "Setting up fake-hwclock"
 chroot $ROOTFS_DIR<<EOF
-export LC_ALL=C LANGUAGE=C LANG=C
+export LC_ALL=C LANGUAGE=C LANG=C LC_CTYPE=$LOCALE
 rm /etc/cron.hourly/fake-hwclock
 chmod a+x /etc/cron.d/fake-hwclock
 insserv -r /etc/init.d/hwclock.sh
