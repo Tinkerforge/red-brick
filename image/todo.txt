@@ -6,7 +6,6 @@
   environment. Mono is enabled currently by selecting essential packages manually
   but `mono-complete` installation will fail in chroot environment. Same for GTK#
   libraries for Mono
-  (works on RED-Brick)
 
 - compat ID detection for WinUSB with a USB composite device with more than one
   interface dosn't work on Windows XP
