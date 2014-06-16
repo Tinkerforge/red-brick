@@ -591,26 +591,18 @@ chroot $ROOTFS_DIR<<EOF
 umount /proc
 mount -t proc proc /proc
 export LC_ALL=C LANGUAGE=C LANG=C LC_CTYPE=$LOCALE
-update-locale LANG=en_US.UTF-8 LANGUAGE=en_US:en LC_ALL=en_US.UTF-8
+dpkg-query -l > ~/dpkg-listing-$CONFIG_NAME.txt
 umount /proc
 EOF
-chroot $ROOTFS_DIR<<EOF
-umount /proc
-mount -t proc proc /proc
-export LC_ALL=C LANGUAGE=C LANG=C LC_CTYPE=$LOCALE
-update-locale LANG=de_DE.UTF-8 LANGUAGE=de_DE:de LC_ALL=de_DE.UTF-8
-dpkg-query -l > ~/dpkg-listing-$CONFIG_NAME.en
-umount /proc
-EOF
-chroot $ROOTFS_DIR<<EOF
-umount /proc
-mount -t proc proc /proc
-export LC_ALL=C LANGUAGE=C LANG=C LC_CTYPE=$LOCALE
-dpkg-query -l > ~/dpkg-listting-$CONFIG_NAME.de
-umount /proc
-EOF
-mv $ROOTFS_DIR/root/dpkg-listing-$CONFIG_NAME.en $BUILD_DIR
-mv $ROOTFS_DIR/root/dpkg-listing-$CONFIG_NAME.de $BUILD_DIR
+mv $ROOTFS_DIR/root/dpkg-listing-$CONFIG_NAME.txt $BUILD_DIR
+
+#mono(list.txt)
+#java(list.txt)
+#ruby - gem list --local --details
+#python - 
+#updatedb
+#locate *egg-info > locs
+#perl - pmall
 
 # Reconfiguring locale
 report_info "Reconfiguring locale"
