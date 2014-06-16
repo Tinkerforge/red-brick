@@ -1,0 +1,1 @@
+OpenTK<==>1.1.1599.6049<==>The Open Toolkit is an advanced, low-level C# library that wraps OpenGL, OpenCL and OpenAL

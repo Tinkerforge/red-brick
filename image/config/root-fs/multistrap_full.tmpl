@@ -49,17 +49,13 @@ packages=module-init-tools midori fake-hwclock cron ntp zip unzip
 packages=console-setup debconf-utils
 # GROUP-END:system
 
-# GROUP-START:test-tools
+# GROUP-START:test_tools
 packages=stress memtester hdparm sysbench
-# GROUP-END:test-tools
+# GROUP-END:test_tools
 
 # GROUP-START:kernel_development
 packages=kernel-package u-boot-tools
 # GROUP-END:kernel_development
-
-# GROUP-START:libusb
-packages=libusb-1.0-0 libusb-1.0-0-dev
-# GROUP-END:libusb
 
 # GROUP-START:qt
 packages=libqt4-qt3support libqt4-core libqt4-dbus libqt4-xml
@@ -70,15 +66,15 @@ packages=libqtassistantclient4 libqtwebkit-dev libqtwebkit4 libqwt-dev
 packages=libqwt5-qt4 libqwt6 qt4-linguist-tools qt4-qmake qt4-dev-tools
 # GROUP-END:qt
 
-# GROUP-START:c_c++
+# GROUP-START:c
 packages=build-essential cmake autoconf automake libtool flex bison sqlite libblas3
 packages=sqlite sqlite3 libmysqlclient-dev libgtk2.0-dev libgtk-3-dev libatlas-base-dev
 packages=libboost-all-dev libopencv-dev libgsl0-dev libgcrypt11-dev freeglut3
 packages=libssl-dev libcrypto++-dev libpcap-dev libmsgpack-dev libxml2-dev libgd2-xpm-dev
 packages=libexpat1-dev libcurl4-openssl-dev libgtkmm-2.4-dev libgtkmm-3.0-dev
 packages=libgfortran3 libsqlite0-dev libsqlite3-dev gnuplot mathgl libncurses5-dev
-packages=libgirepository1.0-dev
-# GROUP-END:c_c++
+packages=libgirepository1.0-dev gnuplot-x11 libusb-1.0-0 libusb-1.0-0-dev
+# GROUP-END:c
 
 # GROUP-START:ruby
 packages=ruby-full
@@ -108,7 +104,9 @@ packages=icedtea-7-jre-jamvm
 # GROUP-END:java
 
 # GROUP-START:php
-packages=php5 php5-common php5-cli php-pear php-mdb2
+packages=php5 php5-common php5-cli php-pear php-mdb2 php5-xmlrpc php5-snmp
+packages=php5-mysql php5-sqlite php5-mcrypt php5-gd php5-curl php-net-smtp
+packages=php-net-socket php-xml-parser php-db php-http php-mail php-log php-fpdf
 # GROUP-END:php
 
 # GROUP-START:perl

@@ -160,14 +160,16 @@ dpkg --configure -a
 umount /proc
 EOF
 
-# Setting up CPANminus
-report_info "Setting up CPANminus"
+# Updating Perl modules
+report_info "Updating Perl modules"
 chroot $ROOTFS_DIR<<EOF
 umount /proc
 mount -t proc proc /proc
 export LC_ALL=C LANGUAGE=C LANG=C LC_CTYPE=$LOCALE
 rm -rf /root/.cpanm/
+# GROUP-START:perl
 cpanm -n Thread::Queue
+# GROUP-END:perl
 umount /proc
 EOF
 
@@ -240,38 +242,45 @@ chroot $ROOTFS_DIR<<EOF
 umount /proc
 mount -t proc proc /proc
 export LC_ALL=C LANGUAGE=C LANG=C LC_CTYPE=$LOCALE
-cd /tmp/Mono_Features/
-unzip ./MathNet.Numerics-2.6.1.30.zip -d MathNet.Numerics
-unzip ./mysql-connector-net-6.8.3-noinstall.zip -d mysql-connector-net
+cd /tmp/features/mono_features/
+unzip ./MathNet.Numerics-2.6.1.30.zip -d ./MathNet.Numerics
+unzip ./mysql-connector-net-6.8.3-noinstall.zip -d ./mysql-connector-net
 unzip ./SharpPcap-4.2.0.bin.zip
-unzip ./sharpPDF_2_0_Beta2_dll.zip -d sharpPDF
-unzip ./xml-rpc.net.2.5.0.zip -d xml-rpc.net
-cd ./MathNet.Numerics/Net40/
-cp *.dll /usr/lib/mono/4.0/
-cd /tmp/Mono_Features/mysql-connector-net/v2.0/
-mv mysql.data.cf.dll MySql.Data.CF.dll
-mv mysql.data.dll MySql.Data.dll
-mv mysql.data.entity.dll MySql.Data.Entity.dll
-mv mysql.web.dll MySql.Web.dll
-cp MySql.* /usr/lib/mono/2.0/
-cd /tmp/Mono_Features/mysql-connector-net/v4.0/
-mv mysql.data.dll MySql.Data.dll
-mv mysql.data.entity.dll MySql.Data.Entity.dll
-mv mysql.data.entity.EF6.dll MySql.Data.Entity.EF6.dll
-mv mysql.web.dll MySql.Web.dll
-cp MySql.* /usr/lib/mono/4.0/
-cd /tmp/Mono_Features/mysql-connector-net/v4.5/
-mv mysql.data.dll MySql.Data.dll
-mv mysql.data.entity.EF5.dll MySql.Data.Entity.EF5.dll
-mv mysql.data.entity.EF6.dll MySql.Data.Entity.EF6.dll
-mv mysql.web.dll MySql.Web.dll
-cp MySql.* /usr/lib/mono/4.5/
-cd /tmp/Mono_Features/SharpPcap-4.2.0/Release/
-cp *.dll /usr/lib/mono/2.0/
-cd /tmp/Mono_Features/sharpPDF/
-cp *.dll /usr/lib/mono/2.0/
-cd /tmp/Mono_Features/xml-rpc.net/
-cp *.dll /usr/lib/mono/2.0/
+unzip ./sharpPDF_2_0_Beta2_dll.zip -d ./sharpPDF
+unzip ./xml-rpc.net.2.5.0.zip -d ./xml-rpc.net
+cd ./MathNet.Numerics/portable/
+cp ./*.dll /usr/lib/mono/2.0/
+cd /tmp/features/mono_features/mysql-connector-net/v2.0/
+mv ./mysql.data.cf.dll ./MySql.Data.CF.dll
+mv ./mysql.data.dll ./MySql.Data.dll
+mv ./mysql.data.entity.dll ./MySql.Data.Entity.dll
+mv ./mysql.web.dll ./MySql.Web.dll
+cp ./MySql.* /usr/lib/mono/2.0/
+cd /tmp/features/mono_features/mysql-connector-net/v4.0/
+mv ./mysql.data.dll ./MySql.Data.dll
+mv ./mysql.data.entity.dll ./MySql.Data.Entity.dll
+mv ./mysql.data.entity.EF6.dll ./MySql.Data.Entity.EF6.dll
+mv ./mysql.web.dll ./MySql.Web.dll
+cp ./MySql.* /usr/lib/mono/4.0/
+cd /tmp/features/mono_features/mysql-connector-net/v4.5/
+mv ./mysql.data.dll ./MySql.Data.dll
+mv ./mysql.data.entity.EF5.dll ./MySql.Data.Entity.EF5.dll
+mv ./mysql.data.entity.EF6.dll ./MySql.Data.Entity.EF6.dll
+mv ./mysql.web.dll ./MySql.Web.dll
+cp ./MySql.* /usr/lib/mono/4.5/
+cd /tmp/features/mono_features/SharpPcap-4.2.0/Release/
+cp ./*.dll /usr/lib/mono/2.0/
+cd /tmp/features/mono_features/sharpPDF/
+cp ./*.dll /usr/lib/mono/2.0/
+cd /tmp/features/mono_features/xml-rpc.net/
+cp ./*.dll /usr/lib/mono/2.0/
+if  [ "$CONFIG_NAME" = "full" ]
+then
+    cd /tmp/features/mono_features/
+    unzip OpenTK_1.1.1599.6049.zip
+    cd ./OpenTK
+    cp ./*.dll /usr/lib/mono/2.0/
+fi
 umount /proc
 EOF
 
@@ -281,13 +290,7 @@ chroot $ROOTFS_DIR<<EOF
 umount /proc
 mount -t proc proc /proc
 export LC_ALL=C LANGUAGE=C LANG=C LC_CTYPE=$LOCALE
-cd /tmp/Java_Features/
-unzip ./jfreechart.zip
-cd ./jfreechart
-cp ./*.jar /usr/lib/jvm/java-6-openjdk-armhf/jre/lib/
-cp ./*.jar /usr/lib/jvm/java-7-openjdk-armhf/jre/lib/
-cp ./*.jar /usr/lib/jvm/jdk1.8.0/jre/lib/
-cd /tmp/Java_Features/
+cd /tmp//features/java_features/
 cp ./*.jar /usr/lib/jvm/java-6-openjdk-armhf/jre/lib/
 cp ./*.jar /usr/lib/jvm/java-7-openjdk-armhf/jre/lib/
 cp ./*.jar /usr/lib/jvm/jdk1.8.0/jre/lib/
@@ -300,12 +303,19 @@ chroot $ROOTFS_DIR<<EOF
 umount /proc
 mount -t proc proc /proc
 export LC_ALL=C LANGUAGE=C LANG=C LC_CTYPE=$LOCALE
+# GROUP-START:ruby
 gem install --no-ri --no-rdoc mysql2 sqlite3
-gem install --no-ri --no-rdoc gtk2 gtk3 opengl
 gem install --no-ri --no-rdoc rubyvis plotrb statsample distribution minimization integration
 gem install --no-ri --no-rdoc ruby-pcap curb
 gem install --no-ri --no-rdoc msgpack-rpc
 gem install --no-ri --no-rdoc prawn god
+# GROUP-END:ruby
+if [ "$CONFIG_NAME" = "full" ]
+then
+    # GROUP-START-FULL:ruby
+    gem install --no-ri --no-rdoc gtk2 gtk3 opengl
+    # GROUP-END-FULL:ruby
+fi
 umount /proc
 EOF
 
@@ -316,7 +326,9 @@ umount /proc
 mount -t proc proc /proc
 export LC_ALL=C LANGUAGE=C LANG=C LC_CTYPE=$LOCALE
 easy_install --upgrade pip
+# GROUP-START:python
 pip install pycrypto
+# GROUP-END:python
 umount /proc
 EOF
 
@@ -326,8 +338,10 @@ chroot $ROOTFS_DIR<<EOF
 umount /proc
 mount -t proc proc /proc
 export LC_ALL=C LANGUAGE=C LANG=C LC_CTYPE=$LOCALE
+# GROUP-START:perl
 cpanm install -n Cv
 cpanm install -n RPC::Simple
+# GROUP-START:perl
 umount /proc
 EOF
 
@@ -563,13 +577,40 @@ usermod -a -G netdev rbuser
 umount /proc
 EOF
 
+# Generating dpkg listing
+report_info "Generating dpkg listing"
+chroot $ROOTFS_DIR<<EOF
+umount /proc
+mount -t proc proc /proc
+export LC_ALL=C LANGUAGE=C LANG=C LC_CTYPE=$LOCALE
+update-locale LANG=en_US.UTF-8 LANGUAGE=en_US:en LC_ALL=en_US.UTF-8
+umount /proc
+EOF
+chroot $ROOTFS_DIR<<EOF
+umount /proc
+mount -t proc proc /proc
+export LC_ALL=C LANGUAGE=C LANG=C LC_CTYPE=$LOCALE
+update-locale LANG=de_DE.UTF-8 LANGUAGE=de_DE:de LC_ALL=de_DE.UTF-8
+dpkg-query -l > ~/dpkg-listing-$CONFIG_NAME.en
+umount /proc
+EOF
+chroot $ROOTFS_DIR<<EOF
+umount /proc
+mount -t proc proc /proc
+export LC_ALL=C LANGUAGE=C LANG=C LC_CTYPE=$LOCALE
+dpkg-query -l > ~/dpkg-listting-$CONFIG_NAME.de
+umount /proc
+EOF
+mv $ROOTFS_DIR/root/dpkg-listing-$CONFIG_NAME.en $BUILD_DIR
+mv $ROOTFS_DIR/root/dpkg-listing-$CONFIG_NAME.de $BUILD_DIR
+
 # Reconfiguring locale
 report_info "Reconfiguring locale"
 chroot $ROOTFS_DIR<<EOF
 umount /proc
 mount -t proc proc /proc
 export LC_ALL=C LANGUAGE=C LANG=C LC_CTYPE=$LOCALE
-update-locale LANG=$LOCALE LANGUAGE=$LOCALE LC_ALL=$LOCALE
+update-locale LANG=$LOCALE LANGUAGE=$LANGUAGE LC_ALL=$LOCALE
 echo $LOCALE_CHARSET > /etc/locale.gen
 locale-gen
 setupcon
