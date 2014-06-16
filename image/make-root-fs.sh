@@ -101,7 +101,7 @@ wget http://archive.raspberrypi.org/debian/raspberrypi.gpg.key -O - | apt-key ad
 echo "dash dash/sh boolean false" | debconf-set-selections
 echo "tzdata tzdata/Areas select $TZDATA_AREA" | debconf-set-selections
 echo "tzdata tzdata/Zones/Europe select $TZDATA_ZONE" | debconf-set-selections
-update-locale LANG=$LOCALE LANGUAGE=$LOCALE LC_ALL=$LOCALE
+update-locale LANG=$LOCALE LANGUAGE=$LANGUAGE LC_ALL=$LOCALE
 echo $LOCALE_CHARSET > /etc/locale.gen
 locale-gen
 echo -e "# KEYBOARD CONFIGURATION FILE
