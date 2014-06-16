@@ -120,10 +120,6 @@ dpkg --configure -a
 umount /proc
 EOF
 
-# Setting up memory information tool
-#report_info "Setting up memory information tool"
-#chmod a+x $ROOTFS_DIR/usr/bin/a10-meminfo-static
-
 # Installing Java 8
 report_info "Installing Java 8"
 chroot $ROOTFS_DIR<<EOF
