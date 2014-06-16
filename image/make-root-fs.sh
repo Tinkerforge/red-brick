@@ -64,6 +64,14 @@ else
     mkdir -p $ROOTFS_DIR
 fi
 
+# Cleaning up dpkg listings
+report_info "Cleaning up dpkg listings"
+if [ -d $BUILD_DIR ]
+then
+    rm -rf $BUILD_DIR/*.en
+    rm -rf $BUILD_DIR/*.de
+fi
+
 # Starting multistrap
 aptcacher=`netstat -lnt | awk '$6 == "LISTEN" && $4 ~ ".3150"'`
 
