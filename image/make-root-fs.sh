@@ -591,7 +591,7 @@ chroot $ROOTFS_DIR<<EOF
 umount /proc
 mount -t proc proc /proc
 export LC_ALL=C LANGUAGE=C LANG=C LC_CTYPE=$LOCALE
-dpkg-query -l > ~/dpkg-listing-$CONFIG_NAME.txt
+dpkg-query -l > /root/dpkg-listing-$CONFIG_NAME.txt
 umount /proc
 EOF
 mv $ROOTFS_DIR/root/dpkg-listing-$CONFIG_NAME.txt $BUILD_DIR
