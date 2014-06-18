@@ -15,4 +15,6 @@
   this still true?
 
 - acpid is complaining about not working netlink communication with the kernel.
-  are we missing a kernle module for this?
+  are we missing a kernel module for this?
+
+- image doesn't contain the kernel header files for the kernel in use
