@@ -591,21 +591,36 @@ chroot $ROOTFS_DIR<<EOF
 umount /proc
 mount -t proc proc /proc
 export LC_ALL=C LANGUAGE=C LANG=C LC_CTYPE=$LOCALE
-dpkg-query -l > /root/dpkg-listing-$CONFIG_NAME.txt.tmp1
-tail -n +6 /root/dpkg-listing-$CONFIG_NAME.txt.tmp1 > /root/dpkg-listing-$CONFIG_NAME.txt.tmp2
-awk -F" " '{print \$2"<==>"\$3"<==>"\$5}' /root/dpkg-listing-$CONFIG_NAME.txt.tmp2 > /root/dpkg-listing-$CONFIG_NAME.txt
-rm -rf /root/dpkg-listing-$CONFIG_NAME.txt.*
+dpkg-query -W -f='\${Package}<==>\${Version}<==>\${Description}\n' > /root/dpkg-listing-$CONFIG_NAME.txt
 umount /proc
 EOF
 mv $ROOTFS_DIR/root/dpkg-listing-$CONFIG_NAME.txt $BUILD_DIR
 
-#mono(list.txt)
-#java(list.txt)
-#ruby - gem list --local --details
-#python - 
-#updatedb
-#locate *egg-info > locs
-#perl - pmall
+# Generating Ruby listing
+report_info "Generating Ruby listing"
+chroot $ROOTFS_DIR<<EOF
+umount /proc
+mount -t proc proc /proc
+export LC_ALL=C LANGUAGE=C LANG=C LC_CTYPE=$LOCALE
+gem list --local --details > /root/ruby-listing-$CONFIG_NAME.txt
+umount /proc
+EOF
+mv $ROOTFS_DIR/root/ruby-listing-$CONFIG_NAME.txt $BUILD_DIR
+
+# Generating Perl listing
+report_info "Generating Perl listing"
+chroot $ROOTFS_DIR<<EOF
+umount /proc
+mount -t proc proc /proc
+export LC_ALL=C LANGUAGE=C LANG=C LC_CTYPE=$LOCALE
+pmall > /root/perl-listing-$CONFIG_NAME.txt
+umount /proc
+EOF
+mv $ROOTFS_DIR/root/perl-listing-$CONFIG_NAME.txt $BUILD_DIR
+
+#mono(listing.txt)
+#java(listing.txt)
+#python
 
 # Reconfiguring locale
 report_info "Reconfiguring locale"
