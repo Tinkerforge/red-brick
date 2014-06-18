@@ -1,3 +1,7 @@
+- `make-root-fs.sh` and `make-image.sh` scripts should have checks whether proper u-boot and
+  kernel are available. Binaries generated from `compile-source.sh` script should have proper
+  names according to the configuration provided
+
 - while trying to install extra features for Node.JS through npm it fails in the chroot
   environment as npm complains about unknown address family on the network interface
   (works on RED-Brick)
