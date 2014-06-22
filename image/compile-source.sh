@@ -16,6 +16,9 @@ fi
 CONFIG_NAME=$1
 . $CONFIG_DIR/image.conf
 
+# Cleaning up .built files
+rm -rf $BUILD_DIR/*.built
+
 # Check U-Boot source directory
 if [ ! -d $UBOOT_SRC_DIR/arch ]
 then
@@ -49,6 +52,7 @@ make ARCH=arm CROSS_COMPILE=$TC_PREFIX $UBOOT_CONFIG_NAME
 # we have to force the correct result
 make ARCH=arm CROSS_COMPILE=$TC_PREFIX GAS_BUG_12532=n -j16
 popd > /dev/null
+touch $BUILD_DIR/u-boot-$CONFIG_NAME.built
 
 # Building the kernel and kernel modules
 pushd $KERNEL_SRC_DIR > /dev/null
@@ -58,6 +62,7 @@ make ARCH=arm CROSS_COMPILE=$TC_PREFIX clean
 make ARCH=arm CROSS_COMPILE=$TC_PREFIX -j16 INSTALL_MOD_PATH=$KERNEL_MOD_DIR_NAME $KERNEL_IMAGE_NAME modules
 make ARCH=arm CROSS_COMPILE=$TC_PREFIX INSTALL_MOD_PATH=$KERNEL_MOD_DIR_NAME modules_install
 popd > /dev/null
+touch $BUILD_DIR/kernel-$CONFIG_NAME.built
 
 # Building sunxi-tools
 pushd $SUNXI_TOOLS_SRC_DIR > /dev/null

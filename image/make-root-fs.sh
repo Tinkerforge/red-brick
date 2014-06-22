@@ -25,6 +25,18 @@ fi
 CONFIG_NAME=$1
 . $CONFIG_DIR/image.conf
 
+# Checking if kernel and U-Boot were compiled for current configuration
+if [ ! -e $BUILD_DIR/u-boot-$CONFIG_NAME.built ]
+then
+    report_error "U-Boot was not built for the current image configuration"
+    exit 1
+fi
+if [ ! -e $BUILD_DIR/kernel-$CONFIG_NAME.built ]
+then
+    report_error "Kernel was not built for the current image configuration"
+    exit 1
+fi
+
 # Checking kernel modules
 if [ ! -d $KERNEL_SRC_DIR/$KERNEL_MOD_DIR_NAME ]
 then
@@ -68,8 +80,7 @@ fi
 report_info "Cleaning up dpkg listings"
 if [ -d $BUILD_DIR ]
 then
-    rm -rf $BUILD_DIR/*.en
-    rm -rf $BUILD_DIR/*.de
+    rm -rf $BUILD_DIR/*.listing
 fi
 
 # Starting multistrap
@@ -591,10 +602,10 @@ chroot $ROOTFS_DIR<<EOF
 umount /proc
 mount -t proc proc /proc
 export LC_ALL=C LANGUAGE=C LANG=C LC_CTYPE=$LOCALE
-dpkg-query -W -f='\${Package}<==>\${Version}<==>\${Description}\n' > /root/dpkg-listing-$CONFIG_NAME.txt
+dpkg-query -W -f='\${Package}<==>\${Version}<==>\${Description}\n' > /root/dpkg-$CONFIG_NAME.listing
 umount /proc
 EOF
-mv $ROOTFS_DIR/root/dpkg-listing-$CONFIG_NAME.txt $BUILD_DIR
+mv $ROOTFS_DIR/root/dpkg-$CONFIG_NAME.listing $BUILD_DIR
 
 # Generating Ruby listing
 report_info "Generating Ruby listing"
@@ -602,10 +613,10 @@ chroot $ROOTFS_DIR<<EOF
 umount /proc
 mount -t proc proc /proc
 export LC_ALL=C LANGUAGE=C LANG=C LC_CTYPE=$LOCALE
-gem list --local --details > /root/ruby-listing-$CONFIG_NAME.txt
+gem list --local --details > /root/ruby-$CONFIG_NAME.listing
 umount /proc
 EOF
-mv $ROOTFS_DIR/root/ruby-listing-$CONFIG_NAME.txt $BUILD_DIR
+mv $ROOTFS_DIR/root/ruby-$CONFIG_NAME.listing $BUILD_DIR
 
 # Generating Perl listing
 report_info "Generating Perl listing"
@@ -613,14 +624,13 @@ chroot $ROOTFS_DIR<<EOF
 umount /proc
 mount -t proc proc /proc
 export LC_ALL=C LANGUAGE=C LANG=C LC_CTYPE=$LOCALE
-pmall > /root/perl-listing-$CONFIG_NAME.txt
+pmall > /root/perl-$CONFIG_NAME.listing
 umount /proc
 EOF
-mv $ROOTFS_DIR/root/perl-listing-$CONFIG_NAME.txt $BUILD_DIR
+mv $ROOTFS_DIR/root/perl-$CONFIG_NAME.listing $BUILD_DIR
 
-#mono(listing.txt)
-#java(listing.txt)
-#python
+# Generating Python listing
+# TODO
 
 # Reconfiguring locale
 report_info "Reconfiguring locale"
