@@ -25,6 +25,18 @@ fi
 CONFIG_NAME=$1
 . $CONFIG_DIR/image.conf
 
+# Checking if kernel and U-Boot were compiled for current configuration
+if [ ! -e $BUILD_DIR/u-boot-$CONFIG_NAME.built ]
+then
+    report_error "U-Boot was not built for the current image configuration"
+    exit 1
+fi
+if [ ! -e $BUILD_DIR/kernel-$CONFIG_NAME.built ]
+then
+    report_error "Kernel was not built for the current image configuration"
+    exit 1
+fi
+
 # Checking U-Boot
 if [ ! -e $UBOOT_IMAGE_FILE ]
 then

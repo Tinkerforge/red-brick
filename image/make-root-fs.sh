@@ -25,6 +25,18 @@ fi
 CONFIG_NAME=$1
 . $CONFIG_DIR/image.conf
 
+# Checking if kernel and U-Boot were compiled for current configuration
+if [ ! -e $BUILD_DIR/u-boot-$CONFIG_NAME.built ]
+then
+    report_error "U-Boot was not built for the current image configuration"
+    exit 1
+fi
+if [ ! -e $BUILD_DIR/kernel-$CONFIG_NAME.built ]
+then
+    report_error "Kernel was not built for the current image configuration"
+    exit 1
+fi
+
 # Checking kernel modules
 if [ ! -d $KERNEL_SRC_DIR/$KERNEL_MOD_DIR_NAME ]
 then
@@ -64,6 +76,13 @@ else
     mkdir -p $ROOTFS_DIR
 fi
 
+# Cleaning up dpkg listings
+report_info "Cleaning up dpkg listings"
+if [ -d $BUILD_DIR ]
+then
+    rm -rf $BUILD_DIR/*.listing
+fi
+
 # Starting multistrap
 aptcacher=`netstat -lnt | awk '$6 == "LISTEN" && $4 ~ ".3150"'`
 
@@ -89,23 +108,21 @@ cp $QEMU_BIN $ROOTFS_DIR/usr/bin/
 
 # Configuring the generated root-fs
 report_info "Configuring the generated root-fs"
+cp /etc/resolv.conf $ROOTFS_DIR/etc/resolv.conf
 chroot $ROOTFS_DIR<<EOF
-export DEBIAN_FRONTEND=noninteractive DEBCONF_NONINTERACTIVE_SEEN=true
-export LC_ALL=C LANGUAGE=C LANG=C
-umount /proc
-dpkg --configure -a
 umount /proc
 mount -t proc proc /proc
-echo "nameserver 8.8.8.8" > /etc/resolv.conf
+export DEBIAN_FRONTEND=noninteractive DEBCONF_NONINTERACTIVE_SEEN=true
+export LC_ALL=C LANGUAGE=C LANG=C LC_CTYPE=$LOCALE
 wget http://archive.raspbian.org/raspbian.public.key -O - | apt-key add -
 wget http://archive.raspberrypi.org/debian/raspberrypi.gpg.key -O - | apt-key add -
 /var/lib/dpkg/info/dash.preinst install
 echo "dash dash/sh boolean false" | debconf-set-selections
 echo "tzdata tzdata/Areas select $TZDATA_AREA" | debconf-set-selections
 echo "tzdata tzdata/Zones/Europe select $TZDATA_ZONE" | debconf-set-selections
+update-locale LANG=$LOCALE LANGUAGE=$LANGUAGE LC_ALL=$LOCALE
 echo $LOCALE_CHARSET > /etc/locale.gen
-locale-gen $LOCALE
-update-locale LANG=$LOCALE LANGUAGE
+locale-gen
 echo -e "# KEYBOARD CONFIGURATION FILE
 
 # Consult the keyboard(5) manual page.
@@ -122,20 +139,11 @@ dpkg --configure -a
 umount /proc
 EOF
 
-# Applying console settings
-report_info "Applying console settings"
-chroot $ROOTFS_DIR<<EOF
-export LC_ALL=C LANGUAGE=C LANG=C
-setupcon
-EOF
-
-# Setting up memory information tool
-report_info "Setting up memory information tool"
-chmod a+x $ROOTFS_DIR/usr/bin/a10-meminfo-static
-
 # Installing Java 8
 report_info "Installing Java 8"
 chroot $ROOTFS_DIR<<EOF
+umount /proc
+mount -t proc proc /proc
 cd /tmp
 wget download.tinkerforge.com/_stuff/jdk-8-linux-arm-vfp-hflt.tar.gz
 tar zxvf jdk-8-linux-arm-vfp-hflt.tar.gz -C /usr/lib/jvm
@@ -143,39 +151,53 @@ update-alternatives --install /usr/bin/javac javac /usr/lib/jvm/jdk1.8.0/bin/jav
 update-alternatives --install /usr/bin/java java /usr/lib/jvm/jdk1.8.0/bin/java 1
 echo 3 | update-alternatives --config javac
 echo 3 | update-alternatives --config java
+umount /proc
 EOF
 
 # Installing brickd
 report_info "Installing brickd"
 chroot $ROOTFS_DIR<<EOF
-export LC_ALL=C LANGUAGE=C LANG=C
+umount /proc
+mount -t proc proc /proc
+export LC_ALL=C LANGUAGE=C LANG=C LC_CTYPE=$LOCALE
 cd /tmp
 wget http://download.tinkerforge.com/tools/brickd/linux/brickd_linux_latest_armhf.deb
 dpkg -i brickd_linux_latest_armhf.deb
 dpkg --configure -a
+umount /proc
 EOF
 
 # Installing Node.JS and NPM
 report_info "Installing Node.JS and NPM"
 chroot $ROOTFS_DIR<<EOF
-export LC_ALL=C LANGUAGE=C LANG=C
+umount /proc
+mount -t proc proc /proc
+export LC_ALL=C LANGUAGE=C LANG=C LC_CTYPE=$LOCALE
 cd /tmp
 dpkg -i node_*
 dpkg --configure -a
+umount /proc
 EOF
 
-# Setting up CPAN
-report_info "Setting up CPANminus"
+# Updating Perl modules
+report_info "Updating Perl modules"
 chroot $ROOTFS_DIR<<EOF
-export LC_ALL=C LANGUAGE=C LANG=C
+umount /proc
+mount -t proc proc /proc
+export LC_ALL=C LANGUAGE=C LANG=C LC_CTYPE=$LOCALE
 rm -rf /root/.cpanm/
+# GROUP-START:perl
 cpanm -n Thread::Queue
+# GROUP-END:perl
+umount /proc
 EOF
 
 # Setting up all the bindings
 report_info "Setting up all the bindings"
 chroot $ROOTFS_DIR<<EOF
-export LC_ALL=C LANGUAGE=C LANG=C LC_CTYPE=$LOCALE
+umount /proc
+mount -t proc proc /proc
+export LC_ALL=C LANGUAGE=C LANG=C LC_CTYPE=$LOCALE LC_CTYPE=$LOCALE
 mkdir -p /usr/tinkerforge/bindings
 cd /usr/tinkerforge/bindings
 wget http://download.tinkerforge.com/bindings/c/tinkerforge_c_bindings_latest.zip
@@ -230,99 +252,176 @@ wget http://download.tinkerforge.com/bindings/vbnet/tinkerforge_vbnet_bindings_l
 unzip -d vbnet tinkerforge_vbnet_bindings_latest.zip
 cd /usr/tinkerforge/bindings
 rm -rf *_bindings_latest.zip
+umount /proc
 EOF
 
-# Installing .NET features
-#report_info "Installing .NET features"
-#chroot $ROOTFS_DIR<<EOF
-#export LC_ALL=C LANGUAGE=C LANG=C
-#cd /tmp
-#unzip ./mysql-connector-net-6.8.3-noinstall.zip -d mysql-connector-net
-#unzip ./dnAnalytics_managed.zip -d dnAnalytics
-#unzip ./SharpPcap-4.2.0.bin.zip
-#gacutil -i ./mysql-connector-net/v4.5/mysql.data.dll
-#gacutil -i ./dnAnalytics/bin/dnAnalytics.dll
-#gacutil -i ./SharpPcap-4.2.0/Release/SharpPcap.dll
-#gacutil -i ./NPlot/NPlot.dll
-#EOF
+# Installing Mono features
+report_info "Installing Mono features"
+chroot $ROOTFS_DIR<<EOF
+umount /proc
+mount -t proc proc /proc
+export LC_ALL=C LANGUAGE=C LANG=C LC_CTYPE=$LOCALE
+cd /tmp/features/mono_features/
+unzip ./MathNet.Numerics-2.6.1.30.zip -d ./MathNet.Numerics
+unzip ./mysql-connector-net-6.8.3-noinstall.zip -d ./mysql-connector-net
+unzip ./SharpPcap-4.2.0.bin.zip
+unzip ./sharpPDF_2_0_Beta2_dll.zip -d ./sharpPDF
+unzip ./xml-rpc.net.2.5.0.zip -d ./xml-rpc.net
+cd ./MathNet.Numerics/portable/
+cp ./*.dll /usr/lib/mono/2.0/
+cd /tmp/features/mono_features/mysql-connector-net/v2.0/
+mv ./mysql.data.cf.dll ./MySql.Data.CF.dll
+mv ./mysql.data.dll ./MySql.Data.dll
+mv ./mysql.data.entity.dll ./MySql.Data.Entity.dll
+mv ./mysql.web.dll ./MySql.Web.dll
+cp ./MySql.* /usr/lib/mono/2.0/
+cd /tmp/features/mono_features/mysql-connector-net/v4.0/
+mv ./mysql.data.dll ./MySql.Data.dll
+mv ./mysql.data.entity.dll ./MySql.Data.Entity.dll
+mv ./mysql.data.entity.EF6.dll ./MySql.Data.Entity.EF6.dll
+mv ./mysql.web.dll ./MySql.Web.dll
+cp ./MySql.* /usr/lib/mono/4.0/
+cd /tmp/features/mono_features/mysql-connector-net/v4.5/
+mv ./mysql.data.dll ./MySql.Data.dll
+mv ./mysql.data.entity.EF5.dll ./MySql.Data.Entity.EF5.dll
+mv ./mysql.data.entity.EF6.dll ./MySql.Data.Entity.EF6.dll
+mv ./mysql.web.dll ./MySql.Web.dll
+cp ./MySql.* /usr/lib/mono/4.5/
+cd /tmp/features/mono_features/SharpPcap-4.2.0/Release/
+cp ./*.dll /usr/lib/mono/2.0/
+cd /tmp/features/mono_features/sharpPDF/
+cp ./*.dll /usr/lib/mono/2.0/
+cd /tmp/features/mono_features/xml-rpc.net/
+cp ./*.dll /usr/lib/mono/2.0/
+if  [ "$CONFIG_NAME" = "full" ]
+then
+    cd /tmp/features/mono_features/
+    unzip OpenTK_1.1.1599.6049.zip
+    cd ./OpenTK
+    cp ./*.dll /usr/lib/mono/2.0/
+fi
+umount /proc
+EOF
 
 # Installing JAVA features
 report_info "Installing JAVA features"
 chroot $ROOTFS_DIR<<EOF
-export LC_ALL=C LANGUAGE=C LANG=C
-cd /tmp
+umount /proc
+mount -t proc proc /proc
+export LC_ALL=C LANGUAGE=C LANG=C LC_CTYPE=$LOCALE
+cd /tmp//features/java_features/
 cp ./*.jar /usr/lib/jvm/java-6-openjdk-armhf/jre/lib/
 cp ./*.jar /usr/lib/jvm/java-7-openjdk-armhf/jre/lib/
 cp ./*.jar /usr/lib/jvm/jdk1.8.0/jre/lib/
-cp ./jfreechart/*.jar /usr/lib/jvm/java-6-openjdk-armhf/jre/lib/
-cp ./jfreechart/*.jar /usr/lib/jvm/java-7-openjdk-armhf/jre/lib/
-cp ./jfreechart/*.jar /usr/lib/jvm/jdk1.8.0/jre/lib/
+umount /proc
 EOF
+
+# Installing Ruby features
+report_info "Installing Ruby features"
+chroot $ROOTFS_DIR<<EOF
+umount /proc
+mount -t proc proc /proc
+export LC_ALL=C LANGUAGE=C LANG=C LC_CTYPE=$LOCALE
+# GROUP-START:ruby
+gem install --no-ri --no-rdoc mysql2 sqlite3
+gem install --no-ri --no-rdoc rubyvis plotrb statsample distribution minimization integration
+gem install --no-ri --no-rdoc ruby-pcap curb
+gem install --no-ri --no-rdoc msgpack-rpc
+gem install --no-ri --no-rdoc prawn god
+# GROUP-END:ruby
+if [ "$CONFIG_NAME" = "full" ]
+then
+    # GROUP-START-FULL:ruby
+    gem install --no-ri --no-rdoc gtk2 gtk3 opengl
+    # GROUP-END-FULL:ruby
+fi
+umount /proc
+EOF
+
+# Installing Python features
+report_info "Installing Python features"
+chroot $ROOTFS_DIR<<EOF
+umount /proc
+mount -t proc proc /proc
+export LC_ALL=C LANGUAGE=C LANG=C LC_CTYPE=$LOCALE
+easy_install --upgrade pip
+# GROUP-START:python
+pip install pycrypto
+# GROUP-END:python
+umount /proc
+EOF
+
+# Installing Perl features
+report_info "Installing Perl features"
+chroot $ROOTFS_DIR<<EOF
+umount /proc
+mount -t proc proc /proc
+export LC_ALL=C LANGUAGE=C LANG=C LC_CTYPE=$LOCALE
+# GROUP-START:perl
+cpanm install -n Cv
+cpanm install -n RPC::Simple
+# GROUP-START:perl
+umount /proc
+EOF
+
+# Installing Node.JS features
+#report_info "Installing Node.JS features"
+#chroot $ROOTFS_DIR<<EOF
+#export LC_ALL=C LANGUAGE=C LANG=C LC_CTYPE=$LOCALE
+#npm -g install node-dbi
+#npm -g install gui node-qt node-opengl
+#npm -g install science gsl numbers ico
+#npm -g install crypto
+#npm -g install node-pcap node-curl
+#npm -g install htmlparser
+#npm -g install opencv
+#npm -g install dnode now pdfkit
+#EOF
 
 # Enable BASH completion
 report_info "Enabling BASH completion"
 chroot $ROOTFS_DIR<<EOF
-export LC_ALL=C LANGUAGE=C LANG=C
+umount /proc
+mount -t proc proc /proc
+export LC_ALL=C LANGUAGE=C LANG=C LC_CTYPE=$LOCALE
 . /etc/bash_completion
+umount /proc
 EOF
 
 # Setting root password
 report_info "Setting root password"
 chroot $ROOTFS_DIR<<EOF
-export LC_ALL=C LANGUAGE=C LANG=C
+umount /proc
+mount -t proc proc /proc
+export LC_ALL=C LANGUAGE=C LANG=C LC_CTYPE=$LOCALE
 passwd root
 tinkerforge
 tinkerforge
-EOF
-
-# Adding new user
-report_info "Adding new user"
-chroot $ROOTFS_DIR<<EOF
-export LC_ALL=C LANGUAGE=C LANG=C
-adduser rbuser
-tinkerforge
-tinkerforge
-RED Brick User
-
-
-
-
-Y
-EOF
-
-# Adding new user to proper groups
-report_info "Adding new user to proper groups"
-chroot $ROOTFS_DIR<<EOF
-usermod -a -G adm rbuser
-usermod -a -G dialout rbuser
-usermod -a -G cdrom rbuser
-usermod -a -G sudo rbuser
-usermod -a -G audio rbuser
-usermod -a -G video rbuser
-usermod -a -G plugdev rbuser
-usermod -a -G games rbuser
-usermod -a -G users rbuser
-usermod -a -G ntp rbuser
-usermod -a -G crontab rbuser
-usermod -a -G netdev rbuser
+umount /proc
 EOF
 
 # Configuring boot splash image
 report_info "Configuring boot splash image"
 chroot $ROOTFS_DIR<<EOF
-export LC_ALL=C LANGUAGE=C LANG=C
+umount /proc
+mount -t proc proc /proc
+export LC_ALL=C LANGUAGE=C LANG=C LC_CTYPE=$LOCALE
 chmod 755 /etc/init.d/asplashscreen
 chmod 755 /etc/init.d/killasplashscreen
 insserv /etc/init.d/asplashscreen
 insserv /etc/init.d/killasplashscreen
+umount /proc
 EOF
 
 # Removing plymouth
 report_info "Removing plymouth"
 chroot $ROOTFS_DIR<<EOF
-export LC_ALL=C LANGUAGE=C LANG=C
+umount /proc
+mount -t proc proc /proc
+export LC_ALL=C LANGUAGE=C LANG=C LC_CTYPE=$LOCALE
 apt-get purge plymouth -y
 dpkg --configure -a
+umount /proc
 EOF
 
 # Add image specific tasks
@@ -335,7 +434,9 @@ then
 	# Configuring Mali GPU
 	report_info "Configuring Mali GPU"
 	chroot $ROOTFS_DIR<<EOF
-export LC_ALL=C LANGUAGE=C LANG=C
+umount /proc
+mount -t proc proc /proc
+export LC_ALL=C LANGUAGE=C LANG=C LC_CTYPE=$LOCALE
 cd /tmp/mali-gpu
 dpkg -i ./libdri2-1_1.0-2_armhf.deb
 dpkg -i ./libsunxi-mali-x11_1.0-4_armhf.deb
@@ -345,36 +446,76 @@ dpkg -i ./sunxi-disp-test_1.0-1_armhf.deb
 dpkg -i ./udevil_0.4.1-3_armhf.deb
 dpkg -i ./xserver-xorg-video-sunximali_1.0-3_armhf.deb
 dpkg --configure -a
+umount /proc
 EOF
 
 	# Setting up XDM logo and desktop wallpaper
 	report_info "Setting up XDM logo and desktop wallpaper"
 	chroot $ROOTFS_DIR<<EOF
+umount /proc
+mount -t proc proc /proc
+export LC_ALL=C LANGUAGE=C LANG=C LC_CTYPE=$LOCALE
 rm -rf /etc/alternatives/desktop-background
 ln -s /usr/share/images/tf-image.png /etc/alternatives/desktop-background
+umount /proc
 EOF
 
 	# Installing brickv
 	report_info "Installing brickv"
 	chroot $ROOTFS_DIR<<EOF
-export LC_ALL=C LANGUAGE=C LANG=C
+umount /proc
+mount -t proc proc /proc
+export LC_ALL=C LANGUAGE=C LANG=C LC_CTYPE=$LOCALE
 cd /tmp
 wget http://download.tinkerforge.com/tools/brickv/linux/brickv_linux_latest.deb
 dpkg -i brickv_linux_latest.deb
 dpkg --configure -a
+umount /proc
 EOF
 fi
 
 # Cleaning /tmp directory
-report_info "Emptying /tmp directory"
+report_info "Cleaning /tmp directory"
 chroot $ROOTFS_DIR<<EOF
+umount /proc
+mount -t proc proc /proc
+export LC_ALL=C LANGUAGE=C LANG=C LC_CTYPE=$LOCALE
 rm -rf /tmp/*
+umount /proc
+EOF
+
+# Setting JAVA class path
+report_info "Setting JAVA class path"
+chroot $ROOTFS_DIR<<EOF
+umount /proc
+mount -t proc proc /proc
+export LC_ALL=C LANGUAGE=C LANG=C LC_CTYPE=$LOCALE
+echo "
+# Setting JAVA class path
+CLASSPATH=\$CLASSPATH:/usr/lib/jvm/java-6-openjdk-armhf/jre/lib/:/usr/lib/jvm/java-7-openjdk-armhf/jre/lib/:/usr/lib/jvm/jdk1.8.0/jre/lib/
+export CLASSPATH" >> /etc/profile
+umount /proc
+EOF
+
+# Setting Mono path
+report_info "Setting Mono path"
+chroot $ROOTFS_DIR<<EOF
+umount /proc
+mount -t proc proc /proc
+export LC_ALL=C LANGUAGE=C LANG=C LC_CTYPE=$LOCALE
+echo "
+# Setting Mono path
+MONO_PATH=\$MONO_PATH:/usr/lib/mono/2.0/:/usr/lib/mono/3.5/:/usr/lib/mono/4.0/:/usr/lib/mono/4.5/
+export MONO_PATH" >> /etc/profile
+umount /proc
 EOF
 
 # Fixing, cleaning and updating APT
 report_info "Fixing, cleaning and updating APT"
 chroot $ROOTFS_DIR<<EOF
-export LC_ALL=C LANGUAGE=C LANG=C
+umount /proc
+mount -t proc proc /proc
+export LC_ALL=C LANGUAGE=C LANG=C LC_CTYPE=$LOCALE
 cat /etc/apt/sources.list.d/* > /tmp/sources.list.tmp
 rm -rf /etc/apt/sources.list.d/*
 if [ -n "$aptcacher" ]
@@ -387,40 +528,132 @@ rm -rf /tmp/*
 apt-get clean
 apt-get update
 apt-get -f install
+umount /proc
 EOF
 
-# Emptying /etc/resolv.conf
-report_info "Emptying /etc/resolv.conf"
+# Cleaning /etc/resolv.conf
+report_info "Cleaning /etc/resolv.conf"
 chroot $ROOTFS_DIR<<EOF
-export LC_ALL=C LANGUAGE=C LANG=C
-echo "" > /etc/resolv.conf
+umount /proc
+mount -t proc proc /proc
+export LC_ALL=C LANGUAGE=C LANG=C LC_CTYPE=$LOCALE
+rm -rf /etc/resolv.conf
+umount /proc
 EOF
 
 # Setting up running-led
 report_info "Setting up running-led"
 chroot $ROOTFS_DIR<<EOF
-export LC_ALL=C LANGUAGE=C LANG=C
+umount /proc
+mount -t proc proc /proc
+export LC_ALL=C LANGUAGE=C LANG=C LC_CTYPE=$LOCALE
 chmod a+x /etc/init.d/running-led
 insserv /etc/init.d/running-led
+umount /proc
 EOF
 
 # Setting up fake-hwclock
 report_info "Setting up fake-hwclock"
 chroot $ROOTFS_DIR<<EOF
-export LC_ALL=C LANGUAGE=C LANG=C
-rm /etc/cron.hourly/fake-hwclock
+umount /proc
+mount -t proc proc /proc
+export LC_ALL=C LANGUAGE=C LANG=C LC_CTYPE=$LOCALE
+rm -rf /etc/cron.hourly/fake-hwclock
 chmod a+x /etc/cron.d/fake-hwclock
 insserv -r /etc/init.d/hwclock.sh
 fake-hwclock
+umount /proc
+EOF
+
+# Adding new user
+report_info "Adding new user"
+chroot $ROOTFS_DIR<<EOF
+umount /proc
+mount -t proc proc /proc
+export LC_ALL=C LANGUAGE=C LANG=C LC_CTYPE=$LOCALE
+rm -rf /home/
+adduser rbuser
+tinkerforge
+tinkerforge
+RED Brick User
+
+
+
+
+Y
+usermod -a -G adm rbuser
+usermod -a -G dialout rbuser
+usermod -a -G cdrom rbuser
+usermod -a -G sudo rbuser
+usermod -a -G audio rbuser
+usermod -a -G video rbuser
+usermod -a -G plugdev rbuser
+usermod -a -G games rbuser
+usermod -a -G users rbuser
+usermod -a -G ntp rbuser
+usermod -a -G crontab rbuser
+usermod -a -G netdev rbuser
+umount /proc
+EOF
+
+# Generating dpkg listing
+report_info "Generating dpkg listing"
+chroot $ROOTFS_DIR<<EOF
+umount /proc
+mount -t proc proc /proc
+export LC_ALL=C LANGUAGE=C LANG=C LC_CTYPE=$LOCALE
+dpkg-query -W -f='\${Package}<==>\${Version}<==>\${Description}\n' > /root/dpkg-$CONFIG_NAME.listing
+umount /proc
+EOF
+mv $ROOTFS_DIR/root/dpkg-$CONFIG_NAME.listing $BUILD_DIR
+
+# Generating Ruby listing
+report_info "Generating Ruby listing"
+chroot $ROOTFS_DIR<<EOF
+umount /proc
+mount -t proc proc /proc
+export LC_ALL=C LANGUAGE=C LANG=C LC_CTYPE=$LOCALE
+gem list --local --details > /root/ruby-$CONFIG_NAME.listing
+umount /proc
+EOF
+mv $ROOTFS_DIR/root/ruby-$CONFIG_NAME.listing $BUILD_DIR
+
+# Generating Perl listing
+report_info "Generating Perl listing"
+chroot $ROOTFS_DIR<<EOF
+umount /proc
+mount -t proc proc /proc
+export LC_ALL=C LANGUAGE=C LANG=C LC_CTYPE=$LOCALE
+pmall > /root/perl-$CONFIG_NAME.listing
+umount /proc
+EOF
+mv $ROOTFS_DIR/root/perl-$CONFIG_NAME.listing $BUILD_DIR
+
+# Generating Python listing
+# TODO
+
+# Reconfiguring locale
+report_info "Reconfiguring locale"
+chroot $ROOTFS_DIR<<EOF
+umount /proc
+mount -t proc proc /proc
+export LC_ALL=C LANGUAGE=C LANG=C LC_CTYPE=$LOCALE
+update-locale LANG=$LOCALE LANGUAGE=$LANGUAGE LC_ALL=$LOCALE
+echo $LOCALE_CHARSET > /etc/locale.gen
+locale-gen
+setupcon
+dpkg --configure -a
+umount /proc
 EOF
 
 # Clearing bash history of the root user
 report_info "Clearing bash history of the root user"
-echo "" > $ROOTFS_DIR/root/.bash_history
+rm -rf $ROOTFS_DIR/root/.bash_history
+touch $ROOTFS_DIR/root/.bash_history
 
 # Removing qemu-arm-static from the root file system
 report_info "Removing qemu-arm-static from the root file system"
-rm $ROOTFS_DIR$QEMU_BIN
+rm -rf $ROOTFS_DIR$QEMU_BIN
 
 # Ensure host name integrity
 report_info "Ensure host name integrity"
