@@ -16,6 +16,9 @@ fi
 CONFIG_NAME=$1
 . $CONFIG_DIR/image.conf
 
+# Cleaning up boot script file
+rm -rf $SCRIPT_BIN_FILE
+
 # Cleaning up .built files
 rm -rf $BUILD_DIR/*.built
 

@@ -31,6 +31,11 @@ then
     report_error "U-Boot was not built for the current image configuration"
     exit 1
 fi
+if [ ! -e $SCRIPT_BIN_FILE ]
+then
+    report_error "Boot script was not built for the current image configuration"
+    exit 1
+fi
 if [ ! -e $BUILD_DIR/kernel-$CONFIG_NAME.built ]
 then
     report_error "Kernel was not built for the current image configuration"
@@ -76,8 +81,8 @@ else
     mkdir -p $ROOTFS_DIR
 fi
 
-# Cleaning up dpkg listings
-report_info "Cleaning up dpkg listings"
+# Cleaning up listing files
+report_info "Cleaning up listing files"
 if [ -d $BUILD_DIR ]
 then
     rm -rf $BUILD_DIR/*.listing
