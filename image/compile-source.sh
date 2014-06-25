@@ -70,8 +70,10 @@ make ARCH=arm CROSS_COMPILE=$TC_PREFIX $KERNEL_CONFIG_NAME
 make ARCH=arm CROSS_COMPILE=$TC_PREFIX clean
 make ARCH=arm CROSS_COMPILE=$TC_PREFIX -j16 INSTALL_MOD_PATH=$KERNEL_MOD_DIR_NAME $KERNEL_IMAGE_NAME modules
 make ARCH=arm CROSS_COMPILE=$TC_PREFIX INSTALL_MOD_PATH=$KERNEL_MOD_DIR_NAME modules_install
+make ARCH=arm CROSS_COMPILE=$TC_PREFIX headers_install
 popd > /dev/null
 touch $BUILD_DIR/kernel-$CONFIG_NAME.built
+touch $BUILD_DIR/kernel-headers-$CONFIG_NAME.built
 
 # Building sunxi-tools
 pushd $SUNXI_TOOLS_SRC_DIR > /dev/null

@@ -41,6 +41,11 @@ then
     report_error "Kernel was not built for the current image configuration"
     exit 1
 fi
+if [ ! -e $BUILD_DIR/kernel-headers-$CONFIG_NAME.built ]
+then
+    report_error "Kernel headers were not installed for the current image configuration"
+    exit 1
+fi
 
 # Checking kernel modules
 if [ ! -d $KERNEL_SRC_DIR/$KERNEL_MOD_DIR_NAME ]
@@ -680,10 +685,10 @@ dpkg --configure -a
 umount /proc
 EOF
 
-# Clearing bash history of the root user
-report_info "Clearing bash history of the root user"
-rm -rf $ROOTFS_DIR/root/.bash_history
-touch $ROOTFS_DIR/root/.bash_history
+# Installing kernel headers
+report_info "Installing kernel headers"
+rsync -a --no-o --no-g $KERNEL_HEADER_INCLUDE_DIR $ROOTFS_DIR/usr/include
+rsync -a --no-o --no-g $KERNEL_HEADER_USR_DIR $ROOTFS_DIR/usr
 
 # Cleaning /etc/resolv.conf
 report_info "Cleaning /etc/resolv.conf"
@@ -694,6 +699,11 @@ export LC_ALL=C LANGUAGE=C LANG=C LC_CTYPE=$LOCALE
 rm -rf /etc/resolv.conf
 umount /proc
 EOF
+
+# Clearing bash history of the root user
+report_info "Clearing bash history of the root user"
+rm -rf $ROOTFS_DIR/root/.bash_history
+touch $ROOTFS_DIR/root/.bash_history
 
 # Removing qemu-arm-static from the root file system
 report_info "Removing qemu-arm-static from the root file system"

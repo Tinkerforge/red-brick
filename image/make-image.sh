@@ -31,9 +31,19 @@ then
     report_error "U-Boot was not built for the current image configuration"
     exit 1
 fi
+if [ ! -e $SCRIPT_BIN_FILE ]
+then
+    report_error "Boot script was not built for the current image configuration"
+    exit 1
+fi
 if [ ! -e $BUILD_DIR/kernel-$CONFIG_NAME.built ]
 then
     report_error "Kernel was not built for the current image configuration"
+    exit 1
+fi
+if [ ! -e $BUILD_DIR/kernel-headers-$CONFIG_NAME.built ]
+then
+    report_error "Kernel headers were not installed for the current image configuration"
     exit 1
 fi
 
