@@ -25,25 +25,10 @@ fi
 CONFIG_NAME=$1
 . $CONFIG_DIR/image.conf
 
-# Checking if kernel and U-Boot were compiled for current configuration
-if [ ! -e $BUILD_DIR/u-boot-$CONFIG_NAME.built ]
+# Checking if root-fs was generated for the provided image configuration
+if [ ! -e $BUILD_DIR/root-fs-$CONFIG_NAME.built ]
 then
-    report_error "U-Boot was not built for the current image configuration"
-    exit 1
-fi
-if [ ! -e $SCRIPT_BIN_FILE ]
-then
-    report_error "Boot script was not built for the current image configuration"
-    exit 1
-fi
-if [ ! -e $BUILD_DIR/kernel-$CONFIG_NAME.built ]
-then
-    report_error "Kernel was not built for the current image configuration"
-    exit 1
-fi
-if [ ! -e $BUILD_DIR/kernel-headers-$CONFIG_NAME.built ]
-then
-    report_error "Kernel headers were not installed for the current image configuration"
+    report_error "Root-fs was not generated for the provided image configuration"
     exit 1
 fi
 

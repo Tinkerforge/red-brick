@@ -368,7 +368,6 @@ umount /proc
 mount -t proc proc /proc
 export LC_ALL=C LANGUAGE=C LANG=C LC_CTYPE=$LOCALE
 # GROUP-START:perl
-cpanm install -n Cv
 cpanm install -n RPC::Simple
 # GROUP-END:perl
 umount /proc
@@ -380,15 +379,16 @@ chroot $ROOTFS_DIR<<EOF
 umount /proc
 mount -t proc proc /proc
 export LC_ALL=C LANGUAGE=C LANG=C LC_CTYPE=$LOCALE
+pear config-set preferred_state alpha
 # GROUP-START:php
-pear install FSM Archive_Tar Archive_Zip
-pear install Crypt_Blowfish Crypt_CHAP Crypt_DiffieHellman Crypt_GPG
-pear install Crypt_HMAC Crypt_HMAC2 Crypt_RC4 Crypt_RC42 Crypt_RSA
-pear install File_Archive File_CSV File_PDF HTTP Image_Barcode Image_Graph
-pear install Image_QRCode Inline_C Math_BinaryUtils Math_Derivative
-pear install Math_Polynomial Math_Quaternion Math_Complex Math_Matrix
-pear install Math_Vector MDB2 Net_URL2 Services_JSON System_Command System_Daemon
-pear install XML_Parser XML_RPC
+pear install --onlyreqdeps FSM Archive_Tar Archive_Zip
+pear install --onlyreqdeps Crypt_Blowfish Crypt_CHAP Crypt_DiffieHellman Crypt_GPG
+pear install --onlyreqdeps Crypt_HMAC2 Crypt_RC42 Crypt_RSA
+pear install --onlyreqdeps File_Archive File_CSV File_PDF HTTP Image_Barcode Image_Graph
+pear install --onlyreqdeps Image_QRCode Inline_C Math_BinaryUtils Math_Derivative
+pear install --onlyreqdeps Math_Polynomial Math_Quaternion Math_Complex Math_Matrix
+pear install --onlyreqdeps Math_Vector MDB2 Net_URL2 Services_JSON System_Command System_Daemon
+pear install --onlyreqdeps XML_Parser XML_RPC
 # GROUP-END:php
 umount /proc
 EOF
@@ -712,6 +712,8 @@ rm -rf $ROOTFS_DIR$QEMU_BIN
 # Ensure host name integrity
 report_info "Ensure host name integrity"
 hostname -F /etc/hostname
+
+touch $BUILD_DIR/root-fs-$CONFIG_NAME.built
 
 report_info "Process finished"
 
