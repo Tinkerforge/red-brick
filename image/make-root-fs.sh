@@ -192,7 +192,7 @@ mount -t proc proc /proc
 export LC_ALL=C LANGUAGE=C LANG=C LC_CTYPE=$LOCALE
 rm -rf /root/.cpanm/
 # GROUP-START:perl
-cpanm -n Thread::Queue
+cpanm install -n Thread::Queue
 # GROUP-END:perl
 umount /proc
 EOF
@@ -365,7 +365,26 @@ export LC_ALL=C LANGUAGE=C LANG=C LC_CTYPE=$LOCALE
 # GROUP-START:perl
 cpanm install -n Cv
 cpanm install -n RPC::Simple
-# GROUP-START:perl
+# GROUP-END:perl
+umount /proc
+EOF
+
+# Installing PHP features
+report_info "Installing PHP features"
+chroot $ROOTFS_DIR<<EOF
+umount /proc
+mount -t proc proc /proc
+export LC_ALL=C LANGUAGE=C LANG=C LC_CTYPE=$LOCALE
+# GROUP-START:php
+pear install FSM Archive_Tar Archive_Zip
+pear install Crypt_Blowfish Crypt_CHAP Crypt_DiffieHellman Crypt_GPG
+pear install Crypt_HMAC Crypt_HMAC2 Crypt_RC4 Crypt_RC42 Crypt_RSA
+pear install File_Archive File_CSV File_PDF HTTP Image_Barcode Image_Graph
+pear install Image_QRCode Inline_C Math_BinaryUtils Math_Derivative
+pear install Math_Polynomial Math_Quaternion Math_Complex Math_Matrix
+pear install Math_Vector MDB2 Net_URL2 Services_JSON System_Command System_Daemon
+pear install XML_Parser XML_RPC
+# GROUP-END:php
 umount /proc
 EOF
 
@@ -536,16 +555,6 @@ apt-get -f install
 umount /proc
 EOF
 
-# Cleaning /etc/resolv.conf
-report_info "Cleaning /etc/resolv.conf"
-chroot $ROOTFS_DIR<<EOF
-umount /proc
-mount -t proc proc /proc
-export LC_ALL=C LANGUAGE=C LANG=C LC_CTYPE=$LOCALE
-rm -rf /etc/resolv.conf
-umount /proc
-EOF
-
 # Setting up running-led
 report_info "Setting up running-led"
 chroot $ROOTFS_DIR<<EOF
@@ -621,17 +630,6 @@ umount /proc
 EOF
 mv $ROOTFS_DIR/root/dpkg-$CONFIG_NAME.listing $BUILD_DIR
 
-# Generating Ruby listing
-report_info "Generating Ruby listing"
-chroot $ROOTFS_DIR<<EOF
-umount /proc
-mount -t proc proc /proc
-export LC_ALL=C LANGUAGE=C LANG=C LC_CTYPE=$LOCALE
-gem list --local --details > /root/ruby-$CONFIG_NAME.listing
-umount /proc
-EOF
-mv $ROOTFS_DIR/root/ruby-$CONFIG_NAME.listing $BUILD_DIR
-
 # Generating Perl listing
 report_info "Generating Perl listing"
 chroot $ROOTFS_DIR<<EOF
@@ -643,8 +641,30 @@ umount /proc
 EOF
 mv $ROOTFS_DIR/root/perl-$CONFIG_NAME.listing $BUILD_DIR
 
+# Generating PHP listing
+report_info "Generating PHP listing"
+chroot $ROOTFS_DIR<<EOF
+umount /proc
+mount -t proc proc /proc
+export LC_ALL=C LANGUAGE=C LANG=C LC_CTYPE=$LOCALE
+pear list-all | sed 's/pear\/\///' > /root/php-$CONFIG_NAME.listing
+umount /proc
+EOF
+mv $ROOTFS_DIR/root/php-$CONFIG_NAME.listing $BUILD_DIR
+
 # Generating Python listing
 # TODO
+
+# Generating Ruby listing
+report_info "Generating Ruby listing"
+chroot $ROOTFS_DIR<<EOF
+umount /proc
+mount -t proc proc /proc
+export LC_ALL=C LANGUAGE=C LANG=C LC_CTYPE=$LOCALE
+gem list --local --details > /root/ruby-$CONFIG_NAME.listing
+umount /proc
+EOF
+mv $ROOTFS_DIR/root/ruby-$CONFIG_NAME.listing $BUILD_DIR
 
 # Reconfiguring locale
 report_info "Reconfiguring locale"
@@ -664,6 +684,16 @@ EOF
 report_info "Clearing bash history of the root user"
 rm -rf $ROOTFS_DIR/root/.bash_history
 touch $ROOTFS_DIR/root/.bash_history
+
+# Cleaning /etc/resolv.conf
+report_info "Cleaning /etc/resolv.conf"
+chroot $ROOTFS_DIR<<EOF
+umount /proc
+mount -t proc proc /proc
+export LC_ALL=C LANGUAGE=C LANG=C LC_CTYPE=$LOCALE
+rm -rf /etc/resolv.conf
+umount /proc
+EOF
 
 # Removing qemu-arm-static from the root file system
 report_info "Removing qemu-arm-static from the root file system"

@@ -50,11 +50,11 @@ if __name__ == "__main__":
 
     # Getting lines of make-root-fs.sh file
     file_handler = open(MAKE_ROOT_FS_FILE)
-    make_root_fs_lines = file_handler.readlines()
-    for index, line in enumerate(make_root_fs_lines):
+    make_root_fs_file_lines = file_handler.readlines()
+    for index, line in enumerate(make_root_fs_file_lines):
         line = line.replace("\r", "")
         line = line.replace("\n", "")
-        make_root_fs_lines[index] = line
+        make_root_fs_file_lines[index] = line
     file_handler.close()
 
     # Getting lines of dpkg listing file
@@ -94,7 +94,7 @@ if __name__ == "__main__":
 
     # Function for getting package list from file lines and with(out) tags.
     # Files like, multistap config files, make-root-fs.sh file etc.
-    def get_packages_as_list(lines, tag_start, tag_end, delimiters):
+    def get_packages_from_delimited_lines(lines, tag_start, tag_end, delimiters):
         tag_start_found = False
         packages = []
         for line in lines:
@@ -113,11 +113,24 @@ if __name__ == "__main__":
                     tag_start_found = True
                     continue
             if not tag_start and not tag_end:
-                packages_from_line = line.split(delimiters[0])
-                for package in packages_from_line:
-                    packages.append(package)
+                fields_from_line = line.split(delimiters[0])
+                package = [fields_from_line[0], fields_from_line[1], fields_from_line[2]]
+                packages.append(package)
                 continue
         return packages
+
+    def populate_main_dict_from_dpkg_listing(package_list, key):
+        for package in package_list:
+            for line in dpkg_listing_file_lines:
+                line_split_array = line.split("<==>")
+                if len(line_split_array) == 3:
+                    if line_split_array[0] == package:
+                        main_dict_packages_entry = []
+                        main_dict_packages_entry.append(line_split_array[0])
+                        main_dict_packages_entry.append(line_split_array[1])
+                        main_dict_packages_entry.append(line_split_array[2])
+                        main_dict[key]["packages"].append(main_dict_packages_entry)
+                        break
 
     # Populating installed packages for each language with details
     for key in main_dict:
@@ -166,49 +179,120 @@ if __name__ == "__main__":
             else:
                 listing_file_ready_common_lines = []
 
+            # Processing main_dict for C/C++
             if key == "c":
                 tag_start = "# GROUP-START:"+key
                 tag_end = "# GROUP-END:"+key
-                package_list = get_packages_as_list(multistrap_file_lines, tag_start, tag_end, ("="," "))
-                for package in package_list:
-                    for line in dpkg_listing_file_lines:
-                        line_split_array = line.split("<==>")
-                        if len(line_split_array) == 3:
-                            if line_split_array[0] == package:
-                                main_dict_packages_entry = []
-                                main_dict_packages_entry.append(line_split_array[0])
-                                main_dict_packages_entry.append(line_split_array[1])
-                                main_dict_packages_entry.append(line_split_array[2])
-                                main_dict[key]["packages"].append(main_dict_packages_entry)
-                                break
-            elif key == "delphi":
-                print("")
+                package_list = get_packages_from_delimited_lines(multistrap_file_lines, tag_start, tag_end, ["=", " "])
+                populate_main_dict_from_dpkg_listing(package_list, key)
+            # Processing main_dict for Java
             elif key == "java":
-                print("")
-            elif key == "javascript":
-                print("")
-            elif key == "labview":
-                print("")
-            elif key == "mathematica":
-                print("")
-            elif key == "matlab":
-                print("")
+                if len(listing_file_ready_lines) != 0:
+                    package_list = \
+                    get_packages_from_delimited_lines(listing_file_ready_lines, "", "", ["<==>"])
+                    for package in package_list:
+                        main_dict[key]["packages"].append(package)
+                if len(listing_file_ready_common_lines) != 0:
+                    package_list= \
+                    get_packages_from_delimited_lines(listing_file_ready_common_lines, "", "", ["<==>"])
+                    for package in package_list:
+                        main_dict[key]["packages"].append(package)
+            # Processing main_dict for Mono
             elif key == "mono":
-                print("")
+                if len(listing_file_ready_lines) != 0:
+                    package_list = \
+                    get_packages_from_delimited_lines(listing_file_ready_lines, "", "", ["<==>"])
+                    for package in package_list:
+                        main_dict[key]["packages"].append(package)
+                if len(listing_file_ready_common_lines) != 0:
+                    package_list = \
+                    get_packages_from_delimited_lines(listing_file_ready_common_lines, "", "", ["<==>"])
+                    for package in package_list:
+                        main_dict[key]["packages"].append(package)
+            # Processing main_dict for Perl
             elif key == "perl":
-                print("")
+                tag_start = "# GROUP-START:"+key
+                tag_end = "# GROUP-END:"+key
+                tag_start_config = "# GROUP-START-"+CONFIG_NAME+":"+key
+                tag_end_config = "# GROUP-END-"+CONFIG_NAME+":"+key
+
+                package_list = \
+                get_packages_from_delimited_lines(multistrap_file_lines, tag_start, tag_end, ["=", " "])
+                populate_main_dict_from_dpkg_listing(package_list, key)
+                
+                package_list_make_root_fs = \
+                get_packages_from_delimited_lines\
+                (make_root_fs_file_lines, tag_start, tag_end, ["cpanm install -n ", " "])
+                package_list_make_root_fs_config = \
+                get_packages_from_delimited_lines\
+                (make_root_fs_file_lines, tag_start_config, tag_end_config, ["cpanm install -n ", " "])
+                package_list = []
+                for package in package_list_make_root_fs:
+                    package_list.append(package)
+                for package in package_list_make_root_fs_config:
+                    package_list.append(package)
+                    
+                for package in package_list:
+                    for line in listing_file_lines:
+                        
+                        name = line.split(" (")[0]
+                        if name == package:
+                            line_split_array = line.split(" - ")
+                            name_version_array = line_split_array[0].split(" (")
+                            main_dict_packages_entry = []
+                            main_dict_packages_entry.append(name_version_array[0])
+                            main_dict_packages_entry.append(name_version_array[1].replace(")", ""))
+                            main_dict_packages_entry.append(line_split_array[1].strip())
+                            main_dict[key]["packages"].append(main_dict_packages_entry)
+            # Processing main_dict for PHP
             elif key == "php":
                 print("")
+            # Processing main_dict for Python
             elif key == "python":
                 print("")
+            # Processing main_dict for Ruby
             elif key == "ruby":
-                print("")
-            elif key == "shell":
-                print("")
+                tag_start = "# GROUP-START:"+key
+                tag_end = "# GROUP-END:"+key
+                tag_start_config = "# GROUP-START-"+CONFIG_NAME+":"+key
+                tag_end_config = "# GROUP-END-"+CONFIG_NAME+":"+key
+                package_list = \
+                get_packages_from_delimited_lines(multistrap_file_lines, tag_start, tag_end, ["=", " "])
+                populate_main_dict_from_dpkg_listing(package_list, key)
+                package_list_make_root_fs = \
+                get_packages_from_delimited_lines(make_root_fs_file_lines, tag_start, tag_end, ["gem install --no-ri --no-rdoc ", " "])
+                package_list_make_root_fs_config = \
+                get_packages_from_delimited_lines(make_root_fs_file_lines, tag_start_config, tag_end_config, ["gem install --no-ri --no-rdoc ", " "])
+                package_list = []
+                for package in package_list_make_root_fs:
+                    package_list.append(package)
+
+                for package in package_list_make_root_fs_config:
+                    package_list.append(package)
+
+                for package in package_list:
+                    for index, line in enumerate(listing_file_lines):
+                        line_split_array = line.split(" (")
+                        if len(line_split_array) == 2 and line_split_array[0] == package:
+                            index += 1
+                            while len(listing_file_lines[index]) > 1:
+                                index += 1
+                            index += 1
+                            main_dict_packages_entry = []
+                            main_dict_packages_entry.append(package)
+                            main_dict_packages_entry.append(line_split_array[1].replace(")", ""))
+                            main_dict_packages_entry.append(listing_file_lines[index].strip())
+                            main_dict[key]["packages"].append(main_dict_packages_entry)
+                            break
             else:
                 print "Error: No proper key found for processing main_dict"
                 exit(1)
 
-    print(main_dict)
-
-
+    for key in main_dict:
+        if not main_dict[key]["process"]:
+            continue
+        print (main_dict[key]["name"])
+        print ""
+        print ""
+        print(main_dict[key]["packages"])
+        print("===================================")
