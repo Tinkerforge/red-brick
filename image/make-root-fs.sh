@@ -586,6 +586,15 @@ RED Brick User
 
 
 Y
+umount /proc
+EOF
+
+# User group setup
+report_info "User group setup"
+chroot $ROOTFS_DIR<<EOF
+umount /proc
+mount -t proc proc /proc
+export LC_ALL=C LANGUAGE=C LANG=C LC_CTYPE=$LOCALE
 usermod -a -G adm rbuser
 usermod -a -G dialout rbuser
 usermod -a -G cdrom rbuser
