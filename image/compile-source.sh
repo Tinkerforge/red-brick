@@ -19,6 +19,12 @@ CONFIG_NAME=$1
 # Cleaning up boot script file
 rm -rf $SCRIPT_BIN_FILE
 
+# Checking for the build directory
+if [ ! -d $BUILD_DIR ]
+then
+	mkdir -p $BUILD_DIR
+fi
+
 # Cleaning up .built files
 rm -rf $BUILD_DIR/*.built
 
@@ -71,7 +77,6 @@ touch $BUILD_DIR/kernel-$CONFIG_NAME.built
 pushd $SUNXI_TOOLS_SRC_DIR > /dev/null
 make clean
 make all
-mkdir -p $BUILD_DIR # Make build directory (otherwise fex2bin can't write to $SCRIPT_BIN_FILE)
 ./fex2bin $SCRIPT_FEX_FILE $SCRIPT_BIN_FILE
 popd > /dev/null
 
