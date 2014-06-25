@@ -37,11 +37,6 @@ popd > /dev/null
 # Compiling advanced cp and mv commands
 report_info "Compiling advanced cp command"
 
-if [ ! -d $TOOLS_DIR ]
-then
-	mkdir -p $TOOLS_DIR
-fi
-
 pushd $TOOLS_DIR > /dev/null
 
 if [ ! -f ./$COREUTILS_FILE_NAME ]
