@@ -277,7 +277,7 @@ unzip ./mysql-connector-net-6.8.3-noinstall.zip -d ./mysql-connector-net
 unzip ./SharpPcap-4.2.0.bin.zip
 unzip ./sharpPDF_2_0_Beta2_dll.zip -d ./sharpPDF
 unzip ./xml-rpc.net.2.5.0.zip -d ./xml-rpc.net
-cd ./MathNet.Numerics/portable/
+cd ./MathNet.Numerics/Portable/
 cp ./*.dll /usr/lib/mono/2.0/
 cd /tmp/features/mono_features/mysql-connector-net/v2.0/
 mv ./mysql.data.cf.dll ./MySql.Data.CF.dll
@@ -319,7 +319,7 @@ chroot $ROOTFS_DIR<<EOF
 umount /proc
 mount -t proc proc /proc
 export LC_ALL=C LANGUAGE=C LANG=C LC_CTYPE=$LOCALE
-cd /tmp//features/java_features/
+cd /tmp/features/java_features/
 cp ./*.jar /usr/lib/jvm/java-6-openjdk-armhf/jre/lib/
 cp ./*.jar /usr/lib/jvm/java-7-openjdk-armhf/jre/lib/
 cp ./*.jar /usr/lib/jvm/jdk1.8.0/jre/lib/
@@ -503,16 +503,6 @@ umount /proc
 EOF
 fi
 
-# Cleaning /tmp directory
-report_info "Cleaning /tmp directory"
-chroot $ROOTFS_DIR<<EOF
-umount /proc
-mount -t proc proc /proc
-export LC_ALL=C LANGUAGE=C LANG=C LC_CTYPE=$LOCALE
-rm -rf /tmp/*
-umount /proc
-EOF
-
 # Setting JAVA class path
 report_info "Setting JAVA class path"
 chroot $ROOTFS_DIR<<EOF
@@ -553,7 +543,6 @@ then
 else
 	cat /tmp/sources.list.tmp > /etc/apt/sources.list
 fi
-rm -rf /tmp/*
 apt-get clean
 apt-get update
 apt-get -f install
@@ -652,13 +641,29 @@ chroot $ROOTFS_DIR<<EOF
 umount /proc
 mount -t proc proc /proc
 export LC_ALL=C LANGUAGE=C LANG=C LC_CTYPE=$LOCALE
-pear list-all | sed 's/pear\/\///' > /root/php-$CONFIG_NAME.listing
+mv /usr/share/php/PEAR/Frontend/CLI.php /usr/share/php/PEAR/Frontend/CLI.php.org
+mv /tmp/CLI.php /usr/share/php/PEAR/Frontend/
+pear list-all > /dev/null
+mv /usr/share/php/PEAR/Frontend/CLI.php.org /usr/share/php/PEAR/Frontend/CLI.php
+mv /root/php.listing /root/php-$CONFIG_NAME.listing
 umount /proc
 EOF
 mv $ROOTFS_DIR/root/php-$CONFIG_NAME.listing $BUILD_DIR
 
 # Generating Python listing
-# TODO
+report_info "Generating Python listing"
+chroot $ROOTFS_DIR<<EOF
+umount /proc
+mount -t proc proc /proc
+export LC_ALL=C LANGUAGE=C LANG=C LC_CTYPE=$LOCALE
+mv /usr/local/lib/python2.7/dist-packages/pip-1.5.6-py2.7.egg/pip/commands/list.py /usr/local/lib/python2.7/dist-packages/pip-1.5.6-py2.7.egg/pip/commands/list.py.org
+mv /tmp/list.py /usr/local/lib/python2.7/dist-packages/pip-1.5.6-py2.7.egg/pip/commands/
+pip list > /root/python.listing
+mv /usr/local/lib/python2.7/dist-packages/pip-1.5.6-py2.7.egg/pip/commands/list.py.org /usr/local/lib/python2.7/dist-packages/pip-1.5.6-py2.7.egg/pip/commands/list.py
+mv /root/python.listing /root/python-$CONFIG_NAME.listing
+umount /proc
+EOF
+mv $ROOTFS_DIR/root/python-$CONFIG_NAME.listing $BUILD_DIR
 
 # Generating Ruby listing
 report_info "Generating Ruby listing"
@@ -697,6 +702,16 @@ umount /proc
 mount -t proc proc /proc
 export LC_ALL=C LANGUAGE=C LANG=C LC_CTYPE=$LOCALE
 rm -rf /etc/resolv.conf
+umount /proc
+EOF
+
+# Cleaning /tmp directory
+report_info "Cleaning /tmp directory"
+chroot $ROOTFS_DIR<<EOF
+umount /proc
+mount -t proc proc /proc
+export LC_ALL=C LANGUAGE=C LANG=C LC_CTYPE=$LOCALE
+rm -rf /tmp/*
 umount /proc
 EOF
 
