@@ -1,3 +1,10 @@
+- for generating the features doc table,
+  1. Listing files of all configurations must be available
+  2. Table for each language in new sections
+  3. Multiple table files for each language
+  4. Check mark to indicate in which configuration a package belongs
+  5. No blank rows in the tables
+
 - while trying to install extra features for Node.JS through npm it fails in the chroot
   environment as npm complains about unknown address family on the network interface
   (works on RED-Brick)
