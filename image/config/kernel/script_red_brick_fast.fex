@@ -729,10 +729,42 @@ auto_hpd = 1
 
 [gpio_para]
 gpio_used = 1
-gpio_num = 2
+gpio_num = 10
+; LED running
 gpio_pin_1 = port:PC05<1><default><default><0>
+; LED error
 gpio_pin_2 = port:PC06<1><default><default><0>
+; Stack select 0
+gpio_pin_3 = port:PC08<1><default><default><1>
+; Stack select 1
+gpio_pin_4 = port:PC09<1><default><default><1>
+; Stack select 2
+gpio_pin_5 = port:PC10<1><default><default><1>
+; Stack select 3
+gpio_pin_6 = port:PC11<1><default><default><1>
+; Stack select 4
+gpio_pin_7 = port:PC12<1><default><default><1>
+; Stack select 5
+gpio_pin_8 = port:PC13<1><default><default><1>
+; Stack select 6
+gpio_pin_9 = port:PC14<1><default><default><1>
+; Stack select 7
+gpio_pin_10 = port:PC15<1><default><default><1>
+; Stack high (Set high by master of stack)
+gpio_pin_11 = port:PB11<1><default><default><1>
+; Stack detect (Is high if we are slave)
+gpio_pin_12 = port:PA20<0><default><default><0>
 
 [gpio_init]
 pin_1 = port:PC05<1><default><default><0>
 pin_2 = port:PC06<1><default><default><0>
+pin_3 = port:PC08<1><default><default><0>
+pin_4 = port:PC09<1><default><default><0>
+pin_5 = port:PC10<1><default><default><0>
+pin_6 = port:PC11<1><default><default><0>
+pin_7 = port:PC12<1><default><default><0>
+pin_8 = port:PC13<1><default><default><0>
+pin_9 = port:PC14<1><default><default><0>
+pin_10 = port:PC15<1><default><default><0>
+pin_9 = port:PC14<1><default><default><1>
+pin_10 = port:PC15<0><default><default><0>
