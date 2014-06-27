@@ -3,6 +3,7 @@
 
 from os import path
 from sys import argv
+from subprocess import call
 
 if __name__ == "__main__":
     if len(argv) != 2:
@@ -36,6 +37,7 @@ if __name__ == "__main__":
     MAKE_ROOT_FS_FILE = SCRIPT_RUN_DIR+"/make-root-fs.sh"
     DPKG_LISTING_FILE = BUILD_DIR+"/dpkg-"+CONFIG_NAME+".listing"
     MULTISTRAP_FILE = CONFIG_DIR+"/root-fs/multistrap_"+CONFIG_NAME+".tmpl"
+    OUTPUT_RST_FILE = BUILD_DIR+"/features-table-"+CONFIG_NAME+".rst"
     
     # Check for listing files
     if not path.exists(MAKE_ROOT_FS_FILE):
@@ -48,48 +50,55 @@ if __name__ == "__main__":
         print "\nError: No multistrap config file\n"
         exit(1)
 
+    # Cleaning up
+    print "\nInfo: Cleaning up\n"
+    call(["rm -rf "+BUILD_DIR+"/*.rst"], shell=True)
+
     # Getting lines of make-root-fs.sh file
     file_handler = open(MAKE_ROOT_FS_FILE)
-    make_root_fs_file_lines = file_handler.readlines()
+    if file_handler:
+        make_root_fs_file_lines = file_handler.readlines()
+        file_handler.close()
     for index, line in enumerate(make_root_fs_file_lines):
         line = line.replace("\r", "")
         line = line.replace("\n", "")
         make_root_fs_file_lines[index] = line
-    file_handler.close()
 
     # Getting lines of dpkg listing file
     file_handler = open(DPKG_LISTING_FILE)
-    dpkg_listing_file_lines = file_handler.readlines()
+    if file_handler:
+        dpkg_listing_file_lines = file_handler.readlines()
+        file_handler.close()
     for index, line in enumerate(dpkg_listing_file_lines):
         line = line.replace("\r", "")
         line = line.replace("\n", "")
         dpkg_listing_file_lines[index] = line
-    file_handler.close()
     
     # Getting lines of multistrap config file
     file_handler = open(MULTISTRAP_FILE)
-    multistrap_file_lines = file_handler.readlines()
+    if file_handler:
+        multistrap_file_lines = file_handler.readlines()
+        file_handler.close()
     for index, line in enumerate(multistrap_file_lines):
         line = line.replace("\r", "")
         line = line.replace("\n", "")
         multistrap_file_lines[index] = line
-    file_handler.close()
 
     # The main dictionary
     main_dict = {
-        'c':{'process':True, 'name':'C/C++','packages':[],},
-        'delphi':{'process':False, 'name':'Delphi','packages':[],},
-        'java':{'process':True, 'name':'Java','packages':[],},
-        'javascript':{'process':False, 'name':'JavaScript','packages':[],},
-        'labview':{'process':False, 'name':'LabVIEW','packages':[],},
-        'mathematica':{'process':False, 'name':'Mathematica','packages':[],},
-        'matlab':{'process':False, 'name':'MATLAB/Octave','packages':[],},
-        'mono':{'process':True, 'name':'Mono','packages':[],},
-        'perl':{'process':True, 'name':'Perl','packages':[],},
-        'php':{'process':True, 'name':'PHP','packages':[],},
-        'python':{'process':True, 'name':'Python','packages':[],},
-        'ruby':{'process':True, 'name':'Ruby','packages':[],},
-        'shell':{'process':False, 'name':'Shell','packages':[],},
+        "c":{"process":True, "name":"C/C++","packages":[],},
+        "delphi":{"process":False, "name":"Delphi","packages":[],},
+        "java":{"process":True, "name":"Java","packages":[],},
+        "node":{"process":False, "name":"Node.JS","packages":[],},
+        "labview":{"process":False, "name":"LabVIEW","packages":[],},
+        "mathematica":{"process":False, "name":"Mathematica","packages":[],},
+        "matlab":{"process":False, "name":"MATLAB/Octave","packages":[],},
+        "mono":{"process":True, "name":"Mono","packages":[],},
+        "perl":{"process":True, "name":"Perl","packages":[],},
+        "php":{"process":True, "name":"PHP","packages":[],},
+        "python":{"process":True, "name":"Python","packages":[],},
+        "ruby":{"process":True, "name":"Ruby","packages":[],},
+        "shell":{"process":False, "name":"Shell","packages":[],},
     }
 
     # Function for getting package list from file lines and with(out) tags
@@ -190,13 +199,14 @@ if __name__ == "__main__":
                and not path.exists(listing_file) \
                and not path.exists(listing_file_ready) \
                and not path.exists(listing_file_ready_common):
-                print ("Error: No listing files found for langauge: "+main_dict[key]["name"])
+                print ("\nError: No listing files found for langauge: "+main_dict[key]["name"]+"\n")
                 exit(1)
 
             if path.exists(listing_file):
                 file_handler = open(listing_file)
-                listing_file_lines = file_handler.readlines()
-                file_handler.close()
+                if file_handler:
+                    listing_file_lines = file_handler.readlines()
+                    file_handler.close()
                 for index, line in enumerate(listing_file_lines):
                     line = line.replace("\r", "")
                     line = line.replace("\n", "")
@@ -206,8 +216,9 @@ if __name__ == "__main__":
 
             if path.exists(listing_file_ready):
                 file_handler = open(listing_file_ready)
-                listing_file_ready_lines = file_handler.readlines()
-                file_handler.close()
+                if file_handler:
+                    listing_file_ready_lines = file_handler.readlines()
+                    file_handler.close()
                 for index, line in enumerate(listing_file_ready_lines):
                     line = line.replace("\r", "")
                     line = line.replace("\n", "")
@@ -217,8 +228,9 @@ if __name__ == "__main__":
                 
             if path.exists(listing_file_ready_common):
                 file_handler = open(listing_file_ready_common)
-                listing_file_ready_common_lines = file_handler.readlines()
-                file_handler.close()
+                if file_handler:
+                    listing_file_ready_common_lines = file_handler.readlines()
+                    file_handler.close()
                 for index, line in enumerate(listing_file_ready_common_lines):
                     line = line.replace("\r", "")
                     line = line.replace("\n", "")
@@ -297,20 +309,107 @@ if __name__ == "__main__":
                             while len(listing_file_lines[index]) > 1:
                                 index += 1
                             index += 1
+                            
+                            description = ""
+                            description += listing_file_lines[index].strip()
+                            
+                            while len(listing_file_lines[index+1]) > 1:
+                                description += " "
+                                description += listing_file_lines[index+1].strip()
+                                index += 1
+                            
                             main_dict_packages_entry = []
                             main_dict_packages_entry.append(package)
                             main_dict_packages_entry.append(line_split_array[1].replace(")", ""))
-                            main_dict_packages_entry.append(listing_file_lines[index].strip())
+                            main_dict_packages_entry.append(description)
                             main_dict[key]["packages"].append(main_dict_packages_entry)
                             break
             else:
-                print "Error: No proper key found for processing main_dict"
+                print "\nError: No proper key found for processing main_dict\n"
                 exit(1)
-
+    
+    # Getting column width information
+    all_name_column_width = []
+    all_version_column_width = []
+    all_description_column_width = []
     for key in main_dict:
         if not main_dict[key]["process"]:
             continue
-        print (main_dict[key]["name"])
-        print ""
-        print(main_dict[key]["packages"])
-        print("===================================")
+        for row in main_dict[key]["packages"]:
+            all_name_column_width.append(len(row[0]))
+            all_version_column_width.append(len(row[1]))
+            all_description_column_width.append(len(row[2]))
+
+    max_name_column_width = max(all_name_column_width)
+    max_version_column_width = max(all_version_column_width)
+    max_description_column_width = max(all_description_column_width)
+
+    # Generating main border
+    main_border = ""
+    for count in range(0, max_name_column_width):
+        main_border += "="
+    main_border += " "
+    for count in range(0, max_version_column_width):
+        main_border += "="
+    main_border += " "
+    for count in range(0, max_description_column_width):
+        main_border += "="
+        
+    # Generating secondary border
+    secondary_border = ""
+    for count in range(0, max_name_column_width):
+        secondary_border += "-"
+    secondary_border += "-"
+    for count in range(0, max_version_column_width):
+        secondary_border += "-"
+    secondary_border += "-"
+    for count in range(0, max_description_column_width):
+        secondary_border += "-"
+    
+    # Generating the reST code for the table
+    rst_table_code = ".. |nbsp| unicode:: 0xA0\n   :trim:\n\n"
+    column_name = "Name"
+    column_version = "Version"
+    column_description = "Description"
+    blank = "|nbsp|"
+    for key in sorted(main_dict):
+        if not main_dict[key]["process"]:
+            continue
+        rst_table_code += main_border+"\n"
+        rst_table_code += main_dict[key]["name"]+"\n"
+        rst_table_code += secondary_border+"\n"
+        rst_table_code += column_name
+        for count in range(0, (max_name_column_width - len(column_name)) + 1):
+            rst_table_code += " "
+        rst_table_code += column_version
+        for count in range(0, (max_version_column_width - len(column_version)) + 1):
+            rst_table_code += " "
+        rst_table_code += column_description+"\n"
+        rst_table_code += main_border+"\n"
+        
+        for row in sorted(main_dict[key]["packages"]):
+            rst_table_code += row[0]
+            for count in range(0, (max_name_column_width - len(row[0])) + 1):
+                rst_table_code += " "
+            rst_table_code += row[1]
+            for count in range(0, (max_version_column_width - len(row[1])) + 1):
+                rst_table_code += " "
+            rst_table_code += row[2]+"\n"
+        rst_table_code += blank
+        for count in range(0, (max_name_column_width - len(blank)) + 1):
+            rst_table_code += " "
+        rst_table_code += blank
+        for count in range(0, (max_version_column_width - len(blank)) + 1):
+            rst_table_code += " "
+        rst_table_code += blank+"\n"
+        rst_table_code += main_border
+        rst_table_code += "\n\n"
+
+    file_handler = open(OUTPUT_RST_FILE, "w")
+    if (file_handler):
+        file_handler.write(rst_table_code)
+        file_handler.close()
+    
+    print "\nInfo: reST features table generated ("+BUILD_DIR+"/features-table-"+CONFIG_NAME+".rst"+")\n"
+    
+    exit(0)
