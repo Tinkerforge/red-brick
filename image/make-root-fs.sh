@@ -86,13 +86,6 @@ else
     mkdir -p $ROOTFS_DIR
 fi
 
-# Cleaning up listing files
-report_info "Cleaning up listing files"
-if [ -d $BUILD_DIR ]
-then
-    rm -rf $BUILD_DIR/*.listing
-fi
-
 # Starting multistrap
 aptcacher=`netstat -lnt | awk '$6 == "LISTEN" && $4 ~ ".3150"'`
 
