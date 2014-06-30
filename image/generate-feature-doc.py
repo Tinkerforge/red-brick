@@ -2,90 +2,101 @@
 # -*- coding: utf-8 -*-
 
 from os import path
+from os import listdir
 from sys import argv
 from subprocess import call
 
 if __name__ == "__main__":
-    if len(argv) != 2:
-        print "\nError: Too many or too few parameters (provide image configuration name)\n"
-        exit(1)
-
-    # Configuration name
-    CONFIG_NAME = argv[1]
-
     # Defining directories
     SCRIPT_RUN_DIR = path.dirname(path.abspath(__file__))
     BUILD_DIR = SCRIPT_RUN_DIR+"/build"
     CONFIG_DIR = SCRIPT_RUN_DIR+"/config"
     PATCHES_DIR = SCRIPT_RUN_DIR+"/patches"
-    FEATURES_DIR = PATCHES_DIR+"/root-fs/"+CONFIG_NAME+"/tmp/features"
     FEATURES_DIR_COMMON = PATCHES_DIR+"/root-fs/common/tmp/features"
+    OUTPUT_DIR = BUILD_DIR+"/feature_tables"
 
     # Checking the directory structure
     if not path.isdir(BUILD_DIR) or not path.isdir(CONFIG_DIR) \
-       or not path.isdir(PATCHES_DIR) or not path.isdir(FEATURES_DIR) \
-       or not path.isdir(FEATURES_DIR_COMMON):
+       or not path.isdir(PATCHES_DIR) or not path.isdir(FEATURES_DIR_COMMON) \
+       or not path.isdir(CONFIG_DIR+"/root-fs"):
         print "\nError: Wrong directory structure\n"
         exit(1)
-
-    # Checking validity of configuration
-    if not path.exists(CONFIG_DIR+"/root-fs/multistrap_"+CONFIG_NAME+".tmpl"):
-        print "\nError: No such configuration\n"
-        exit(1)
-
-    # File locations
-    MAKE_ROOT_FS_FILE = SCRIPT_RUN_DIR+"/make-root-fs.sh"
-    DPKG_LISTING_FILE = BUILD_DIR+"/dpkg-"+CONFIG_NAME+".listing"
-    MULTISTRAP_FILE = CONFIG_DIR+"/root-fs/multistrap_"+CONFIG_NAME+".tmpl"
-    OUTPUT_RST_FILE = BUILD_DIR+"/features-table-"+CONFIG_NAME+".rst"
     
-    # Check for listing files
+    # Getting available configurations
+    CONFIG_LIST = []
+    for file_name in listdir(CONFIG_DIR+"/root-fs"):
+        file_name_split_array_us = file_name.split("_")
+        file_name_split_array_dot = file_name_split_array_us[1].split(".")
+        CONFIG_LIST.append(file_name_split_array_dot[0])
+    if len(CONFIG_LIST) == 0:
+        print "\nError: No valid image configurations available\n"
+        exit(1)
+    
+    # Check for multistrap files
+    MULTISTRAP_FILES_DICT = {}
+    for config in CONFIG_LIST:
+        if not path.exists(CONFIG_DIR+"/root-fs/multistrap_"+config+".tmpl"):
+            print "\nError: multistrap config file missing: "+config+"\n"
+            exit(1)
+        else:
+            MULTISTRAP_FILES_DICT[config] = {"path":CONFIG_DIR+"/root-fs/multistrap_"+config+".tmpl"}
+    
+    for config in MULTISTRAP_FILES_DICT:
+        file_handler = open(MULTISTRAP_FILES_DICT[config]["path"])
+        if file_handler:
+            multistrap_file_lines = file_handler.readlines()
+            file_handler.close()
+            MULTISTRAP_FILES_DICT[config]["lines"] = []
+            for line in multistrap_file_lines:
+                if line[:1] == "#":
+                    if line.strip()[:14] == "# GROUP-START:" \
+                    or line.strip()[:12] == "# GROUP-END:":
+                        line = line.replace("\r", "")
+                        line = line.replace("\n", "")
+                        line = line.strip()
+                        MULTISTRAP_FILES_DICT[config]["lines"].append(line)
+                    else:
+                        
+                        continue
+                else:
+                    line = line.replace("\r", "")
+                    line = line.replace("\n", "")
+                    line = line.strip()
+                    MULTISTRAP_FILES_DICT[config]["lines"].append(line)
+
+    # Check for make-root-fs.sh file
+    MAKE_ROOT_FS_FILE = SCRIPT_RUN_DIR+"/make-root-fs.sh"
     if not path.exists(MAKE_ROOT_FS_FILE):
-        print "\nError: No make-root-fs.sh file\n"
+        print "\nError: make-root-fs.sh file missing\n"
         exit(1)
-    if not path.exists(DPKG_LISTING_FILE):
-        print "\nError: No dpkg listing file\n"
-        exit(1)
-    if not path.exists(MULTISTRAP_FILE):
-        print "\nError: No multistrap config file\n"
-        exit(1)
+    else:
+        file_handler = open(MAKE_ROOT_FS_FILE)
+        if file_handler:
+            MAKE_ROOT_FS_FILE_LINES = file_handler.readlines()
+            file_handler.close()
+            for i, line in enumerate(MAKE_ROOT_FS_FILE_LINES):
+                if line[:1] == "#":
+                    if line.strip()[:14] == "# GROUP-START:" \
+                    or line.strip()[:12] == "# GROUP-END:":
+                        line = line.replace("\r", "")
+                        line = line.replace("\n", "")
+                        line = line.strip()
+                        MAKE_ROOT_FS_FILE_LINES[i] = line
+                    else:
+                        continue
+                else:
+                    line = line.replace("\r", "")
+                    line = line.replace("\n", "")
+                    line = line.strip()
+                    MAKE_ROOT_FS_FILE_LINES[i] = line
 
     # Cleaning up
     print "\nInfo: Cleaning up\n"
-    call(["rm -rf "+BUILD_DIR+"/*.rst"], shell=True)
-
-    # Getting lines of make-root-fs.sh file
-    file_handler = open(MAKE_ROOT_FS_FILE)
-    if file_handler:
-        make_root_fs_file_lines = file_handler.readlines()
-        file_handler.close()
-    for index, line in enumerate(make_root_fs_file_lines):
-        line = line.replace("\r", "")
-        line = line.replace("\n", "")
-        make_root_fs_file_lines[index] = line
-
-    # Getting lines of dpkg listing file
-    file_handler = open(DPKG_LISTING_FILE)
-    if file_handler:
-        dpkg_listing_file_lines = file_handler.readlines()
-        file_handler.close()
-    for index, line in enumerate(dpkg_listing_file_lines):
-        line = line.replace("\r", "")
-        line = line.replace("\n", "")
-        dpkg_listing_file_lines[index] = line
-    
-    # Getting lines of multistrap config file
-    file_handler = open(MULTISTRAP_FILE)
-    if file_handler:
-        multistrap_file_lines = file_handler.readlines()
-        file_handler.close()
-    for index, line in enumerate(multistrap_file_lines):
-        line = line.replace("\r", "")
-        line = line.replace("\n", "")
-        multistrap_file_lines[index] = line
+    call(["rm -rf "+OUTPUT_DIR], shell=True)
+    call(["mkdir "+OUTPUT_DIR], shell=True)
 
     # The main dictionary
-    main_dict = {
+    MAIN_DICT = {
         "c":{"process":True, "name":"C/C++","packages":[],},
         "delphi":{"process":False, "name":"Delphi","packages":[],},
         "java":{"process":True, "name":"Java","packages":[],},
@@ -100,6 +111,104 @@ if __name__ == "__main__":
         "ruby":{"process":True, "name":"Ruby","packages":[],},
         "shell":{"process":False, "name":"Shell","packages":[],},
     }
+    
+    # Define the columns
+    COLUMNS = ["Name", "Version", "Description", {}]
+    
+    # Storing available configs in columns
+    for i, config in enumerate(sorted(CONFIG_LIST)):
+        COLUMNS[len(COLUMNS)-1][config] = i
+
+    # Check for dpkg listing files
+    DPKG_LISTING_FILES_DICT = {}
+    for config in CONFIG_LIST:
+        if not path.exists(BUILD_DIR+"/dpkg-"+config+".listing"):
+            print "\nError: dpkg listing file missing\n"
+            exit(1)
+        else:
+            DPKG_LISTING_FILES_DICT[config] = {"path":BUILD_DIR+"/dpkg-"+config+".listing"}
+    
+    for config in DPKG_LISTING_FILES_DICT:
+        file_handler = open(DPKG_LISTING_FILES_DICT[config]["path"])
+        if file_handler:
+            dpkg_listing_file_lines = file_handler.readlines()
+            file_handler.close()
+            DPKG_LISTING_FILES_DICT[config]["lines"] = []
+            for line in dpkg_listing_file_lines:
+                line = line.replace("\r", "")
+                line = line.replace("\n", "")
+                line = line.strip()
+                DPKG_LISTING_FILES_DICT[config]["lines"].append(line)
+
+    # Check for language listing files
+    LISTING_FILES_DICT = {}
+    for language in MAIN_DICT:
+        if MAIN_DICT[language]["process"]:
+            LISTING_FILES_DICT[language] = {}
+    
+    for language in MAIN_DICT:
+        if MAIN_DICT[language]["process"]:
+            for config in CONFIG_LIST:
+                if not path.exists(DPKG_LISTING_FILES_DICT[config]["path"]) \
+                and not path.exists(BUILD_DIR+"/"+language+"-"+config+".listing") \
+                and not path.exists(FEATURES_DIR_COMMON+"/"+language+"_features/"+language+".listing") \
+                and not path.exists\
+                (PATCHES_DIR+"/root-fs/"+config+"/tmp/features/"+language+"_features/"+language+".listing"):
+                    print "\nError: Listing file missing: "+language+"\n"
+                    exit(1)
+                else:
+                    LISTING_FILES_DICT[language][config] = {
+                    "listing_file_path":"",
+                    "listing_file_lines":[],
+                    "listing_file_ready_path":"",
+                    "listing_file_ready_lines":[],
+                    "listing_file_ready_common_path":"",
+                    "listing_file_ready_common_lines":[],
+                    }
+                    
+                    if path.exists(BUILD_DIR+"/"+language+"-"+config+".listing"):
+                        file_handler = open(BUILD_DIR+"/"+language+"-"+config+".listing")
+                        if file_handler:
+                            LISTING_FILES_DICT[language][config]["listing_file_path"] = \
+                            BUILD_DIR+"/"+language+"-"+config+".listing"
+                            listing_file_lines = file_handler.readlines()
+                            file_handler.close()
+                            LISTING_FILES_DICT[language][config]["listing_file_lines"] = []
+                            for line in listing_file_lines:
+                                line = line.replace("\r", "")
+                                line = line.replace("\n", "")
+                                line = line.strip()
+                                LISTING_FILES_DICT[language][config]["listing_file_lines"].append(line)
+
+                    if path.exists\
+                    (PATCHES_DIR+"/root-fs/"+config+"/tmp/features/"+language+"_features/"+language+".listing"):
+                        file_handler = \
+                        open(PATCHES_DIR+"/root-fs/"+config+"/tmp/features/"+language+"_features/"+language+".listing")
+                        if file_handler:
+                            LISTING_FILES_DICT[language][config]["listing_file_ready_path"] = \
+                            PATCHES_DIR+"/root-fs/"+config+"/tmp/features/"+language+"_features/"+language+".listing"
+                            listing_file_ready_lines = file_handler.readlines()
+                            file_handler.close()
+                            LISTING_FILES_DICT[language][config]["listing_file_ready_lines"] = []
+                            for line in listing_file_ready_lines:
+                                line = line.replace("\r", "")
+                                line = line.replace("\n", "")
+                                line = line.strip()
+                                LISTING_FILES_DICT[language][config]["listing_file_ready_lines"].append(line)
+                        
+                    if path.exists(FEATURES_DIR_COMMON+"/"+language+"_features/"+language+".listing"):
+                        file_handler = open(FEATURES_DIR_COMMON+"/"+language+"_features/"+language+".listing")
+                        if file_handler:
+                            LISTING_FILES_DICT[language][config]["listing_file_ready_common_path"] = \
+                            FEATURES_DIR_COMMON+"/"+language+"/"+language+".listing"
+                            listing_file_ready_common_lines = file_handler.readlines()
+                            file_handler.close()
+                            LISTING_FILES_DICT[language][config]["listing_file_ready_common_lines"] = []
+                            for line in listing_file_ready_common_lines:
+                                line = line.replace("\r", "")
+                                line = line.replace("\n", "")
+                                line = line.strip()
+                                LISTING_FILES_DICT[language][config]["listing_file_ready_common_lines"].append(line)
 
     # Function for getting package list from file lines and with(out) tags
     # The lines can be delimited with single or double delimiters
@@ -128,57 +237,111 @@ if __name__ == "__main__":
                 continue
         return packages
 
-    # Function for populating main_dict for a given package list and a language
+    # Function for populating MAIN_DICT for a given package list and a language
     # The information for each package in package list is obtained from dpkg listing
-    def populate_main_dict_from_dpkg_listing(package_list, key):
+    def populate_main_dict_from_dpkg_listing(language, config, package_list):
         for package in package_list:
-            for line in dpkg_listing_file_lines:
+            for line in DPKG_LISTING_FILES_DICT[config]["lines"]:
                 line_split_array = line.split("<==>")
                 if len(line_split_array) == 3:
                     if line_split_array[0] == package:
-                        main_dict_packages_entry = []
-                        main_dict_packages_entry.append(line_split_array[0])
-                        main_dict_packages_entry.append(line_split_array[1])
-                        main_dict_packages_entry.append(line_split_array[2])
-                        main_dict[key]["packages"].append(main_dict_packages_entry)
-                        break
+                        package_name = line_split_array[0]
+                        package_version = line_split_array[1]
+                        package_description = line_split_array[2]
+                        found_index = -1
+                        for i, package in enumerate(MAIN_DICT[language]["packages"]):
+                            if package[0] == package_name \
+                            and package[1] == package_version:
+                                found_index = i
+                                break
+                        if found_index > -1:
+                            MAIN_DICT[language]["packages"][found_index][3][config] = True
+                            continue
+                        else:
+                            main_dict_packages_entry = []
+                            main_dict_packages_entry.append(package_name)
+                            main_dict_packages_entry.append(package_version)
+                            main_dict_packages_entry.append(package_description)
+                            main_dict_packages_entry.append({config:True})
+                            MAIN_DICT[language]["packages"].append(main_dict_packages_entry)
                         
-    # Function for populating main_dict for a given set of lines and a language
+    # Function for populating MAIN_DICT for a given set of lines and a language
     # The information for each package is obtained from the ready listing files
-    def populate_main_dict_from_ready_listing(listing_file_ready_lines, listing_file_ready_common_lines, key):
-        if len(listing_file_ready_lines) != 0:
+    def populate_main_dict_from_ready_listing(language, config):
+        if len(LISTING_FILES_DICT[language][config]["listing_file_ready_lines"]) != 0:
+            listing_file_ready_lines = LISTING_FILES_DICT[language][config]["listing_file_ready_lines"]
             package_list = \
             get_packages_from_delimited_lines(listing_file_ready_lines, "", "", ["<==>"])
             for package in package_list:
-                main_dict[key]["packages"].append(package)
-        if len(listing_file_ready_common_lines) != 0:
-            package_list= \
+                package_name = package[0]
+                package_version = package[1]
+                package_description = package[2]
+                found_index = -1
+                for i, package in enumerate(MAIN_DICT[language]["packages"]):
+                    if package[0] == package_name \
+                    and package[1] == package_version:
+                        found_index = i
+                        break
+                if found_index > -1:
+                    MAIN_DICT[language]["packages"][found_index][3][config] = True
+                    continue
+                else:
+                    main_dict_packages_entry = []
+                    main_dict_packages_entry.append(package_name)
+                    main_dict_packages_entry.append(package_version)
+                    main_dict_packages_entry.append(package_description)
+                    main_dict_packages_entry.append({config:True})
+                    MAIN_DICT[language]["packages"].append(main_dict_packages_entry)
+    
+        if len(LISTING_FILES_DICT[language][config]["listing_file_ready_common_lines"]) != 0:
+            listing_file_ready_common_lines = \
+            LISTING_FILES_DICT[language][config]["listing_file_ready_common_lines"]
+            package_list = \
             get_packages_from_delimited_lines(listing_file_ready_common_lines, "", "", ["<==>"])
             for package in package_list:
-                main_dict[key]["packages"].append(package)
+                package_name = package[0]
+                package_version = package[1]
+                package_description = package[2]
+                found_index = -1
+                for i, package in enumerate(MAIN_DICT[language]["packages"]):
+                    if package[0] == package_name \
+                    and package[1] == package_version:
+                        found_index = i
+                        break
+                if found_index > -1:
+                    MAIN_DICT[language]["packages"][found_index][3][config] = True
+                    continue
+                else:
+                    main_dict_packages_entry = []
+                    main_dict_packages_entry.append(package_name)
+                    main_dict_packages_entry.append(package_version)
+                    main_dict_packages_entry.append(package_description)
+                    main_dict_packages_entry.append({config:True})
+                    MAIN_DICT[language]["packages"].append(main_dict_packages_entry)
 
     # Function for generalized processing for all the languages
-    def common_processing(key, make_root_fs_file_delimiters):
-        tag_start = "# GROUP-START:"+key
-        tag_end = "# GROUP-END:"+key
-        tag_start_config = "# GROUP-START-"+CONFIG_NAME+":"+key
-        tag_end_config = "# GROUP-END-"+CONFIG_NAME+":"+key
+    def common_processing(language, config, make_root_fs_file_delimiters):
+        tag_start = "# GROUP-START:"+language
+        tag_end = "# GROUP-END:"+language
+        tag_start_config = "# GROUP-START-"+config+":"+language
+        tag_end_config = "# GROUP-END-"+config+":"+language
 
         package_list = \
-        get_packages_from_delimited_lines(multistrap_file_lines, tag_start, tag_end, ["=", " "])
-        populate_main_dict_from_dpkg_listing(package_list, key)
-        
-        package_list = []
+        get_packages_from_delimited_lines\
+        (MULTISTRAP_FILES_DICT[config]["lines"], tag_start, tag_end, ["=", " "])
+        populate_main_dict_from_dpkg_listing(language, config, package_list)
         
         if len(make_root_fs_file_delimiters) == 2:
+            package_list = []
+            
             package_list_make_root_fs = \
             get_packages_from_delimited_lines\
-            (make_root_fs_file_lines, tag_start, tag_end, \
+            (MAKE_ROOT_FS_FILE_LINES, tag_start, tag_end, \
             [make_root_fs_file_delimiters[0], make_root_fs_file_delimiters[1]])
 
             package_list_make_root_fs_config = \
             get_packages_from_delimited_lines\
-            (make_root_fs_file_lines, tag_start_config, tag_end_config, \
+            (MAKE_ROOT_FS_FILE_LINES, tag_start_config, tag_end_config, \
             [make_root_fs_file_delimiters[0], make_root_fs_file_delimiters[1]])
             
             for package in package_list_make_root_fs:
@@ -189,227 +352,265 @@ if __name__ == "__main__":
         return package_list
 
     # Populating installed packages for each language with details
-    for key in main_dict:
-        if main_dict[key]["process"]:
-            listing_file = BUILD_DIR+"/"+key+"-"+CONFIG_NAME+".listing"
-            listing_file_ready = FEATURES_DIR+"/"+key+"_features/"+key+".listing"
-            listing_file_ready_common = FEATURES_DIR_COMMON+"/"+key+"_features/"+key+".listing"
-        
-            if not path.exists(DPKG_LISTING_FILE) \
-               and not path.exists(listing_file) \
-               and not path.exists(listing_file_ready) \
-               and not path.exists(listing_file_ready_common):
-                print ("\nError: No listing files found for langauge: "+main_dict[key]["name"]+"\n")
-                exit(1)
+    for language in MAIN_DICT:
+        if MAIN_DICT[language]["process"]:
+            for config in CONFIG_LIST:
+                # Processing MAIN_DICT for C/C++
+                if language == "c":
+                    common_processing(language, config, [])
 
-            if path.exists(listing_file):
-                file_handler = open(listing_file)
-                if file_handler:
-                    listing_file_lines = file_handler.readlines()
-                    file_handler.close()
-                for index, line in enumerate(listing_file_lines):
-                    line = line.replace("\r", "")
-                    line = line.replace("\n", "")
-                    listing_file_lines[index] = line
-            else:
-                listing_file_lines = []
-
-            if path.exists(listing_file_ready):
-                file_handler = open(listing_file_ready)
-                if file_handler:
-                    listing_file_ready_lines = file_handler.readlines()
-                    file_handler.close()
-                for index, line in enumerate(listing_file_ready_lines):
-                    line = line.replace("\r", "")
-                    line = line.replace("\n", "")
-                    listing_file_ready_lines[index] = line
-            else:
-                listing_file_ready_lines = []
+                # Processing MAIN_DICT for Java
+                elif language == "java":
+                    common_processing(language, config, [])
+                    populate_main_dict_from_ready_listing(language, config)
+            
+                # Processing MAIN_DICT for Mono
+                elif language == "mono":
+                    common_processing(language, config, [])
+                    populate_main_dict_from_ready_listing(language, config)
                 
-            if path.exists(listing_file_ready_common):
-                file_handler = open(listing_file_ready_common)
-                if file_handler:
-                    listing_file_ready_common_lines = file_handler.readlines()
-                    file_handler.close()
-                for index, line in enumerate(listing_file_ready_common_lines):
-                    line = line.replace("\r", "")
-                    line = line.replace("\n", "")
-                    listing_file_ready_common_lines[index] = line
-            else:
-                listing_file_ready_common_lines = []
+                # Processing MAIN_DICT for Perl
+                elif language == "perl":
+                    package_list = common_processing(language, config, ["cpanm install -n ", " "])
+                    for package in package_list:
+                        for line in LISTING_FILES_DICT[language][config]["listing_file_lines"]:
+                            package_name = line.split(" (")[0]
+                            if package_name == package:
+                                line_split_array = line.split(" - ")
+                                name_version_array = line_split_array[0].split(" (")
+                                package_version = name_version_array[1].replace(")", "")
+                                package_description = line_split_array[1].strip()
+                                found_index = -1
+                                for i, package in enumerate(MAIN_DICT[language]["packages"]):
+                                    if package[0] == package_name \
+                                    and package[1] == package_version:
+                                        found_index = i
+                                        break
+                                if found_index > -1:
+                                    MAIN_DICT[language]["packages"][found_index][3][config] = True
+                                    continue
+                                else:
+                                    main_dict_packages_entry = []
+                                    main_dict_packages_entry.append(package_name)
+                                    main_dict_packages_entry.append(package_version)
+                                    main_dict_packages_entry.append(package_description)
+                                    main_dict_packages_entry.append({config:True})
+                                    MAIN_DICT[language]["packages"].append(main_dict_packages_entry)
 
-            # Processing main_dict for C/C++
-            if key == "c":
-                common_processing(key, [])
-
-            # Processing main_dict for Java
-            elif key == "java":
-                common_processing(key, [])
-                populate_main_dict_from_ready_listing\
-                (listing_file_ready_lines, listing_file_ready_common_lines, key)
+                # Processing MAIN_DICT for PHP
+                elif language == "php":
+                    package_list = common_processing(language, config, ["pear install --onlyreqdeps ", " "])
+                    for package in package_list:
+                        for line in LISTING_FILES_DICT[language][config]["listing_file_lines"]:
+                            line_split_array = line.split("<==>")
+                            if line_split_array[0] == package:
+                                package_name = line_split_array[0]
+                                package_version = line_split_array[2]
+                                package_description = line_split_array[3]
+                                found_index = -1
+                                for i, package in enumerate(MAIN_DICT[language]["packages"]):
+                                    if package[0] == package_name \
+                                    and package[1] == package_version:
+                                        found_index = i
+                                        break
+                                if found_index > -1:
+                                    MAIN_DICT[language]["packages"][found_index][3][config] = True
+                                    continue
+                                else:
+                                    main_dict_packages_entry = []
+                                    main_dict_packages_entry.append(package_name)
+                                    main_dict_packages_entry.append(package_version)
+                                    main_dict_packages_entry.append(package_description)
+                                    main_dict_packages_entry.append({config:True})
+                                    MAIN_DICT[language]["packages"].append(main_dict_packages_entry)
+                                    
+                # Processing MAIN_DICT for Python
+                elif language == "python":
+                    package_list = common_processing(language, config, ["pip install ", " "])
+                    for package in package_list:
+                        for line in LISTING_FILES_DICT[language][config]["listing_file_lines"]:
+                            line_split_array = line.split("<==>")
+                            if line_split_array[0] == package:
+                                package_name = line_split_array[0]
+                                package_version = line_split_array[1]
+                                package_description = line_split_array[2]
+                                found_index = -1
+                                for i, package in enumerate(MAIN_DICT[language]["packages"]):
+                                    if package[0] == package_name \
+                                    and package[1] == package_version:
+                                        found_index = i
+                                        break
+                                if found_index > -1:
+                                    MAIN_DICT[language]["packages"][found_index][3][config] = True
+                                    continue
+                                else:
+                                    main_dict_packages_entry = []
+                                    main_dict_packages_entry.append(package_name)
+                                    main_dict_packages_entry.append(package_version)
+                                    main_dict_packages_entry.append(package_description)
+                                    main_dict_packages_entry.append({config:True})
+                                    MAIN_DICT[language]["packages"].append(main_dict_packages_entry)
             
-            # Processing main_dict for Mono
-            elif key == "mono":
-                common_processing(key, [])
-                populate_main_dict_from_ready_listing\
-                (listing_file_ready_lines, listing_file_ready_common_lines, key)
-            
-            # Processing main_dict for Perl
-            elif key == "perl":
-                package_list = common_processing(key, ["cpanm install -n ", " "])
-                for package in package_list:
-                    for line in listing_file_lines:
-                        name = line.split(" (")[0]
-                        if name == package:
-                            line_split_array = line.split(" - ")
-                            name_version_array = line_split_array[0].split(" (")
-                            main_dict_packages_entry = []
-                            main_dict_packages_entry.append(package)
-                            main_dict_packages_entry.append(name_version_array[1].replace(")", ""))
-                            main_dict_packages_entry.append(line_split_array[1].strip())
-                            main_dict[key]["packages"].append(main_dict_packages_entry)
-                            break
-            
-            # Processing main_dict for PHP
-            elif key == "php":
-                package_list = common_processing(key, ["pear install --onlyreqdeps ", " "])
-                for package in package_list:
-                    for line in listing_file_lines:
-                        line_split_array = line.split("<==>")
-                        if line_split_array[0] == package:
-                            main_dict_packages_entry = []
-                            main_dict_packages_entry.append(package)
-                            main_dict_packages_entry.append(line_split_array[2])
-                            main_dict_packages_entry.append(line_split_array[3])
-                            main_dict[key]["packages"].append(main_dict_packages_entry)
-                            break
-            
-            # Processing main_dict for Python
-            elif key == "python":
-                package_list = common_processing(key, ["pip install ", " "])
-                for package in package_list:
-                    for line in listing_file_lines:
-                        line_split_array = line.split("<==>")
-                        if line_split_array[0] == package:
-                            main_dict_packages_entry = []
-                            main_dict_packages_entry.append(package)
-                            main_dict_packages_entry.append(line_split_array[1])
-                            main_dict_packages_entry.append(line_split_array[2])
-                            main_dict[key]["packages"].append(main_dict_packages_entry)
-                            break
-            
-            # Processing main_dict for Ruby
-            elif key == "ruby":
-                package_list = common_processing(key, ["gem install --no-ri --no-rdoc ", " "])
-                for package in package_list:
-                    for index, line in enumerate(listing_file_lines):
-                        line_split_array = line.split(" (")
-                        if len(line_split_array) == 2 and line_split_array[0] == package:
-                            index += 1
-                            while len(listing_file_lines[index]) > 1:
-                                index += 1
-                            index += 1
+                # Processing MAIN_DICT for Ruby
+                elif language == "ruby":
+                    package_list = common_processing(language, config, ["gem install --no-ri --no-rdoc ", " "])
+                    for package in package_list:
+                        listing_file_lines = LISTING_FILES_DICT[language][config]["listing_file_lines"]
+                        for i, line in enumerate(listing_file_lines):
+                            line_split_array = line.split(" (")
+                            if len(line_split_array) == 2 and line_split_array[0] == package:
+                                package_name = line_split_array[0]
+                                package_version = line_split_array[1].replace(")", "")
+                                i += 1
+                                while len(listing_file_lines[i]) > 1:
+                                    i += 1
+                                i += 1
                             
-                            description = ""
-                            description += listing_file_lines[index].strip()
+                                package_description = ""
+                                package_description += listing_file_lines[i].strip()
                             
-                            while len(listing_file_lines[index+1]) > 1:
-                                description += " "
-                                description += listing_file_lines[index+1].strip()
-                                index += 1
-                            
-                            main_dict_packages_entry = []
-                            main_dict_packages_entry.append(package)
-                            main_dict_packages_entry.append(line_split_array[1].replace(")", ""))
-                            main_dict_packages_entry.append(description)
-                            main_dict[key]["packages"].append(main_dict_packages_entry)
-                            break
-            else:
-                print "\nError: No proper key found for processing main_dict\n"
-                exit(1)
-    
-    # Getting column width information
-    all_name_column_width = []
-    all_version_column_width = []
-    all_description_column_width = []
-    for key in main_dict:
-        if not main_dict[key]["process"]:
-            continue
-        for row in main_dict[key]["packages"]:
-            all_name_column_width.append(len(row[0]))
-            all_version_column_width.append(len(row[1]))
-            all_description_column_width.append(len(row[2]))
+                                while len(listing_file_lines[i+1]) > 1:
+                                    package_description += " "
+                                    package_description += listing_file_lines[i+1].strip()
+                                    i += 1
 
-    max_name_column_width = max(all_name_column_width)
-    max_version_column_width = max(all_version_column_width)
-    max_description_column_width = max(all_description_column_width)
+                                found_index = -1
+                                for j, package in enumerate(MAIN_DICT[language]["packages"]):
+                                    if package[0] == package_name \
+                                    and package[1] == package_version:
+                                        found_index = j
+                                        break
+                                if found_index > -1:
+                                    MAIN_DICT[language]["packages"][found_index][3][config] = True
+                                    continue
+                                else:
+                                    main_dict_packages_entry = []
+                                    main_dict_packages_entry.append(package_name)
+                                    main_dict_packages_entry.append(package_version)
+                                    main_dict_packages_entry.append(package_description)
+                                    main_dict_packages_entry.append({config:True})
+                                    MAIN_DICT[language]["packages"].append(main_dict_packages_entry)
+                
+                else:
+                    print "\nError: No proper key found for processing MAIN_DICT\n"
+                    exit(1)
 
-    # Generating main border
-    main_border = ""
-    for count in range(0, max_name_column_width):
-        main_border += "="
-    main_border += " "
-    for count in range(0, max_version_column_width):
-        main_border += "="
-    main_border += " "
-    for count in range(0, max_description_column_width):
-        main_border += "="
-        
-    # Generating secondary border
-    secondary_border = ""
-    for count in range(0, max_name_column_width):
-        secondary_border += "-"
-    secondary_border += "-"
-    for count in range(0, max_version_column_width):
-        secondary_border += "-"
-    secondary_border += "-"
-    for count in range(0, max_description_column_width):
-        secondary_border += "-"
-    
-    # Generating the reST code for the table
-    rst_table_code = ".. |nbsp| unicode:: 0xA0\n   :trim:\n\n"
-    column_name = "Name"
-    column_version = "Version"
-    column_description = "Description"
-    blank = "|nbsp|"
-    for key in sorted(main_dict):
-        if not main_dict[key]["process"]:
-            continue
-        rst_table_code += main_border+"\n"
-        rst_table_code += main_dict[key]["name"]+"\n"
-        rst_table_code += secondary_border+"\n"
-        rst_table_code += column_name
-        for count in range(0, (max_name_column_width - len(column_name)) + 1):
-            rst_table_code += " "
-        rst_table_code += column_version
-        for count in range(0, (max_version_column_width - len(column_version)) + 1):
-            rst_table_code += " "
-        rst_table_code += column_description+"\n"
-        rst_table_code += main_border+"\n"
-        
-        for row in sorted(main_dict[key]["packages"]):
-            rst_table_code += row[0]
-            for count in range(0, (max_name_column_width - len(row[0])) + 1):
-                rst_table_code += " "
-            rst_table_code += row[1]
-            for count in range(0, (max_version_column_width - len(row[1])) + 1):
-                rst_table_code += " "
-            rst_table_code += row[2]+"\n"
-        rst_table_code += blank
-        for count in range(0, (max_name_column_width - len(blank)) + 1):
-            rst_table_code += " "
-        rst_table_code += blank
-        for count in range(0, (max_version_column_width - len(blank)) + 1):
-            rst_table_code += " "
-        rst_table_code += blank+"\n"
-        rst_table_code += main_border
-        rst_table_code += "\n\n"
+    # Generating the output files language wise
+    for language in sorted(MAIN_DICT):
+        if MAIN_DICT[language]["process"]:
+            checkmark = "|c|"
+            column_widths = []
+            max_column_widths = []
+            config_column_widths = []
+            
+            # Getting all the elements except the last one
+            for coloumn in COLUMNS[:-1]:
+                column_widths.append([])
 
-    file_handler = open(OUTPUT_RST_FILE, "w")
-    if (file_handler):
-        file_handler.write(rst_table_code)
-        file_handler.close()
+            for package in MAIN_DICT[language]["packages"]:
+                # Getting all the elements except the last one
+                for i, field in enumerate(package[:-1]):
+                    column_widths[i].append(len(field))
+            
+            for column_width_list in column_widths:
+                max_column_widths.append(max(column_width_list))
+            
+            for i, column_width in enumerate(max_column_widths):
+                if column_width < len(COLUMNS[i]):
+                    max_column_widths[i] = len(COLUMNS[i])
+            
+            # Getting maximum config column width
+            for config_column in COLUMNS[-1]:
+                config_column_widths.append(len(config_column))
+            max_config_column_width = max(config_column_widths)
+            if max_config_column_width < len(checkmark):
+                max_config_column_width = len(checkmark)
+            
+            # Generating boilerplate code at the beginning of the file
+            boilerplate_beginning = ".. "+checkmark+" unicode:: 0x2713\n    :trim:\n\n"
+            
+            # Generating language underline
+            language_underline = ""
+            for i in range (0, len(MAIN_DICT[language]["name"])):
+                language_underline += "-"
+
+            # Generating table border
+            table_border = ""
+            for max_column_width in max_column_widths:
+                for i in range(0, max_column_width):
+                    table_border += "="
+                table_border += " "
+                
+            for i in range(0, len(CONFIG_LIST)):
+                for j in range(0, max_config_column_width):
+                    table_border += "="
+                if i != len(CONFIG_LIST) - 1:
+                    table_border += " "
+            
+           # Generating table column headers
+            table_column_header_line = ""
+            
+            # Getting all the elements except the last one
+            for i, column_header in enumerate(COLUMNS[:-1]):
+                table_column_header_line += column_header
+                for j in range(0, (max_column_widths[i] - len(column_header)) + 1):
+                    table_column_header_line += " "
+
+            for i, config_column in enumerate(sorted(COLUMNS[-1])):
+                table_column_header_line += config_column
+                if i == len(COLUMNS[-1]) - 1:
+                    break
+                else:
+                    for i in range(0, (max_config_column_width - len(config_column)) + 1):
+                        table_column_header_line += " "
+            
+            #Generating table rows
+            table_rows = ""
+            
+            for i, package in enumerate(sorted(MAIN_DICT[language]["packages"])):
+                # Getting all the elements except the last one
+                for j, field in enumerate(package[:-1]):
+                    table_rows += field
+                    for k in range(0, (max_column_widths[j] - len(field)) + 1):
+                        table_rows += " "
+
+                # Checkmarks for current package in row
+                previous_config_column_index = -1
+                for l, package_in_config in enumerate(sorted(package[-1])):
+                    if previous_config_column_index < 0:
+                        current_config_column_index = (COLUMNS[-1][package_in_config])
+                    else:
+                        current_config_column_index = \
+                        (COLUMNS[-1][package_in_config] - previous_config_column_index) -1
+                    for m in range(0, current_config_column_index):
+                        for n in range(0, max_config_column_width + 1):
+                            table_rows += " "
+                    table_rows += checkmark
+                    if l == len(package[-1]) - 1:
+                        break
+                    for n in range(0, (max_config_column_width - len(checkmark)) + 1):
+                        table_rows += " "
+                    previous_config_column_index = current_config_column_index
+                if i == len(MAIN_DICT[language]["packages"]) - 1:
+                    continue
+                table_rows += "\n"
+
+             # Generating the reST code for the table
+            rst_table_code = boilerplate_beginning
+            rst_table_code += MAIN_DICT[language]["name"]+"\n"
+            rst_table_code += language_underline+"\n"
+            rst_table_code += table_border+"\n"
+            rst_table_code += table_column_header_line+"\n"
+            rst_table_code += table_border+"\n"
+            rst_table_code += table_rows+"\n"
+            rst_table_code += table_border+"\n"
+            
+            # Writing the output file
+            file_handler = open(OUTPUT_DIR+"/"+language+"_features.table", "w")
+            if (file_handler):
+                file_handler.write(rst_table_code)
+                file_handler.close()
     
-    print "\nInfo: reST features table generated ("+BUILD_DIR+"/features-table-"+CONFIG_NAME+".rst"+")\n"
-    
+            print "\nInfo: "+MAIN_DICT[language]["name"]+" table generated\n"
+            
     exit(0)
