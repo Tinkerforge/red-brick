@@ -59,15 +59,6 @@ then
     exit 1
 fi
 
-# Cleaning up output directory
-report_info "Cleaning up output directory"
-if [ -d $OUTPUT_DIR ]
-then
-    rm -rf $OUTPUT_DIR/*
-else
-    mkdir -p $OUTPUT_DIR
-fi
-
 # Checking stray /proc mount on root-fs directory
 set +e
 report_info "Checking stray /proc mount on root-fs directory"
