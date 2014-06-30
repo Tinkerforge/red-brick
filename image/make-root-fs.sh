@@ -313,9 +313,9 @@ umount /proc
 mount -t proc proc /proc
 export LC_ALL=C LANGUAGE=C LANG=C LC_CTYPE=$LOCALE
 cd /tmp/features/java_features/
-cp ./*.jar /usr/lib/jvm/java-6-openjdk-armhf/jre/lib/
-cp ./*.jar /usr/lib/jvm/java-7-openjdk-armhf/jre/lib/
-cp ./*.jar /usr/lib/jvm/jdk1.8.0/jre/lib/
+cp ./*.jar /usr/share/java/
+cp ./*.jar /usr/share/java/
+cp ./*.jar /usr/share/java/
 umount /proc
 EOF
 
@@ -504,7 +504,7 @@ mount -t proc proc /proc
 export LC_ALL=C LANGUAGE=C LANG=C LC_CTYPE=$LOCALE
 echo "
 # Setting JAVA class path
-CLASSPATH=\$CLASSPATH:/usr/lib/jvm/java-6-openjdk-armhf/jre/lib/:/usr/lib/jvm/java-7-openjdk-armhf/jre/lib/:/usr/lib/jvm/jdk1.8.0/jre/lib/
+CLASSPATH=\$CLASSPATH:/usr/share/java
 export CLASSPATH" >> /etc/profile
 umount /proc
 EOF
@@ -686,7 +686,7 @@ EOF
 # Installing kernel headers
 report_info "Installing kernel headers"
 rsync -a --no-o --no-g $KERNEL_HEADER_INCLUDE_DIR $ROOTFS_DIR/usr/include
-rsync -a --no-o --no-g $KERNEL_HEADER_USR_DIR $ROOTFS_DIR/usr
+rsync -a --no-o --no-g $KERNEL_HEADER_USR_INCLUDE_DIR $ROOTFS_DIR/usr/include
 
 # Cleaning /etc/resolv.conf
 report_info "Cleaning /etc/resolv.conf"
