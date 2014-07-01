@@ -685,8 +685,8 @@ EOF
 
 # Installing kernel headers
 report_info "Installing kernel headers"
-rsync -a --no-o --no-g $KERNEL_HEADER_INCLUDE_DIR $ROOTFS_DIR/usr/include
-rsync -a --no-o --no-g $KERNEL_HEADER_USR_INCLUDE_DIR $ROOTFS_DIR/usr/include
+rsync -a --no-o --no-g $KERNEL_HEADER_INCLUDE_DIR $ROOTFS_DIR/usr/include/
+rsync -a --no-o --no-g $KERNEL_HEADER_USR_INCLUDE_DIR $ROOTFS_DIR/usr/
 
 # Cleaning /etc/resolv.conf
 report_info "Cleaning /etc/resolv.conf"
