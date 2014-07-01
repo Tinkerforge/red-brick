@@ -68,6 +68,10 @@ then
 fi
 set -e
 
+# Cleaning previously built image
+report_info "Cleaning previously built image"
+rm -rf $OUTPUT_DIR/$IMAGE_NAME.img
+
 # Creating empty image
 report_info "Creating empty image"
 dd bs=$IMAGE_DD_BS count=$IMAGE_DD_COUNT if=/dev/zero | pv -treb | dd of=$IMAGE_FILE
