@@ -114,7 +114,6 @@ report_info "Configuring the generated root-fs"
 cp /etc/resolv.conf $ROOTFS_DIR/etc/resolv.conf
 chroot $ROOTFS_DIR<<EOF
 umount /proc
-mount -t proc proc /proc
 export DEBIAN_FRONTEND=noninteractive DEBCONF_NONINTERACTIVE_SEEN=true
 export LC_ALL=C LANGUAGE=C LANG=C LC_CTYPE=$LOCALE
 wget http://archive.raspbian.org/raspbian.public.key -O - | apt-key add -
@@ -138,6 +137,9 @@ XKBOPTIONS=\"$KB_OPTIONS\"
 BACKSPACE=\"$KB_BACKSPACE\"
 " > /etc/default/keyboard
 setupcon
+dpkg --configure -a
+umount /proc
+mount -t proc proc /proc
 dpkg --configure -a
 umount /proc
 EOF
@@ -265,13 +267,15 @@ umount /proc
 mount -t proc proc /proc
 export LC_ALL=C LANGUAGE=C LANG=C LC_CTYPE=$LOCALE
 cd /tmp/features/mono_features/
-unzip ./MathNet.Numerics-2.6.1.30.zip -d ./MathNet.Numerics
+unzip ./MathNet.Numerics-3.0.1.zip
 unzip ./mysql-connector-net-6.8.3-noinstall.zip -d ./mysql-connector-net
 unzip ./SharpPcap-4.2.0.bin.zip
-unzip ./sharpPDF_2_0_Beta2_dll.zip -d ./sharpPDF
+unzip ./itextsharp-all-5.5.1.zip -d ./itextsharp
 unzip ./xml-rpc.net.2.5.0.zip -d ./xml-rpc.net
-cd ./MathNet.Numerics/Portable/
+cd /tmp/features/mono_features/MathNet.Numerics/Net35
 cp ./*.dll /usr/lib/mono/2.0/
+cd /tmp/features/mono_features/MathNet.Numerics/Net40
+cp ./*.dll /usr/lib/mono/4.0/
 cd /tmp/features/mono_features/mysql-connector-net/v2.0/
 mv ./mysql.data.cf.dll ./MySql.Data.CF.dll
 mv ./mysql.data.dll ./MySql.Data.dll
@@ -292,16 +296,18 @@ mv ./mysql.web.dll ./MySql.Web.dll
 cp ./MySql.* /usr/lib/mono/4.5/
 cd /tmp/features/mono_features/SharpPcap-4.2.0/Release/
 cp ./*.dll /usr/lib/mono/2.0/
-cd /tmp/features/mono_features/sharpPDF/
+cp ./*.config /usr/lib/mono/2.0/
+cd /tmp/features/mono_features/itextsharp/
 cp ./*.dll /usr/lib/mono/2.0/
 cd /tmp/features/mono_features/xml-rpc.net/
 cp ./*.dll /usr/lib/mono/2.0/
 if  [ "$CONFIG_NAME" = "full" ]
 then
     cd /tmp/features/mono_features/
-    unzip OpenTK_1.1.1599.6049.zip
-    cd ./OpenTK
+    unzip opentk-2014-06-20.zip -d ./OpenTK
+    cd ./OpenTK/Binaries/OpenTK/Release/
     cp ./*.dll /usr/lib/mono/2.0/
+    cp ./*.config /usr/lib/mono/2.0/
 fi
 umount /proc
 EOF
@@ -313,8 +319,6 @@ umount /proc
 mount -t proc proc /proc
 export LC_ALL=C LANGUAGE=C LANG=C LC_CTYPE=$LOCALE
 cd /tmp/features/java_features/
-cp ./*.jar /usr/share/java/
-cp ./*.jar /usr/share/java/
 cp ./*.jar /usr/share/java/
 umount /proc
 EOF
@@ -509,19 +513,6 @@ export CLASSPATH" >> /etc/profile
 umount /proc
 EOF
 
-# Setting Mono path
-report_info "Setting Mono path"
-chroot $ROOTFS_DIR<<EOF
-umount /proc
-mount -t proc proc /proc
-export LC_ALL=C LANGUAGE=C LANG=C LC_CTYPE=$LOCALE
-echo "
-# Setting Mono path
-MONO_PATH=\$MONO_PATH:/usr/lib/mono/2.0/:/usr/lib/mono/3.5/:/usr/lib/mono/4.0/:/usr/lib/mono/4.5/
-export MONO_PATH" >> /etc/profile
-umount /proc
-EOF
-
 # Fixing, cleaning and updating APT
 report_info "Fixing, cleaning and updating APT"
 chroot $ROOTFS_DIR<<EOF
@@ -685,8 +676,8 @@ EOF
 
 # Installing kernel headers
 report_info "Installing kernel headers"
-rsync -a --no-o --no-g $KERNEL_HEADER_INCLUDE_DIR $ROOTFS_DIR/usr/include/
-rsync -a --no-o --no-g $KERNEL_HEADER_USR_INCLUDE_DIR $ROOTFS_DIR/usr/
+rsync -a --no-o --no-g $KERNEL_HEADER_INCLUDE_DIR $ROOTFS_DIR/usr/
+rsync -a --no-o --no-g $KERNEL_HEADER_USR_DIR $ROOTFS_DIR
 
 # Cleaning /etc/resolv.conf
 report_info "Cleaning /etc/resolv.conf"
@@ -705,6 +696,7 @@ umount /proc
 mount -t proc proc /proc
 export LC_ALL=C LANGUAGE=C LANG=C LC_CTYPE=$LOCALE
 rm -rf /tmp/*
+updatedb
 umount /proc
 EOF
 

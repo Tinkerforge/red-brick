@@ -1,5 +1,5 @@
-Math.NET_Numerics<==>2.6.1.30<==>Numeric library
+MathNet.Numerics<==>3.0.1<==>Methods and algorithms for numerical computations in science, engineering and every day use
 MySQL_Oracle_Connector<==>6.8.3<==>Oracle corporation driver for MySQL
 SharpPcap<==>4.2.0<==>Packet capture framework based on the famous pcap/WinPcap libraries
-sharpPDF<==>2.0_Beta2<==>Library that implements different objects for the creation of PDF documents
+iTextSharp<==>5.5.1<==>Library that provides support of PDF document manipulation
 XML-RPC.NET<==>2.5.0<==>Library for implementing XML-RPC services and clients
