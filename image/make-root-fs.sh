@@ -564,9 +564,9 @@ umount /proc
 mount -t proc proc /proc
 export LC_ALL=C LANGUAGE=C LANG=C LC_CTYPE=$LOCALE
 rm -rf /home/
-adduser rbuser
-tinkerforge
-tinkerforge
+adduser tf
+tf
+tf
 RED Brick User
 
 
@@ -582,18 +582,18 @@ chroot $ROOTFS_DIR<<EOF
 umount /proc
 mount -t proc proc /proc
 export LC_ALL=C LANGUAGE=C LANG=C LC_CTYPE=$LOCALE
-usermod -a -G adm rbuser
-usermod -a -G dialout rbuser
-usermod -a -G cdrom rbuser
-usermod -a -G sudo rbuser
-usermod -a -G audio rbuser
-usermod -a -G video rbuser
-usermod -a -G plugdev rbuser
-usermod -a -G games rbuser
-usermod -a -G users rbuser
-usermod -a -G ntp rbuser
-usermod -a -G crontab rbuser
-usermod -a -G netdev rbuser
+usermod -a -G adm tf
+usermod -a -G dialout tf
+usermod -a -G cdrom tf
+usermod -a -G sudo tf
+usermod -a -G audio tf
+usermod -a -G video tf
+usermod -a -G plugdev tf
+usermod -a -G games tf
+usermod -a -G users tf
+usermod -a -G ntp tf
+usermod -a -G crontab tf
+usermod -a -G netdev tf
 umount /proc
 EOF
 
