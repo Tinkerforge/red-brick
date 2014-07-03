@@ -18,3 +18,8 @@
   are we missing a kernel module for this?
 
 - image doesn't contain the kernel header files for the kernel in use
+
+- Remove root user, use normal user with sudo rights (perhaps just user:
+  tf, pass: tf)
+
+- use X autologin by default (no password query on start of X)
