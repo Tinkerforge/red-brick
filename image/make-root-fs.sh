@@ -597,6 +597,14 @@ usermod -a -G netdev tf
 umount /proc
 EOF
 
+# Configuring Wicd
+report_info "Configuring Wicd"
+chroot $ROOTFS_DIR<<EOF
+cp -ar /tmp/wicd/manager-settings.conf /etc/wicd/
+cp -ar /tmp/wicd/wired-settings.conf /etc/wicd/
+cp -ar /tmp/wicd/set-wireless-automatic.sh /etc/wicd/scripts/postconnect/
+EOF
+
 # Generating dpkg listing
 report_info "Generating dpkg listing"
 chroot $ROOTFS_DIR<<EOF
