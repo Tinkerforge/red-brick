@@ -768,5 +768,3 @@ pin_7 = port:PC12<1><default><default><0>
 pin_8 = port:PC13<1><default><default><0>
 pin_9 = port:PC14<1><default><default><0>
 pin_10 = port:PC15<1><default><default><0>
-pin_9 = port:PC14<1><default><default><1>
-pin_10 = port:PC15<0><default><default><0>
