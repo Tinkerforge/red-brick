@@ -310,7 +310,8 @@ CONFIG_ARCH_SUN5I=y
 #
 # Allwinner's sunxi options
 #
-CONFIG_SW_DEBUG_UART=3 # Comment out if you want to use debug of Brick in stack
+# Comment out CONFIG_SW_DEBUG_UART if you want to use debug of Brick in stack
+CONFIG_SW_DEBUG_UART=3
 CONFIG_SUNXI_MULTIPLATFORM=y
 CONFIG_SUNXI_SCALING_MIN=60
 CONFIG_PLAT_SUNXI=y
@@ -1093,7 +1094,8 @@ CONFIG_I2C_SUNXI=y
 # CONFIG_I2C_DEBUG_ALGO is not set
 # CONFIG_I2C_DEBUG_BUS is not set
 CONFIG_SPI=y
-# CONFIG_SPI_DEBUG=y # TODO: Uncomment in final release
+# TODO: Comment out CONFIG_SPI_DEBUG in final release
+# CONFIG_SPI_DEBUG=y
 CONFIG_SPI_MASTER=y
 
 #
