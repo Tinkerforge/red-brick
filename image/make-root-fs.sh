@@ -414,18 +414,6 @@ export LC_ALL=C LANGUAGE=C LANG=C LC_CTYPE=$LOCALE
 umount /proc
 EOF
 
-# Setting root password
-report_info "Setting root password"
-chroot $ROOTFS_DIR<<EOF
-umount /proc
-mount -t proc proc /proc
-export LC_ALL=C LANGUAGE=C LANG=C LC_CTYPE=$LOCALE
-passwd root
-tinkerforge
-tinkerforge
-umount /proc
-EOF
-
 # Configuring boot splash image
 report_info "Configuring boot splash image"
 chroot $ROOTFS_DIR<<EOF
@@ -597,14 +585,6 @@ usermod -a -G netdev tf
 umount /proc
 EOF
 
-# Configuring Wicd
-report_info "Configuring Wicd"
-chroot $ROOTFS_DIR<<EOF
-cp -ar /tmp/wicd/manager-settings.conf /etc/wicd/
-cp -ar /tmp/wicd/wired-settings.conf /etc/wicd/
-cp -ar /tmp/wicd/set-wireless-automatic.sh /etc/wicd/scripts/postconnect/
-EOF
-
 # Generating dpkg listing
 report_info "Generating dpkg listing"
 chroot $ROOTFS_DIR<<EOF
@@ -694,6 +674,26 @@ umount /proc
 mount -t proc proc /proc
 export LC_ALL=C LANGUAGE=C LANG=C LC_CTYPE=$LOCALE
 rm -rf /etc/resolv.conf
+umount /proc
+EOF
+
+# Disabling the root user
+report_info "Disabling the root user"
+chroot $ROOTFS_DIR<<EOF
+umount /proc
+mount -t proc proc /proc
+export LC_ALL=C LANGUAGE=C LANG=C LC_CTYPE=$LOCALE
+passwd -l root
+umount /proc
+EOF
+
+# Fix apache server name problem
+report_info "Fix apache server name problem"
+chroot $ROOTFS_DIR<<EOF
+umount /proc
+mount -t proc proc /proc
+export LC_ALL=C LANGUAGE=C LANG=C LC_CTYPE=$LOCALE
+cp -ar /tmp/apache2.conf /etc/apache2/
 umount /proc
 EOF
 

@@ -72,6 +72,13 @@ set -e
 report_info "Cleaning previously built image"
 rm -rf $OUTPUT_DIR/$IMAGE_NAME.img
 
+# Making output directory if required
+report_info "Making output directory if required"
+if [ ! -d $OUTPUT_DIR ]
+then
+    mkdir -p $OUTPUT_DIR
+fi
+
 # Creating empty image
 report_info "Creating empty image"
 dd bs=$IMAGE_DD_BS count=$IMAGE_DD_COUNT if=/dev/zero | pv -treb | dd of=$IMAGE_FILE
