@@ -732,7 +732,7 @@ auto_hpd = 1
 
 [gpio_para]
 gpio_used = 1
-gpio_num = 13
+gpio_num = 14
 ; LED running
 gpio_pin_1 = port:PC05<1><default><default><0>
 ; LED error
@@ -757,9 +757,11 @@ gpio_pin_10 = port:PC15<1><default><default><1>
 gpio_pin_11 = port:PB11<1><default><default><1>
 ; Stack detect (Is high if we are slave)
 gpio_pin_12 = port:PA20<0><default><default><0>
-; External select/ External select 00
-; (Select pin to read EEPROM with I2C)
+; STACK-SEL-EX-00 (setting I2C address of EEPROM chips)
 gpio_pin_13 = port:PG09<1><default><default><0>
+; STACK-SW-I2C-PULLUPS
+; (controlled by stack master, enables I2C bus)
+gpio_pin_14 = port:PB06<1><default><default><0>
 
 [gpio_init]
 pin_1 = port:PC05<1><default><default><0>
@@ -773,3 +775,4 @@ pin_8 = port:PC13<1><default><default><0>
 pin_9 = port:PC14<1><default><default><0>
 pin_10 = port:PC15<1><default><default><0>
 pin_13 = port:PG09<1><default><default><0>
+pin_14 = port:PB06<1><default><default><0>
