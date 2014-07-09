@@ -23,3 +23,5 @@
   tf, pass: tf)
 
 - use X autologin by default (no password query on start of X)
+
+- /usr/shin not in normal PATH
