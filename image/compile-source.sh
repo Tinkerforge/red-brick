@@ -54,7 +54,10 @@ export PATH=$TOOLS_DIR/$TC_DIR_NAME/bin:$PATH
 
 # Building U-Boot
 pushd $UBOOT_SRC_DIR > /dev/null
-make ARCH=arm CROSS_COMPILE=$TC_PREFIX clean
+if [ $CLEAN_BEFORE_COMPILE == "yes" ]
+then
+    make ARCH=arm CROSS_COMPILE=$TC_PREFIX clean
+fi
 make ARCH=arm CROSS_COMPILE=$TC_PREFIX $UBOOT_CONFIG_NAME
 # set GAS_BUG_12532 to n. we use gas 2.23, the bug was fixed in 2.22, but due to the
 # managed version output of our gas the version detection in the Makefile fails and
@@ -67,7 +70,10 @@ touch $BUILD_DIR/u-boot-$CONFIG_NAME.built
 pushd $KERNEL_SRC_DIR > /dev/null
 cp $KERNEL_CONFIG_FILE ./arch/arm/configs
 make ARCH=arm CROSS_COMPILE=$TC_PREFIX $KERNEL_CONFIG_NAME
-make ARCH=arm CROSS_COMPILE=$TC_PREFIX clean
+if [ $CLEAN_BEFORE_COMPILE == "yes" ]
+then
+    make ARCH=arm CROSS_COMPILE=$TC_PREFIX clean
+fi
 make ARCH=arm CROSS_COMPILE=$TC_PREFIX -j16 INSTALL_MOD_PATH=$KERNEL_MOD_DIR_NAME $KERNEL_IMAGE_NAME modules
 make ARCH=arm CROSS_COMPILE=$TC_PREFIX INSTALL_MOD_PATH=$KERNEL_MOD_DIR_NAME modules_install
 make ARCH=arm CROSS_COMPILE=$TC_PREFIX headers_install
@@ -77,7 +83,10 @@ touch $BUILD_DIR/kernel-headers-$CONFIG_NAME.built
 
 # Building sunxi-tools
 pushd $SUNXI_TOOLS_SRC_DIR > /dev/null
-make clean
+if [ $CLEAN_BEFORE_COMPILE == "yes" ]
+then
+    make clean
+fi
 make all
 ./fex2bin $SCRIPT_FEX_FILE $SCRIPT_BIN_FILE
 popd > /dev/null
