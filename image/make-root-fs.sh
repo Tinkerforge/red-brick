@@ -648,6 +648,19 @@ umount /proc
 EOF
 mv $ROOTFS_DIR/root/ruby-$CONFIG_NAME.listing $BUILD_DIR
 
+# Updating user PATH
+report_info "Updating user PATH"
+chroot $ROOTFS_DIR<<EOF
+umount /proc
+mount -t proc proc /proc
+export LC_ALL=C LANGUAGE=C LANG=C LC_CTYPE=$LOCALE
+echo "
+# Updating user PATH
+PATH=\$PATH:/sbin:/usr/sbin
+export PATH" >> /etc/profile
+umount /proc
+EOF
+
 # Reconfiguring locale
 report_info "Reconfiguring locale"
 chroot $ROOTFS_DIR<<EOF
