@@ -661,6 +661,16 @@ export PATH" >> /etc/profile
 umount /proc
 EOF
 
+# Patching Wicd manager settings file
+report_info "Patching Wicd manager settings file"
+chroot $ROOTFS_DIR<<EOF
+umount /proc
+mount -t proc proc /proc
+export LC_ALL=C LANGUAGE=C LANG=C LC_CTYPE=$LOCALE
+cp /tmp/manager-settings.conf /etc/wicd/
+umount /proc
+EOF
+
 # Reconfiguring locale
 report_info "Reconfiguring locale"
 chroot $ROOTFS_DIR<<EOF
