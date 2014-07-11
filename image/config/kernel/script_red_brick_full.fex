@@ -732,7 +732,7 @@ auto_hpd = 1
 
 [gpio_para]
 gpio_used = 1
-gpio_num = 14
+gpio_num = 16
 ; LED running
 gpio_pin_1 = port:PC05<1><default><default><0>
 ; LED error
@@ -761,6 +761,10 @@ gpio_pin_12 = port:PA20<0><default><default><0>
 gpio_pin_13 = port:PG09<1><default><default><0>
 ; STACK-SW-I2C-PULLUPS (controlled by stack master, enables I2C bus)
 gpio_pin_14 = port:PB06<1><default><default><0>
+; RXE (Receiver enable pin for modbus interface)
+gpio_pin_15 = port:PB13<1><default><default><1>
+; TXE (Transmitter enable pin for modbus interface)
+gpio_pin_16 = port:PC19<1><default><default><0>
 
 [gpio_init]
 pin_1 = port:PC05<1><default><default><0>
@@ -777,3 +781,5 @@ pin_11 = port:PB11<1><default><default><1>
 pin_12 = port:PA20<0><default><default><0>
 pin_13 = port:PG09<1><default><default><0>
 pin_14 = port:PB06<1><default><default><0>
+pin_15 = port:PB13<1><default><default><1>
+pin_16 = port:PC19<1><default><default><0>
