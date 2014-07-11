@@ -173,14 +173,13 @@ uart_type = 2
 uart_tx = port:PC18<3><1><default><default>
 uart_rx = port:PC19<3><1><default><default>
 
-; Comment out if you want to use debug of other Bricks in stack
+; Set uart_used = 0 if you want to debug other Bricks in the stack
 [uart_para3]
 uart_used = 1
 uart_port = 3
 uart_type = 2
 uart_tx = port:PC16<4><1><default><default>
 uart_rx = port:PC17<4><1><default><default>
-uart_rts = port:PC19<4><1><default><default>
 
 [spi0_para]
 spi_used = 1
@@ -188,7 +187,8 @@ spi_cs_bitmap = 0
 spi_mosi = port:PC00<3><default><default><default>
 spi_miso = port:PC01<3><default><default><default>
 spi_sclk = port:PC02<3><default><default><default>
-spi_cs0 = port:PC03<3><default><default><default>
+; We do manual chip select
+; spi_cs0 = port:PC03<3><default><default><default>
 
 [spi_devices]
 spi_dev_num = 1
@@ -758,20 +758,21 @@ gpio_pin_11 = port:PB11<1><default><default><1>
 gpio_pin_12 = port:PA20<0><default><default><0>
 ; STACK-SEL-EX-00 (setting I2C address of EEPROM chips)
 gpio_pin_13 = port:PG09<1><default><default><0>
-; STACK-SW-I2C-PULLUPS
-; (controlled by stack master, enables I2C bus)
+; STACK-SW-I2C-PULLUPS (controlled by stack master, enables I2C bus)
 gpio_pin_14 = port:PB06<1><default><default><0>
 
 [gpio_init]
 pin_1 = port:PC05<1><default><default><0>
 pin_2 = port:PC06<1><default><default><0>
-pin_3 = port:PC08<1><default><default><0>
-pin_4 = port:PC09<1><default><default><0>
-pin_5 = port:PC10<1><default><default><0>
-pin_6 = port:PC11<1><default><default><0>
-pin_7 = port:PC12<1><default><default><0>
-pin_8 = port:PC13<1><default><default><0>
-pin_9 = port:PC14<1><default><default><0>
-pin_10 = port:PC15<1><default><default><0>
+pin_3 = port:PC08<1><default><default><1>
+pin_4 = port:PC09<1><default><default><1>
+pin_5 = port:PC10<1><default><default><1>
+pin_6 = port:PC11<1><default><default><1>
+pin_7 = port:PC12<1><default><default><1>
+pin_8 = port:PC13<1><default><default><1>
+pin_9 = port:PC14<1><default><default><1>
+pin_10 = port:PC15<1><default><default><1>
+pin_11 = port:PB11<1><default><default><1>
+pin_12 = port:PA20<0><default><default><0>
 pin_13 = port:PG09<1><default><default><0>
 pin_14 = port:PB06<1><default><default><0>
