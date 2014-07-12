@@ -10,6 +10,9 @@ This requires a recent Debian or Ubuntu installation with Internet connection.
 Also make sure that the filesystem you're running this on is not mounted with
 the nodev or noexec options as they hinder the root-fs generation process.
 
+Note: The building process will not work if the building directory is on
+a separate partition than the root fs.
+
 First run
 
  ./prepare-host.sh
