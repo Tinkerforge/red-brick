@@ -25,6 +25,13 @@ fi
 CONFIG_NAME=$1
 . $CONFIG_DIR/image.conf
 
+# Checking if root-fs was generated for the provided image configuration
+if [ ! -e $BUILD_DIR/root-fs-$CONFIG_NAME.built ]
+then
+    report_error "Root-fs was not generated for the provided image configuration"
+    exit 1
+fi
+
 # Checking U-Boot
 if [ ! -e $UBOOT_IMAGE_FILE ]
 then
@@ -52,23 +59,25 @@ then
     exit 1
 fi
 
-# Cleaning up output directory
-report_info "Cleaning up output directory"
-if [ -d $OUTPUT_DIR ]
-then
-    rm -rf $OUTPUT_DIR/*
-else
-    mkdir -p $OUTPUT_DIR
-fi
-
 # Checking stray /proc mount on root-fs directory
 set +e
 report_info "Checking stray /proc mount on root-fs directory"
 if [ -d $ROOTFS_DIR/proc ]
 then
-    umount $ROOTFS_DIR/proc > /dev/null
+    umount $ROOTFS_DIR/proc &> /dev/null
 fi
 set -e
+
+# Cleaning previously built image
+report_info "Cleaning previously built image"
+rm -rf $OUTPUT_DIR/$IMAGE_NAME.img
+
+# Making output directory if required
+report_info "Making output directory if required"
+if [ ! -d $OUTPUT_DIR ]
+then
+    mkdir -p $OUTPUT_DIR
+fi
 
 # Creating empty image
 report_info "Creating empty image"
@@ -87,7 +96,7 @@ o
 n
 p
 1
-20480
+$ROOT_PART_START_SECTOR
 
 w
 EOF
@@ -96,7 +105,7 @@ set -e
 # Setting up loop device for image partition
 report_info "Setting up loop device for image partition"
 loop_dev_p1=$(losetup -f)
-losetup -o $((512*20480)) $loop_dev_p1 $IMAGE_FILE
+losetup -o $((512*$ROOT_PART_START_SECTOR)) $loop_dev_p1 $IMAGE_FILE
 
 # Formatting image partition
 report_info "Formatting image partition"
@@ -118,7 +127,7 @@ then
     mkdir -p $MOUNT_DIR
 else
     set +e
-    umount $MOUNT_DIR > /dev/null
+    umount $MOUNT_DIR &> /dev/null
     set -e
 fi
 mount $loop_dev_p1 $MOUNT_DIR

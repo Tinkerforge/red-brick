@@ -1,3 +1,11 @@
 - to be able to use networking with the provided network manager (wicd)
   one must first define the network interfaces (wlan0, eth0 etc) in the
   settings of the network manager
+
+- once network is configured with the wicd network manager settings such as,
+  `automatic reconnect` and `auto-connect to this network` must be enabled
+  (from the GUI) to use the connection next time without any configuration.
+  The overall auto reconnect configuration option is,
+  `auto_reconnect = [True|False]` in the file, `/etc/wicd/manager-settings.conf`
+  and wireless connection specific auto connect configuration option is,
+  `automatic = [0 | 1]` in the file, `/etc/wicd/wireless-settings.conf`

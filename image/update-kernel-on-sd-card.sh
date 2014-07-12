@@ -41,13 +41,17 @@ then
 fi
 
 # Copying the kernel to the SD card
+report_info "Copying U-Boot bin to the SD card"
+dd bs=512 seek=$UBOOT_DD_SEEK if=$UBOOT_IMAGE_FILE of=$DEVICE
+report_info "Copying the fex bin to the SD card"
+dd bs=512 seek=$SCRIPT_DD_SEEK if=$SCRIPT_BIN_FILE of=$DEVICE
 report_info "Copying the kernel to the SD card"
 dd bs=512 seek=$KERNEL_DD_SEEK if=$KERNEL_IMAGE_FILE of=$DEVICE
 
 # Copying kernel modules to the SD card
 report_info "Copying kernel modules to the SD card"
 mkdir -p $MOUNT_DIR
-mount -t ext3 -o offset=$((512*20480)) $DEVICE $MOUNT_DIR
+mount -t ext3 -o offset=$((512*$ROOT_PART_START_SECTOR)) $DEVICE $MOUNT_DIR
 rsync -arpc $KERNEL_SRC_DIR/$KERNEL_MOD_DIR_NAME/lib/modules $MOUNT_DIR/lib/
 rsync -arpc $KERNEL_SRC_DIR/$KERNEL_MOD_DIR_NAME/lib/firmware $MOUNT_DIR/lib/
 umount $MOUNT_DIR

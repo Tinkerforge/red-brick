@@ -1,5 +1,22 @@
-- find a way to fix the apt sources in the final image when the image is being
-  generated with apt-cacher on
+- while trying to install extra features for Node.JS through npm it fails in the chroot
+  environment as npm complains about unknown address family on the network interface
+  (works on RED-Brick)
+
+- for a bug in the `qemu-arm-static` binary, Mono installtion hangs in the chroot
+  environment. Mono is enabled currently by selecting essential packages manually
+  but `mono-complete` installation will fail in chroot environment. Same for GTK#
+  libraries for Mono
 
 - compat ID detection for WinUSB with a USB composite device with more than one
   interface dosn't work on Windows XP
+
+- a Brick connected to the USB host port on the RED Brick only works if it was
+  connected before boot. it doesn't work if it was hotplugged after boot. is
+  this still true?
+
+- acpid is complaining about not working netlink communication with the kernel.
+  are we missing a kernel module for this?
+
+- image doesn't contain the kernel header files for the kernel in use
+
+- use X autologin by default (no password query on start of X)
