@@ -3,15 +3,25 @@ RED Brick Linux Image
 
 The RED Brick uses as special Linux image.
 
+Requirements
+------------
+
+This scripts require a recent Debian or Ubuntu installation with Internet
+connection. Also make sure that the filesystem you're running this on is not
+mounted with the nodev or noexec options as they hinder the root-fs generation
+process. If you're using a separate partition for /home then it is likely to be
+mounted with nodev and noexec. In this case an easy workaround is to build the
+image in a directory that is mounted without this options, or to remount /home
+without this options.
+
+In Ubuntu 14.04 the multistrap package has a bug. The /usr/sbin/multistrap
+script is written in Perl and there is a $forceyes variable in it. To fix the
+problem you need to edit /usr/sbin/multistrap and remove $forceyes from it. If
+you don't have the multistrap package installed yet, then the prepare-host.sh
+script in the next step will install it.
+
 Building the Image
 ------------------
-
-This requires a recent Debian or Ubuntu installation with Internet connection.
-Also make sure that the filesystem you're running this on is not mounted with
-the nodev or noexec options as they hinder the root-fs generation process.
-
-Note: The building process will not work if the building directory is on
-a separate partition than the root fs.
 
 First run
 
@@ -49,7 +59,7 @@ which creates the image file in the ./build/output directory.
 Writing the Image to a SD card
 ------------------------------
 
-The image can be transfered to an SD card now with
+The image can be transferred to an SD card now with
 
  sudo ./write-image-to-sd-card.sh <config-name> <device>
 
