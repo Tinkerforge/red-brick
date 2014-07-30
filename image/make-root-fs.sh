@@ -172,8 +172,8 @@ dpkg --configure -a
 umount /proc
 EOF
 
-# Installing Node.JS and NPM
-report_info "Installing Node.JS and NPM"
+# Installing Node.js and NPM
+report_info "Installing Node.js and NPM"
 chroot $ROOTFS_DIR<<EOF
 umount /proc
 mount -t proc proc /proc
@@ -312,8 +312,8 @@ fi
 umount /proc
 EOF
 
-# Installing JAVA features
-report_info "Installing JAVA features"
+# Installing Java features
+report_info "Installing Java features"
 chroot $ROOTFS_DIR<<EOF
 umount /proc
 mount -t proc proc /proc
@@ -390,8 +390,8 @@ pear install --onlyreqdeps XML_Parser XML_RPC
 umount /proc
 EOF
 
-# Installing Node.JS features
-#report_info "Installing Node.JS features"
+# Installing Node.js features
+#report_info "Installing Node.js features"
 #chroot $ROOTFS_DIR<<EOF
 #export LC_ALL=C LANGUAGE=C LANG=C LC_CTYPE=$LOCALE
 #npm -g install node-dbi

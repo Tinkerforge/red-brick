@@ -1,4 +1,4 @@
-- while trying to install extra features for Node.JS through npm it fails in the chroot
+- while trying to install extra features for Node.js through npm it fails in the chroot
   environment as npm complains about unknown address family on the network interface
   (works on RED-Brick)
 

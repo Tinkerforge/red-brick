@@ -100,7 +100,7 @@ if __name__ == "__main__":
         "c":{"process":True, "name":"C/C++","packages":[],},
         "delphi":{"process":False, "name":"Delphi","packages":[],},
         "java":{"process":True, "name":"Java","packages":[],},
-        "node":{"process":False, "name":"Node.JS","packages":[],},
+        "node":{"process":False, "name":"Node.js","packages":[],},
         "labview":{"process":False, "name":"LabVIEW","packages":[],},
         "mathematica":{"process":False, "name":"Mathematica","packages":[],},
         "matlab":{"process":False, "name":"MATLAB/Octave","packages":[],},
