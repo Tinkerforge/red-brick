@@ -116,6 +116,14 @@ report_info "Patching the root-fs"
 rsync -a --no-o --no-g $PATCHES_DIR/root-fs/common/ $ROOTFS_DIR/
 rsync -a --no-o --no-g $PATCHES_DIR/root-fs/$CONFIG_NAME/ $ROOTFS_DIR/
 
+# Disable starting daemons in the chroot
+report_info "Disable starting daemons in the chroot"
+cat > $ROOTFS_DIR/usr/sbin/policy-rc.d <<EOF
+#!/bin/sh
+exit 101
+EOF
+chmod a+x $ROOTFS_DIR/usr/sbin/policy-rc.d
+
 # Copying qemu-arm-static to root-fs
 report_info "Copying qemu-arm-static to root-fs"
 cp $QEMU_BIN $ROOTFS_DIR/usr/bin/
@@ -645,6 +653,10 @@ rm -rf $ROOTFS_DIR$QEMU_BIN
 report_info "Unmounting /proc and /dev/pts from the root-fs"
 umount $ROOTFS_DIR/proc
 umount $ROOTFS_DIR/dev/pts
+
+# Enable starting daemons in the chroot
+report_info "Enable starting daemons in the chroot"
+rm -rf $ROOTFS_DIR/usr/sbin/policy-rc.d
 
 # Ensure host name integrity
 report_info "Ensure host name integrity"
