@@ -22,11 +22,13 @@ rm -rf $SCRIPT_BIN_FILE
 # Checking for the build directory
 if [ ! -d $BUILD_DIR ]
 then
-	mkdir -p $BUILD_DIR
+    mkdir -p $BUILD_DIR
 fi
 
 # Cleaning up .built files
-rm -rf $BUILD_DIR/*.built
+rm -f $BUILD_DIR/u-boot-*.built
+rm -f $BUILD_DIR/kernel-*.built
+rm -f $BUILD_DIR/kernel-headers-*.built
 
 # Check U-Boot source directory
 if [ ! -d $UBOOT_SRC_DIR/arch ]
