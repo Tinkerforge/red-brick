@@ -206,55 +206,55 @@ export LC_ALL=C LANGUAGE=C LANG=C LC_CTYPE=$LOCALE LC_CTYPE=$LOCALE
 mkdir -p /usr/tinkerforge/bindings
 cd /usr/tinkerforge/bindings
 wget http://download.tinkerforge.com/bindings/c/tinkerforge_c_bindings_latest.zip
-unzip -d c_c++ tinkerforge_c_bindings_latest.zip
+unzip -q -d c tinkerforge_c_bindings_latest.zip
 wget http://download.tinkerforge.com/bindings/csharp/tinkerforge_csharp_bindings_latest.zip
-unzip -d c# tinkerforge_csharp_bindings_latest.zip
+unzip -q -d csharp tinkerforge_csharp_bindings_latest.zip
 wget http://download.tinkerforge.com/bindings/delphi/tinkerforge_delphi_bindings_latest.zip
-unzip -d delphi tinkerforge_delphi_bindings_latest.zip
+unzip -q -d delphi tinkerforge_delphi_bindings_latest.zip
 wget http://download.tinkerforge.com/bindings/java/tinkerforge_java_bindings_latest.zip
-unzip -d java tinkerforge_java_bindings_latest.zip
+unzip -q -d java tinkerforge_java_bindings_latest.zip
 wget http://download.tinkerforge.com/bindings/javascript/tinkerforge_javascript_bindings_latest.zip
-unzip -d javascript tinkerforge_javascript_bindings_latest.zip
+unzip -q -d javascript tinkerforge_javascript_bindings_latest.zip
 wget http://download.tinkerforge.com/bindings/labview/tinkerforge_labview_bindings_latest.zip
-unzip -d labview tinkerforge_labview_bindings_latest.zip
+unzip -q -d labview tinkerforge_labview_bindings_latest.zip
 wget http://download.tinkerforge.com/bindings/mathematica/tinkerforge_mathematica_bindings_latest.zip
-unzip -d mathematica tinkerforge_mathematica_bindings_latest.zip
+unzip -q -d mathematica tinkerforge_mathematica_bindings_latest.zip
 wget http://download.tinkerforge.com/bindings/matlab/tinkerforge_matlab_bindings_latest.zip
-unzip -d matlab tinkerforge_matlab_bindings_latest.zip
+unzip -q -d matlab tinkerforge_matlab_bindings_latest.zip
 wget http://download.tinkerforge.com/bindings/perl/tinkerforge_perl_bindings_latest.zip
-unzip -d perl tinkerforge_perl_bindings_latest.zip
+unzip -q -d perl tinkerforge_perl_bindings_latest.zip
 cd perl
 tar zxvf Tinkerforge.tar.gz
 cd Tinkerforge-*
 perl Makefile.PL
 make all
-make install
 make test
+make install
 cd /usr/tinkerforge/bindings
 wget http://download.tinkerforge.com/bindings/php/tinkerforge_php_bindings_latest.zip
-unzip -d php tinkerforge_php_bindings_latest.zip
+unzip -q -d php tinkerforge_php_bindings_latest.zip
 cd php
 pear install Tinkerforge.tgz
 cd /usr/tinkerforge/bindings
 wget http://download.tinkerforge.com/bindings/python/tinkerforge_python_bindings_latest.zip
-unzip -d python tinkerforge_python_bindings_latest.zip
+unzip -q -d python tinkerforge_python_bindings_latest.zip
 cd python
 easy_install tinkerforge.egg
 cd /usr/tinkerforge/bindings
 wget http://download.tinkerforge.com/bindings/ruby/tinkerforge_ruby_bindings_latest.zip
-unzip -d ruby tinkerforge_ruby_bindings_latest.zip
+unzip -q -d ruby tinkerforge_ruby_bindings_latest.zip
 cd ruby
 gem install tinkerforge.gem
 cd /usr/tinkerforge/bindings
 wget http://download.tinkerforge.com/bindings/shell/tinkerforge_shell_bindings_latest.zip
-unzip -d shell tinkerforge_shell_bindings_latest.zip
+unzip -q -d shell tinkerforge_shell_bindings_latest.zip
 cd shell
 cp ./tinkerforge /usr/local/bin/
 cp tinkerforge-bash-completion.sh /etc/bash_completion.d/
 . /etc/bash_completion
 cd /usr/tinkerforge/bindings
 wget http://download.tinkerforge.com/bindings/vbnet/tinkerforge_vbnet_bindings_latest.zip
-unzip -d vbnet tinkerforge_vbnet_bindings_latest.zip
+unzip -q -d vbnet tinkerforge_vbnet_bindings_latest.zip
 cd /usr/tinkerforge/bindings
 rm -rf *_bindings_latest.zip
 EOF
@@ -264,11 +264,11 @@ report_info "Installing Mono features"
 chroot $ROOTFS_DIR<<EOF
 export LC_ALL=C LANGUAGE=C LANG=C LC_CTYPE=$LOCALE
 cd /tmp/features/mono_features/
-unzip ./MathNet.Numerics-3.0.1.zip
-unzip ./mysql-connector-net-6.8.3-noinstall.zip -d ./mysql-connector-net
-unzip ./SharpPcap-4.2.0.bin.zip
-unzip ./itextsharp-all-5.5.1.zip -d ./itextsharp
-unzip ./xml-rpc.net.2.5.0.zip -d ./xml-rpc.net
+unzip -q ./MathNet.Numerics-3.0.1.zip
+unzip -q ./mysql-connector-net-6.8.3-noinstall.zip -d ./mysql-connector-net
+unzip -q ./SharpPcap-4.2.0.bin.zip
+unzip -q ./itextsharp-all-5.5.1.zip -d ./itextsharp
+unzip -q ./xml-rpc.net.2.5.0.zip -d ./xml-rpc.net
 cd /tmp/features/mono_features/MathNet.Numerics/Net35
 cp ./*.dll /usr/lib/mono/2.0/
 cd /tmp/features/mono_features/MathNet.Numerics/Net40
@@ -301,7 +301,7 @@ cp ./*.dll /usr/lib/mono/2.0/
 if  [ "$CONFIG_NAME" = "full" ]
 then
     cd /tmp/features/mono_features/
-    unzip opentk-2014-06-20.zip -d ./OpenTK
+    unzip -q opentk-2014-06-20.zip -d ./OpenTK
     cd ./OpenTK/Binaries/OpenTK/Release/
     cp ./*.dll /usr/lib/mono/2.0/
     cp ./*.config /usr/lib/mono/2.0/
