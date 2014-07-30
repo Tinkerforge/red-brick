@@ -52,7 +52,6 @@ twi_port = 0
 twi_scl = port:PB00<2><1><default><default>
 twi_sda = port:PB01<2><1><default><default>
 
-; Comment out if you want to use debug of other Bricks in stack
 [uart_para]
 uart_debug_port = 3
 uart_debug_tx = port:PC16<4><1><default><default>
