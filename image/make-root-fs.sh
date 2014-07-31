@@ -156,6 +156,8 @@ BACKSPACE=\"$KB_BACKSPACE\"
 " > /etc/default/keyboard
 setupcon
 dpkg --configure -a
+# add true here to avoid having a dpkg error abort the whole script here
+true
 EOF
 
 # Installing Java 8
@@ -178,6 +180,8 @@ cd /tmp
 wget http://download.tinkerforge.com/tools/brickd/linux/brickd_linux_latest_armhf.deb
 dpkg -i brickd_linux_latest_armhf.deb
 dpkg --configure -a
+# add true here to avoid having a dpkg error abort the whole script here
+true
 EOF
 
 # Installing Node.js and NPM
@@ -187,6 +191,8 @@ export LC_ALL=C LANGUAGE=C LANG=C LC_CTYPE=$LOCALE
 cd /tmp
 dpkg -i node_*
 dpkg --configure -a
+# add true here to avoid having a dpkg error abort the whole script here
+true
 EOF
 
 # Updating Perl modules
@@ -408,6 +414,8 @@ chroot $ROOTFS_DIR<<EOF
 export LC_ALL=C LANGUAGE=C LANG=C LC_CTYPE=$LOCALE
 apt-get purge plymouth -y
 dpkg --configure -a
+# add true here to avoid having a dpkg error abort the whole script here
+true
 EOF
 
 # Add image specific tasks
@@ -430,6 +438,8 @@ dpkg -i ./sunxi-disp-test_1.0-1_armhf.deb
 dpkg -i ./udevil_0.4.1-3_armhf.deb
 dpkg -i ./xserver-xorg-video-sunximali_1.0-3_armhf.deb
 dpkg --configure -a
+# add true here to avoid having a dpkg error abort the whole script here
+true
 EOF
 
 	# Setting up XDM logo and desktop wallpaper
@@ -448,6 +458,8 @@ cd /tmp
 wget http://download.tinkerforge.com/tools/brickv/linux/brickv_linux_latest.deb
 dpkg -i brickv_linux_latest.deb
 dpkg --configure -a
+# add true here to avoid having a dpkg error abort the whole script here
+true
 EOF
 fi
 
@@ -604,6 +616,8 @@ echo $LOCALE_CHARSET > /etc/locale.gen
 locale-gen
 setupcon
 dpkg --configure -a
+# add true here to avoid having a dpkg error aborit the whole script here
+true
 EOF
 
 # Installing kernel headers
