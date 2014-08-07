@@ -177,9 +177,11 @@ uart_rx = port:PC19<3><1><default><default>
 [uart_para3]
 uart_used = 1
 uart_port = 3
-uart_type = 2
+uart_type = 4
 uart_tx = port:PC16<4><1><default><default>
 uart_rx = port:PC17<4><1><default><default>
+uart_rts = port:PC19<4><1><default><default>
+uart_cts = port:PC18<4><1><default><default>
 
 [spi0_para]
 spi_used = 1
@@ -731,7 +733,7 @@ auto_hpd = 1
 
 [gpio_para]
 gpio_used = 1
-gpio_num = 16
+gpio_num = 15
 ; LED running
 gpio_pin_1 = port:PC05<1><default><default><0>
 ; LED error
@@ -762,8 +764,6 @@ gpio_pin_13 = port:PG09<1><default><default><0>
 gpio_pin_14 = port:PB06<1><default><default><0>
 ; RXE (Receiver enable pin for modbus interface)
 gpio_pin_15 = port:PB13<1><default><default><1>
-; TXE (Transmitter enable pin for modbus interface)
-gpio_pin_16 = port:PC19<1><default><default><0>
 
 [gpio_init]
 pin_1 = port:PC05<1><default><default><0>
@@ -781,4 +781,3 @@ pin_12 = port:PA20<0><1><default><default>
 pin_13 = port:PG09<1><default><default><0>
 pin_14 = port:PB06<1><default><default><0>
 pin_15 = port:PB13<1><default><default><1>
-pin_16 = port:PC19<1><default><default><0>
