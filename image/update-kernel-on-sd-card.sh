@@ -26,6 +26,22 @@ CONFIG_NAME=$1
 DEVICE=$2
 . $CONFIG_DIR/image.conf
 
+# Cleanup function in case of interrupts
+function cleanup {
+    report_info "Cleaning up before exit..."
+
+    # Checking stray mounts
+    set +e
+    if [ -d $MOUNT_DIR ]
+    then
+        umount $MOUNT_DIR
+        rm -rf $MOUNT_DIR
+    fi
+    set -e
+}
+
+trap "cleanup" SIGHUP SIGINT SIGTERM SIGQUIT EXIT
+
 # Checking image file
 if [ ! -e $KERNEL_IMAGE_FILE ]
 then

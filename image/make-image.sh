@@ -25,6 +25,39 @@ fi
 CONFIG_NAME=$1
 . $CONFIG_DIR/image.conf
 
+# Cleanup function in case of interrupts
+function cleanup {
+    report_info "Cleaning up before exit..."
+
+    # Cleaning previously built image
+    if [ -f $OUTPUT_DIR/$IMAGE_NAME.img ]
+    then
+        rm -rf $OUTPUT_DIR/$IMAGE_NAME.img
+    fi
+
+    # Reset mount directory
+    if [ -d $MOUNT_DIR ]
+    then
+        rm -rf $MOUNT_DIR
+    fi
+
+    # Unmount and release loop device
+    set +e
+    if [ -n "${loop_dev_p1+1}" ]
+    then
+        umount $loop_dev_p1
+        losetup -d $loop_dev_p1
+    fi
+    
+    if [ -n "${loop_dev+1}" ]
+    then
+        losetup -d $loop_dev
+    fi
+    set -e
+}
+
+trap "cleanup" SIGHUP SIGINT SIGTERM SIGQUIT EXIT
+
 # Checking if root-fs was generated for the provided image configuration
 if [ ! -e $BUILD_DIR/root-fs-$CONFIG_NAME.built ]
 then
@@ -121,14 +154,12 @@ dd bs=512 seek=$KERNEL_DD_SEEK if=$KERNEL_IMAGE_FILE of=$loop_dev
 
 # Copying root-fs and kernel modules to the image
 report_info "Copying root-fs and kernel modules to the image"
-# Checking kernel modules
 if [ ! -d $MOUNT_DIR ]
 then
     mkdir -p $MOUNT_DIR
 else
-    set +e
-    umount $MOUNT_DIR &> /dev/null
-    set -e
+    rm -rf $MOUNT_DIR
+    mkdir -p $MOUNT_DIR
 fi
 mount $loop_dev_p1 $MOUNT_DIR
 $ADVCP_CMD -garp $ROOTFS_DIR/* $MOUNT_DIR/

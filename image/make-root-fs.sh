@@ -25,6 +25,35 @@ fi
 CONFIG_NAME=$1
 . $CONFIG_DIR/image.conf
 
+# Cleanup function in case of interrupts
+function cleanup {
+    report_info "Cleaning up before exit..."
+
+    # Checking stray /proc and /dev/pts mount on root-fs directory
+    set +e
+    if [ -d $ROOTFS_DIR/proc ]
+    then
+        umount $ROOTFS_DIR/proc
+    fi
+    
+    if [ -d $ROOTFS_DIR/dev/pts ]
+    then
+        umount $ROOTFS_DIR/dev/pts
+    fi
+    set -e
+    
+    # Cleaning up root-fs directory
+    if [ -d $ROOTFS_DIR ]
+    then
+        rm -rf $ROOTFS_DIR/*
+    fi
+
+    # Ensure host name integrity
+    hostname -F /etc/hostname
+}
+
+trap "cleanup" SIGHUP SIGINT SIGTERM SIGQUIT EXIT
+
 # Checking if kernel and U-Boot were compiled for current configuration
 if [ ! -e $BUILD_DIR/u-boot-$CONFIG_NAME.built ]
 then
@@ -676,6 +705,7 @@ rm -rf $ROOTFS_DIR/usr/sbin/policy-rc.d
 report_info "Ensure host name integrity"
 hostname -F /etc/hostname
 
+# Built file that indicates rootfs was made
 touch $BUILD_DIR/root-fs-$CONFIG_NAME.built
 
 report_info "Process finished"
