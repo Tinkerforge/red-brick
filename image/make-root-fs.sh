@@ -145,6 +145,9 @@ report_info "Patching the root-fs"
 rsync -a --no-o --no-g $PATCHES_DIR/root-fs/common/ $ROOTFS_DIR/
 rsync -a --no-o --no-g $PATCHES_DIR/root-fs/$CONFIG_NAME/ $ROOTFS_DIR/
 
+# Fix mode of /tmp
+chmod 1777 $ROOTFS_DIR/tmp
+
 # Disable starting daemons in the chroot
 report_info "Disable starting daemons in the chroot"
 cat > $ROOTFS_DIR/usr/sbin/policy-rc.d <<EOF
@@ -492,12 +495,12 @@ true
 EOF
 fi
 
-# Setting JAVA class path
-report_info "Setting JAVA class path"
+# Setting Java class path
+report_info "Setting Java class path"
 chroot $ROOTFS_DIR<<EOF
 export LC_ALL=C LANGUAGE=C LANG=C LC_CTYPE=$LOCALE
 echo "
-# Setting JAVA class path
+# Setting Java class path
 CLASSPATH=\$CLASSPATH:/usr/share/java
 export CLASSPATH" >> /etc/profile
 EOF
