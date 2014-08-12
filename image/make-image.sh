@@ -29,18 +29,6 @@ CONFIG_NAME=$1
 function cleanup {
     report_info "Cleaning up before exit..."
 
-    # Cleaning previously built image
-    if [ -f $OUTPUT_DIR/$IMAGE_NAME.img ]
-    then
-        rm -rf $OUTPUT_DIR/$IMAGE_NAME.img
-    fi
-
-    # Reset mount directory
-    if [ -d $MOUNT_DIR ]
-    then
-        rm -rf $MOUNT_DIR
-    fi
-
     # Unmount and release loop device
     set +e
     if [ -n "${loop_dev_p1+1}" ]
@@ -54,6 +42,12 @@ function cleanup {
         losetup -d $loop_dev
     fi
     set -e
+    
+    # Reset mount directory
+    if [ -d $MOUNT_DIR ]
+    then
+        rm -rf $MOUNT_DIR
+    fi
 }
 
 trap "cleanup" SIGHUP SIGINT SIGTERM SIGQUIT EXIT

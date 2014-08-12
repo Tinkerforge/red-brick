@@ -42,12 +42,6 @@ function cleanup {
     fi
     set -e
     
-    # Cleaning up root-fs directory
-    if [ -d $ROOTFS_DIR ]
-    then
-        rm -rf $ROOTFS_DIR/*
-    fi
-
     # Ensure host name integrity
     hostname -F /etc/hostname
 }
