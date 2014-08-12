@@ -35,7 +35,6 @@ function cleanup {
     if [ -d $MOUNT_DIR ]
     then
         umount $MOUNT_DIR
-        rm -rf $MOUNT_DIR
     fi
     set -e
 }
@@ -66,7 +65,13 @@ dd bs=512 seek=$KERNEL_DD_SEEK if=$KERNEL_IMAGE_FILE of=$DEVICE
 
 # Copying kernel modules to the SD card
 report_info "Copying kernel modules to the SD card"
-mkdir -p $MOUNT_DIR
+if [ ! -d $MOUNT_DIR ]
+then
+    mkdir -p $MOUNT_DIR
+else
+    rm -rf $MOUNT_DIR
+    mkdir -p $MOUNT_DIR
+fi
 mount -t ext3 -o offset=$((512*$ROOT_PART_START_SECTOR)) $DEVICE $MOUNT_DIR
 rsync -arpc $KERNEL_SRC_DIR/$KERNEL_MOD_DIR_NAME/lib/modules $MOUNT_DIR/lib/
 rsync -arpc $KERNEL_SRC_DIR/$KERNEL_MOD_DIR_NAME/lib/firmware $MOUNT_DIR/lib/

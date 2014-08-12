@@ -42,12 +42,6 @@ function cleanup {
         losetup -d $loop_dev
     fi
     set -e
-    
-    # Reset mount directory
-    if [ -d $MOUNT_DIR ]
-    then
-        rm -rf $MOUNT_DIR
-    fi
 }
 
 trap "cleanup" SIGHUP SIGINT SIGTERM SIGQUIT EXIT
