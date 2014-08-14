@@ -33,12 +33,12 @@ function cleanup {
     set +e
     if [ -d $ROOTFS_DIR/proc ]
     then
-        umount $ROOTFS_DIR/proc
+        umount -f $ROOTFS_DIR/proc
     fi
     
     if [ -d $ROOTFS_DIR/dev/pts ]
     then
-        umount $ROOTFS_DIR/dev/pts
+        umount -f $ROOTFS_DIR/dev/pts
     fi
     set -e
     

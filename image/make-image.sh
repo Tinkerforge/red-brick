@@ -33,7 +33,7 @@ function cleanup {
     set +e
     if [ -n "${loop_dev_p1+1}" ]
     then
-        umount $loop_dev_p1
+        umount -f $loop_dev_p1
         losetup -d $loop_dev_p1
     fi
     
