@@ -95,3 +95,18 @@ The default user name is ``tf`` with password ``tf``.
 
 The full image runs a LXDE desktop on the HDMI interface. All images have a
 serial console running on the USB OTG interface.
+
+Editing kernel config
+---------------------
+
+Go to red-brick/image/source/red-brick-linux-sunxi/ and copy full or fast config::
+
+ cp ../../config/kernel/red_brick_{full|fast}_defconfig .config
+
+run xconfig::
+
+ make ARCH=arm xconfig
+
+copy config back::
+ 
+ cp .config ../../config/kernel/red_brick_{full|fast}_defconfig
