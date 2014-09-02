@@ -12,3 +12,9 @@
 
 - acpid is complaining about not working netlink communication with the kernel.
   are we missing a kernel module for this?
+
+- document LED behavior:
+ * If red LED on at startup: Could not find image
+ * If red LED off, green LED off: Could not boot linux
+ * If red LED off, green LED on: RED Brick is booting, not ready yet
+ * If red LED off, green LED heartbeat: BED Brick is ready, all daemons started
