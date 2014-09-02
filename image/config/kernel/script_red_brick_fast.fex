@@ -781,3 +781,13 @@ pin_12 = port:PA20<0><1><default><default>
 pin_13 = port:PG09<1><default><default><0>
 pin_14 = port:PB06<1><default><default><0>
 pin_15 = port:PB13<1><default><default><1>
+
+[leds_para]
+leds_used = 1
+leds_num = 2
+leds_pin_1 = port:PC05<1><default><default><0>
+leds_name_1 = "pc05:green:status"
+leds_trigger_1 = "default-on"
+leds_pin_2 = port:PC06<1><default><default><0>
+leds_name_2 = "pc06:red:error"
+leds_trigger_2 = "none"
