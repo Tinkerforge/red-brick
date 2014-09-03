@@ -733,7 +733,7 @@ auto_hpd = 1
 
 [gpio_para]
 gpio_used = 1
-gpio_num = 15
+gpio_num = 16
 ; LED running
 gpio_pin_1 = port:PC05<1><default><default><0>
 ; LED error
