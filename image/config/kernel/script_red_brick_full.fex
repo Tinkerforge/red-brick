@@ -764,6 +764,8 @@ gpio_pin_13 = port:PG09<1><default><default><0>
 gpio_pin_14 = port:PB06<1><default><default><0>
 ; RXE (Receiver enable pin for modbus interface)
 gpio_pin_15 = port:PB13<1><default><default><1>
+; Stack Reset (TODO: Change to PB4 in final version)
+gpio_pin_16 = port:PG04<0><default><default><default>
 
 [gpio_init]
 pin_1 = port:PC05<1><default><default><0>
@@ -781,6 +783,7 @@ pin_12 = port:PA20<0><1><default><default>
 pin_13 = port:PG09<1><default><default><0>
 pin_14 = port:PB06<1><default><default><0>
 pin_15 = port:PB13<1><default><default><1>
+pin_16 = port:PG04<0><default><default><default>
 
 [leds_para]
 leds_used = 1
