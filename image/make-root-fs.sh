@@ -516,14 +516,6 @@ apt-get update
 apt-get -f install
 EOF
 
-# Setting up running-led
-report_info "Setting up running-led"
-chroot $ROOTFS_DIR<<EOF
-export LC_ALL=C LANGUAGE=C LANG=C LC_CTYPE=$LOCALE
-chmod a+x /etc/init.d/running-led
-insserv /etc/init.d/running-led
-EOF
-
 # Setting up fake-hwclock
 report_info "Setting up fake-hwclock"
 chroot $ROOTFS_DIR<<EOF
