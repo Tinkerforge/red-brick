@@ -30,8 +30,7 @@ LIBS:opto
 LIBS:atmel
 LIBS:contrib
 LIBS:valves
-LIBS:red-cache
-EELAYER 24 0
+EELAYER 27 0
 EELAYER END
 $Descr A3 16535 11693
 encoding utf-8
