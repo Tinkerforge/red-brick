@@ -110,3 +110,17 @@ run xconfig::
 copy config back::
  
  cp .config ../../config/kernel/red_brick_{full|fast}_defconfig
+
+
+Enable serial console for Debug Brick
+-------------------------------------
+
+In config/kernel/red_brick_*_defconfig::
+
+ add console=ttyS0,115200 to CONFIG_CMDLINE
+ add CONFIG_SW_DEBUG_UART=3
+ set CONFIG_DEBUG_LL=y
+
+In patches/root-fs/full/etc/inittab::
+
+ uncomment T1:23:respawn:/sbin/getty --autologin tf -L ttyS0 115200 vt100
