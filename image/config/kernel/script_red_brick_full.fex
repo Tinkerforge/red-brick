@@ -788,7 +788,7 @@ gpio_pin_19 = port:PG13<1><default><default><0>
 ; RXE (Receiver enable pin for modbus interface) and nRESET for Ethernet Extension
 gpio_pin_20 = port:PG02<1><default><default><1>
 ; nINT for Ethernet Extension (interrupt from W5X00)
-gpio_pin_21 = port:PG03<0><default><default><default>
+gpio_pin_21 = port:PG03<6><default><default><default>
 ; PWDN for Ethernet Extension
 gpio_pin_22 = port:PG04<1><default><default><0>
 
@@ -813,7 +813,7 @@ pin_17 = port:PB14<0><default><default><default>
 pin_18 = port:PB19<1><default><default><0>
 pin_19 = port:PG13<1><default><default><0>
 pin_20 = port:PG02<1><default><default><1>
-pin_21 = port:PG03<0><default><default><default>
+pin_21 = port:PG03<6><default><default><default>
 pin_22 = port:PG04<1><default><default><0>
 
 [leds_para]
