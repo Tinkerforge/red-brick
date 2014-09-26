@@ -775,7 +775,7 @@ gpio_pin_12 = port:PA20<0><1><default><default>
 gpio_pin_13 = port:PG09<1><default><default><0>
 ; STACK-SW-I2C-PULLUPS (controlled by stack master, enables I2C bus)
 gpio_pin_14 = port:PB06<1><default><default><0>
-; RXE (Receiver enable pin for modbus interface)
+; RXE (Receiver enable pin for modbus interface) and nRESET for Ethernet Extension
 gpio_pin_15 = port:PB13<1><default><default><1>
 ; Stack Reset (TODO: Change to PB4 in final version)
 gpio_pin_16 = port:PG04<6><default><default><default>
