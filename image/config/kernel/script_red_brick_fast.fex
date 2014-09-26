@@ -183,6 +183,10 @@ uart_rx = port:PC17<4><1><default><default>
 uart_rts = port:PC19<4><1><default><default>
 uart_cts = port:PC18<4><1><default><default>
 
+[spi_devices]
+spi_dev_num = 2
+
+; SPI0 = SPI stack communication
 [spi0_para]
 spi_used = 1
 spi_cs_bitmap = 0
@@ -191,9 +195,6 @@ spi_miso = port:PC01<3><default><default><default>
 spi_sclk = port:PC02<3><default><default><default>
 ; We do manual chip select
 ; spi_cs0 = port:PC03<3><default><default><default>
-
-[spi_devices]
-spi_dev_num = 1
 
 [spi_board0]
 modalias = "spidev"
@@ -204,13 +205,25 @@ mode = 2
 full_duplex = 1
 manual_cs = 0
 
+; SPI1 = Extension (Ethernet Extension)
 [spi1_para]
-spi_used = 0
+spi_used = 1
+spi_cs_bitmap = 1
 spi_cs0 = port:PG09<2><default><default><default>
-spi_cs1 = port:PG13<2><default><default><default>
 spi_sclk = port:PG10<2><default><default><default>
 spi_mosi = port:PG11<2><default><default><default>
 spi_miso = port:PG12<2><default><default><default>
+; Used as nRESET, see gpio section
+; spi_cs1 = port:PG13<2><default><default><default>
+
+[spi_board1]
+modalias = "w5x00"
+max_speed_hz = 8000000
+bus_num = 1
+chip_select = 0
+mode = 0
+full_duplex = 1
+; irq_gpio = 17 
 
 [spi2_para]
 spi_used = 0
@@ -733,7 +746,7 @@ auto_hpd = 1
 
 [gpio_para]
 gpio_used = 1
-gpio_num = 16
+gpio_num = 22
 ; LED running
 gpio_pin_1 = port:PC05<1><default><default><0>
 ; LED error
@@ -766,6 +779,18 @@ gpio_pin_14 = port:PB06<1><default><default><0>
 gpio_pin_15 = port:PB13<1><default><default><1>
 ; Stack Reset (TODO: Change to PB4 in final version)
 gpio_pin_16 = port:PG04<0><default><default><default>
+; nINT for Ethernet Extension (interrupt from W5X00)
+gpio_pin_17 = port:PB14<0><default><default><default>
+; PWDN for Ethernet Extension
+gpio_pin_18 = port:PB19<1><default><default><0>
+; STACK-SEL-EX-01 (setting I2C address of EEPROM chips)
+gpio_pin_19 = port:PG13<1><default><default><0>
+; RXE (Receiver enable pin for modbus interface) and nRESET for Ethernet Extension
+gpio_pin_20 = port:PG02<1><default><default><1>
+; nINT for Ethernet Extension (interrupt from W5X00)
+gpio_pin_21 = port:PG03<0><default><default><default>
+; PWDN for Ethernet Extension
+gpio_pin_22 = port:PG04<1><default><default><0>
 
 [gpio_init]
 pin_1 = port:PC05<1><default><default><0>
@@ -784,6 +809,12 @@ pin_13 = port:PG09<1><default><default><0>
 pin_14 = port:PB06<1><default><default><0>
 pin_15 = port:PB13<1><default><default><1>
 pin_16 = port:PG04<0><default><default><default>
+pin_17 = port:PB14<0><default><default><default>
+pin_18 = port:PB19<1><default><default><0>
+pin_19 = port:PG13<1><default><default><0>
+pin_20 = port:PG02<1><default><default><1>
+pin_21 = port:PG03<0><default><default><default>
+pin_22 = port:PG04<1><default><default><0>
 
 [leds_para]
 leds_used = 1
