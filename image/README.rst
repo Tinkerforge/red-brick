@@ -124,3 +124,7 @@ In config/kernel/red_brick_*_defconfig::
 In patches/root-fs/full/etc/inittab::
 
  uncomment T1:23:respawn:/sbin/getty --autologin tf -L ttyS0 115200 vt100
+
+in /etc/securetty::
+
+ uncomment ttyS0
