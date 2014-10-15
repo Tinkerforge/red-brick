@@ -12,3 +12,5 @@
 
 - acpid is complaining about not working netlink communication with the kernel.
   are we missing a kernel module for this?
+
+- delete /tmp/* on startup
