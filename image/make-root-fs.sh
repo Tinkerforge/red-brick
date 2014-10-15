@@ -231,6 +231,13 @@ cpanm install -n Thread::Queue
 # GROUP-END:perl
 EOF
 
+# Setting up scripts directory (red-brick's brickv mechanism)
+report_info "Setting up scripts directory"
+chroot $ROOTFS_DIR<<EOF
+export LC_ALL=C LANGUAGE=C LANG=C LC_CTYPE=$LOCALE LC_CTYPE=$LOCALE
+mkdir -p /usr/local/scripts
+EOF
+
 # Setting up all the bindings
 report_info "Setting up all the bindings"
 chroot $ROOTFS_DIR<<EOF
