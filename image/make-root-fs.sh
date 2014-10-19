@@ -382,6 +382,7 @@ easy_install --upgrade pip
 # GROUP-START:python
 pip install pycrypto
 # GROUP-END:python
+pip install --upgrade netifaces
 EOF
 
 # Installing Perl features
