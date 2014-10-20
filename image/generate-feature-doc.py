@@ -5,6 +5,7 @@ from os import path
 from os import listdir
 from sys import argv
 from subprocess import call
+import json
 
 if __name__ == "__main__":
     # Defining directories
@@ -14,6 +15,7 @@ if __name__ == "__main__":
     PATCHES_DIR = SCRIPT_RUN_DIR+"/patches"
     FEATURES_DIR_COMMON = PATCHES_DIR+"/root-fs/common/tmp/features"
     OUTPUT_DIR = BUILD_DIR+"/feature_tables"
+    ETC_VERSION_PATH = PATCHES_DIR+"/root-fs/common/etc/tf_installed_versions"
 
     # Checking the directory structure
     if not path.isdir(BUILD_DIR) or not path.isdir(CONFIG_DIR) \
@@ -31,7 +33,7 @@ if __name__ == "__main__":
     if len(CONFIG_LIST) == 0:
         print "\nError: No valid image configurations available\n"
         exit(1)
-    
+
     # Check for multistrap files
     MULTISTRAP_FILES_DICT = {}
     for config in CONFIG_LIST:
@@ -351,6 +353,8 @@ if __name__ == "__main__":
         
         return package_list
 
+
+
     # Populating installed packages for each language with details
     for language in MAIN_DICT:
         if MAIN_DICT[language]["process"]:
@@ -494,6 +498,10 @@ if __name__ == "__main__":
                 else:
                     print "\nError: No proper key found for processing MAIN_DICT\n"
                     exit(1)
+
+    # Write dict as json file to file system, Brick Viewer reads this in versions tab
+    with open(ETC_VERSION_PATH, "w") as f:
+        f.write(json.dumps(MAIN_DICT))
 
     # Generating the output files language wise
     for language in sorted(MAIN_DICT):
