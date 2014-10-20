@@ -672,12 +672,13 @@ export LC_ALL=C LANGUAGE=C LANG=C LC_CTYPE=$LOCALE
 cp -ar /tmp/apache2.conf /etc/apache2/
 EOF
 
-# Cleaning /tmp directory
+# Cleaning /tmp directory and make it r/w for everyone
 report_info "Cleaning /tmp directory"
 chroot $ROOTFS_DIR<<EOF
 export LC_ALL=C LANGUAGE=C LANG=C LC_CTYPE=$LOCALE
 rm -rf /tmp/*
 updatedb
+chmod a+rw /tmp/
 EOF
 
 # Clearing bash history of the root user
