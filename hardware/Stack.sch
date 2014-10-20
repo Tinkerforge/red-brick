@@ -30,17 +30,18 @@ LIBS:opto
 LIBS:atmel
 LIBS:contrib
 LIBS:valves
-EELAYER 27 0
+LIBS:red-cache
+EELAYER 24 0
 EELAYER END
 $Descr A4 11693 8268
 encoding utf-8
 Sheet 5 5
-Title ""
-Date "14 may 2014"
-Rev "2.0"
+Title "RED Brick"
+Date "20 Okt 2014"
+Rev "1.0"
 Comp "Tinkerforge GmbH"
 Comment1 "Licensed under CERN OHL v.1.1"
-Comment2 "Copyright (©) 2012, B.Nordmeyer <bastian@tinkerforge.com>"
+Comment2 "Copyright (©) 2014, B.Nordmeyer <bastian@tinkerforge.com>"
 Comment3 ""
 Comment4 ""
 $EndDescr

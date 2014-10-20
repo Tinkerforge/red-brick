@@ -30,17 +30,18 @@ LIBS:opto
 LIBS:atmel
 LIBS:contrib
 LIBS:valves
-EELAYER 27 0
+LIBS:red-cache
+EELAYER 24 0
 EELAYER END
 $Descr A3 16535 11693
 encoding utf-8
 Sheet 4 5
-Title ""
-Date "14 may 2014"
-Rev ""
-Comp ""
-Comment1 ""
-Comment2 ""
+Title "RED Brick"
+Date "20 Okt 2014"
+Rev "1.0"
+Comp "Tinkerforge GmbH"
+Comment1 "Licensed under CERN OHL v.1.1"
+Comment2 "Copyright (©) 2014, B.Nordmeyer <bastian@tinkerforge.com>"
 Comment3 ""
 Comment4 ""
 $EndDescr
@@ -123,7 +124,7 @@ Text GLabel 3750 9800 2    60   Output ~ 0
 STACK-SER-SCK
 Text GLabel 3750 5050 2    60   Output ~ 0
 STACK-EX-0-GP02
-Text GLabel 3750 9000 2    60   Output ~ 0
+Text GLabel 3750 9300 2    60   Output ~ 0
 STACK-EX-1-GP00
 Text GLabel 3750 9100 2    60   Output ~ 0
 STACK-EX-1-GP01
@@ -264,7 +265,7 @@ Wire Wire Line
 Wire Wire Line
 	11600 4550 11750 4550
 Text Notes 1900 8500 1    61   ~ 0
-Speicherkarte
+SD Card
 $Comp
 L MOSFET_N Q3
 U 1 1 526F4FC8
@@ -594,8 +595,6 @@ Wire Wire Line
 	2750 5050 3750 5050
 Wire Wire Line
 	2750 5150 3750 5150
-Wire Wire Line
-	3100 9000 3750 9000
 Wire Wire Line
 	3750 9100 3100 9100
 Wire Wire Line
@@ -964,7 +963,6 @@ Wire Wire Line
 NoConn ~ 3100 9600
 NoConn ~ 3100 9500
 NoConn ~ 3100 9400
-NoConn ~ 3100 9300
 $Comp
 L NX3008PBKS U9
 U 1 1 52727CF8
@@ -1212,4 +1210,9 @@ Wire Wire Line
 NoConn ~ 11150 5250
 Wire Wire Line
 	11150 6450 11250 6450
+Wire Wire Line
+	3100 9300 3750 9300
+NoConn ~ 3100 9000
+Text Notes 3250 8950 0    60   ~ 0
+PG0-PG2 are input only!
 $EndSCHEMATC

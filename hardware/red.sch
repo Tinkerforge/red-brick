@@ -30,13 +30,14 @@ LIBS:opto
 LIBS:atmel
 LIBS:contrib
 LIBS:valves
-EELAYER 27 0
+LIBS:red-cache
+EELAYER 24 0
 EELAYER END
 $Descr A3 16535 11693
 encoding utf-8
 Sheet 1 5
 Title "RED Brick"
-Date "14 may 2014"
+Date "20 Okt 2014"
 Rev "1.0"
 Comp "Tinkerforge GmbH"
 Comment1 "Licensed under CERN OHL v.1.1"
@@ -747,7 +748,7 @@ F 3 "" H 2200 9900 60  0000 C CNN
 	1    0    0    -1  
 $EndComp
 Text Notes 2050 8850 0    60   ~ 0
-ADC nicht benutzt
+ADC not used
 $Comp
 L TACT-SWITCH SW1
 U 1 1 525F40D1
@@ -1905,8 +1906,6 @@ Text GLabel 11400 9550 0    60   Input ~ 0
 POWER-I2C-SDA
 Text GLabel 11350 9250 0    60   Output ~ 0
 NMI_N
-Text Notes 2700 10700 1    60   ~ 0
-Bauteile Extern
 $Sheet
 S 8750 6950 500  500 
 U 526E4292
@@ -2001,10 +2000,6 @@ F 3 "" H 4900 6750 60  0000 C CNN
 	1    4900 6750
 	0    -1   -1   0   
 $EndComp
-Text Notes 4850 6950 0    60   ~ 0
-Tiefpass 1R -> 22µF bauen
-Text Notes 4900 7050 0    30   ~ 0
-Allwinner verbindet V33_USB und V33_HDMI
 NoConn ~ 4150 9850
 NoConn ~ 4150 9950
 NoConn ~ 2650 6350
@@ -3050,8 +3045,6 @@ $EndComp
 Connection ~ 700  5300
 Text Notes 13500 6700 0    60   ~ 0
 2,2µH DCR<0.1 >1A
-Text Notes 650  8700 0    60   ~ 0
-z.B. 732-TX325-24F20G-AC3
 Wire Wire Line
 	11700 9050 11650 9050
 Wire Wire Line

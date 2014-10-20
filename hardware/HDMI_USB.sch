@@ -30,17 +30,18 @@ LIBS:opto
 LIBS:atmel
 LIBS:contrib
 LIBS:valves
-EELAYER 27 0
+LIBS:red-cache
+EELAYER 24 0
 EELAYER END
 $Descr A4 11693 8268
 encoding utf-8
 Sheet 3 5
-Title ""
-Date "14 may 2014"
-Rev ""
-Comp ""
-Comment1 ""
-Comment2 ""
+Title "RED Brick"
+Date "20 Okt 2014"
+Rev "1.0"
+Comp "Tinkerforge GmbH"
+Comment1 "Licensed under CERN OHL v.1.1"
+Comment2 "Copyright (©) 2014, B.Nordmeyer <bastian@tinkerforge.com>"
 Comment3 ""
 Comment4 ""
 $EndDescr
@@ -1077,7 +1078,7 @@ $Comp
 L C C98
 U 1 1 527245A8
 P 2550 3000
-F 0 "C98" H 2600 3100 50  0000 L CNN
+F 0 "C98" H 2550 3100 50  0000 L CNN
 F 1 "22µF/6.3V" V 2400 2800 50  0000 L CNN
 F 2 "0603" H 2550 3000 60  0001 C CNN
 F 3 "" H 2550 3000 60  0000 C CNN
@@ -1088,8 +1089,8 @@ $Comp
 L C C97
 U 1 1 527245CE
 P 2200 3000
-F 0 "C97" H 2250 3100 50  0000 L CNN
-F 1 "22µF/6.3V" V 2050 2800 50  0000 L CNN
+F 0 "C97" H 2050 3100 50  0000 L CNN
+F 1 "22µF/6.3V" V 2350 2800 50  0000 L CNN
 F 2 "0603" H 2200 3000 60  0001 C CNN
 F 3 "" H 2200 3000 60  0000 C CNN
 	1    2200 3000
@@ -1367,4 +1368,5 @@ Wire Wire Line
 NoConn ~ 8500 6900
 NoConn ~ 9000 6900
 Connection ~ 8550 3950
+Connection ~ 9250 5700
 $EndSCHEMATC

@@ -30,17 +30,18 @@ LIBS:opto
 LIBS:atmel
 LIBS:contrib
 LIBS:valves
-EELAYER 27 0
+LIBS:red-cache
+EELAYER 24 0
 EELAYER END
 $Descr A4 11693 8268
 encoding utf-8
 Sheet 2 5
-Title ""
-Date "14 may 2014"
-Rev ""
-Comp ""
-Comment1 ""
-Comment2 ""
+Title "RED Brick"
+Date "20 Okt 2014"
+Rev "1.0"
+Comp "Tinkerforge GmbH"
+Comment1 "Licensed under CERN OHL v.1.1"
+Comment2 "Copyright (©) 2014, B.Nordmeyer <bastian@tinkerforge.com>"
 Comment3 ""
 Comment4 ""
 $EndDescr
@@ -592,10 +593,6 @@ Connection ~ 6300 7050
 Wire Wire Line
 	5400 6800 5500 6800
 Connection ~ 5500 6850
-Text Notes 6150 6700 0    60   ~ 0
-Alternativ 240
-Text Notes 10300 5400 0    60   ~ 0
-Alternativ 240
 Entry Wire Line
 	500  2200 600  2300
 Entry Wire Line
@@ -857,8 +854,6 @@ Text Notes 9950 3850 2    50   ~ 0
 100 Ohm
 Text Notes 5950 4600 2    50   ~ 0
 100 Ohm
-Text Notes 6550 750  0    60   ~ 0
-Kein pullup für DDR_NRST vorhanden
 $Comp
 L R R10
 U 1 1 52CBFE2E
