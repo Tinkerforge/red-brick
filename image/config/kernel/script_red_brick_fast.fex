@@ -208,13 +208,12 @@ manual_cs = 0
 ; SPI1 = Extension (Ethernet Extension)
 [spi1_para]
 spi_used = 1
-spi_cs_bitmap = 1
+spi_cs_bitmap = 3
 spi_cs0 = port:PG09<2><default><default><default>
 spi_sclk = port:PG10<2><default><default><default>
 spi_mosi = port:PG11<2><default><default><default>
 spi_miso = port:PG12<2><default><default><default>
-; Used as nRESET, see gpio section
-; spi_cs1 = port:PG13<2><default><default><default>
+spi_cs1 = port:PG13<2><default><default><default>
 
 [spi_board1]
 modalias = "w5x00"
@@ -223,7 +222,6 @@ bus_num = 1
 chip_select = 0
 mode = 0
 full_duplex = 1
-; irq_gpio = 17 
 
 [spi2_para]
 spi_used = 0
