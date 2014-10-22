@@ -46,6 +46,7 @@ packages=locales man-db console-data fbi ca-certificates openssh-server
 packages=policykit-1 curl checkinstall locate git zip unzip openssh-client
 packages=module-init-tools fake-hwclock cron ntp macchanger syslog-ng
 packages=console-setup debconf-utils stress elinks i2c-tools libi2c-dev
+packages=bash-completion
 # GROUP-END:system
 
 # GROUP-START:test_tools
@@ -65,7 +66,7 @@ packages=libqt4-scripttools libqt4-xmlpatterns
 # GROUP-END:qt
 
 # GROUP-START:c
-packages=build-essential cmake autoconf automake libtool flex bison sqlite libblas3
+packages=cc g++ libc6-dev cmake autoconf automake libtool flex bison sqlite libblas3
 packages=sqlite sqlite3 libmysqlclient-dev libatlas-base-dev libexpat1-dev libcurl4-openssl-dev
 packages=libboost-all-dev libopencv-dev libgsl0-dev libgcrypt11-dev freeglut3
 packages=libssl-dev libcrypto++-dev libpcap-dev libmsgpack-dev libxml2-dev libgd2-xpm-dev
@@ -79,7 +80,7 @@ packages=ruby-full
 
 # GROUP-START:python
 packages=python python-pip python-setuptools python-mysql.connector python-mysqldb
-packages=bash-completion python-software-properties libpython2.7 python-pcapy python-psutil
+packages=python-software-properties libpython2.7 python-pcapy python-psutil
 packages=python-numpy python-serial python-sip python-sqlite python-sqlitecachec python-netifaces
 packages=python-scientific python-scipy python-sciscipy python-scitools python-pycurl
 packages=python-opencv python-matplotlib python-matplotlib-data msgpack-python python-pypdf
@@ -93,10 +94,8 @@ packages=octave octave-java
 packages=fpc fp-utils
 # GROUP-END:delphi
 
+# We get java8 and libs externaly
 # GROUP-START:java
-packages=openjdk-6-jdk openjdk-7-jdk icedtea-netx icedtea-6-plugin
-packages=icedtea-7-plugin icedtea-6-jre-cacao icedtea-6-jre-jamvm
-packages=icedtea-7-jre-jamvm
 # GROUP-END:java
 
 # GROUP-START:php

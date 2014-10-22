@@ -47,6 +47,7 @@ packages=tasksel xorg fakeroot ca-certificates lxlauncher lxtask openssh-client
 packages=lxpolkit policykit-1 menu-xdg curl checkinstall synaptic locate git
 packages=module-init-tools midori fake-hwclock cron ntp zip unzip i2c-tools
 packages=console-setup debconf-utils libi2c-dev macchanger syslog-ng
+packages=bash-completion sshfs
 # GROUP-END:system
 
 # GROUP-START:test_tools
@@ -67,7 +68,7 @@ packages=libqwt5-qt4 libqwt6 qt4-linguist-tools qt4-qmake qt4-dev-tools
 # GROUP-END:qt
 
 # GROUP-START:c
-packages=build-essential cmake autoconf automake libtool flex bison sqlite libblas3
+packages=gcc g++ libc6-dev cmake autoconf automake libtool flex bison sqlite libblas3
 packages=sqlite sqlite3 libmysqlclient-dev libgtk2.0-dev libgtk-3-dev libatlas-base-dev
 packages=libboost-all-dev libopencv-dev libgsl0-dev libgcrypt11-dev freeglut3
 packages=libssl-dev libcrypto++-dev libpcap-dev libmsgpack-dev libxml2-dev libgd2-xpm-dev
@@ -83,7 +84,7 @@ packages=ruby-full
 
 # GROUP-START:python
 packages=python python-pip python-setuptools python-mysql.connector python-mysqldb
-packages=bash-completion python-software-properties libpython2.7 python-pcapy python-psutil
+packages=python-software-properties libpython2.7 python-pcapy python-psutil
 packages=python-numpy python-opengl python-qt4 python-qt4-gl python-gtk2 python-gtk2-dev
 packages=python-qwt5-qt4 python-serial python-sip python-sqlite python-sqlitecachec python-netifaces
 packages=python-scientific python-scipy python-sciscipy python-scitools python-pycurl
@@ -98,10 +99,8 @@ packages=octave octave-java
 packages=fpc fp-utils
 # GROUP-END:delphi
 
+# We get java8 and libs externaly
 # GROUP-START:java
-packages=openjdk-6-jdk openjdk-7-jdk icedtea-netx icedtea-6-plugin
-packages=icedtea-7-plugin icedtea-6-jre-cacao icedtea-6-jre-jamvm
-packages=icedtea-7-jre-jamvm
 # GROUP-END:java
 
 # GROUP-START:php
