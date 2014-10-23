@@ -210,6 +210,18 @@ dpkg --configure -a
 true
 EOF
 
+# Installing redapid
+report_info "Installing redapid"
+chroot $ROOTFS_DIR<<EOF
+export LC_ALL=C LANGUAGE=C LANG=C LC_CTYPE=$LOCALE
+cd /tmp
+wget http://download.tinkerforge.com/tools/redapid/linux/redapid_linux_latest_armhf.deb
+dpkg -i redapid_linux_latest_armhf.deb
+dpkg --configure -a
+# add true here to avoid having a dpkg error abort the whole script here
+true
+EOF
+
 # Installing Node.js and NPM
 report_info "Installing Node.js and NPM"
 chroot $ROOTFS_DIR<<EOF
