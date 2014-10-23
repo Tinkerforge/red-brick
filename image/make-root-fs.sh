@@ -194,8 +194,8 @@ wget download.tinkerforge.com/_stuff/jdk-8-linux-arm-vfp-hflt.tar.gz
 tar zxf jdk-8-linux-arm-vfp-hflt.tar.gz -C /usr/lib/jvm
 update-alternatives --install /usr/bin/javac javac /usr/lib/jvm/jdk1.8.0/bin/javac 1
 update-alternatives --install /usr/bin/java java /usr/lib/jvm/jdk1.8.0/bin/java 1
-echo 3 | update-alternatives --config javac
-echo 3 | update-alternatives --config java
+# we only have the java8 javac echo 3 | update-alternatives --config javac 
+echo 4 | update-alternatives --config java
 EOF
 
 # Installing brickd
