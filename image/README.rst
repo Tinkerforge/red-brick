@@ -99,7 +99,7 @@ serial console running on the USB OTG interface.
 Editing kernel config
 ---------------------
 
-Go to red-brick/image/source/red-brick-linux-sunxi/ and copy full or fast config::
+Go to ``red-brick/image/source/red-brick-linux-sunxi/`` and copy full or fast config::
 
  cp ../../config/kernel/red_brick_{full|fast}_defconfig .config
 
@@ -108,23 +108,26 @@ run xconfig::
  make ARCH=arm xconfig
 
 copy config back::
- 
+
  cp .config ../../config/kernel/red_brick_{full|fast}_defconfig
 
 
 Enable serial console for Debug Brick
 -------------------------------------
 
-In config/kernel/red_brick_*_defconfig::
+In ``config/kernel/red_brick_*_defconfig`` add::
 
- add console=ttyS0,115200 to CONFIG_CMDLINE
- add CONFIG_SW_DEBUG_UART=3
- set CONFIG_DEBUG_LL=y
+ console=ttyS0,115200
 
-In patches/root-fs/full/etc/inittab::
+to ``CONFIG_CMDLINE`` and ensure that the following two are set::
 
- uncomment T1:23:respawn:/sbin/getty --autologin tf -L ttyS0 115200 vt100
+ CONFIG_SW_DEBUG_UART=3
+ CONFIG_DEBUG_LL=y
 
-in /etc/securetty::
+In ``patches/root-fs/{full|fast}/etc/inittab`` uncomment::
 
- uncomment ttyS0
+ T1:23:respawn:/sbin/getty --autologin tf -L ttyS0 115200 vt100
+
+In ``/etc/securetty`` uncomment::
+
+ ttyS0
