@@ -684,6 +684,12 @@ export LC_ALL=C LANGUAGE=C LANG=C LC_CTYPE=$LOCALE
 cp -ar /tmp/apache2.conf /etc/apache2/
 EOF
 
+# Generate Tinkerforge.js symlink
+report_info "Generating Tinkerforge.js symlink"
+chroot $ROOTFS_DIR<<EOF
+ln -s /usr/tinkerforge/bindings/javascript/browser/source/Tinkerforge.js /home/tf
+EOF
+
 # Cleaning /tmp directory and make it r/w for everyone
 report_info "Cleaning /tmp directory"
 chroot $ROOTFS_DIR<<EOF
