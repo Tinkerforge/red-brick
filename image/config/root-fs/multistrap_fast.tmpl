@@ -49,7 +49,7 @@ packages=console-setup debconf-utils stress elinks i2c-tools libi2c-dev
 packages=bash-completion sshfs firmware-atheros atmel-firmware firmware-linux-free
 packages=firmware-linux-nonfree prism2-usb-firmware-installer
 packages=firmware-realtek firmware-ralink firmware-libertas zd1211-firmware
-packages=libapache2-mod-python
+packages=libapache2-mod-python mono-complete
 # GROUP-END:system
 
 # GROUP-START:test_tools
@@ -148,8 +148,9 @@ omitdebsrc=false
 
 [Raspbian]
 # GROUP-START:mono
-packages=mono-runtime libmono-2.0-1 mono-mcs
-packages=mono-dmcs mono-gmcs mono-vbnc
+packages=mono-runtime libmono-2.0-1 mono-mcs mono-dmcs mono-gmcs mono-vbnc
+packages=mono-runtime-sgen libmono-profiler mono-utils mono-jay mono-devel mono-csharp-shell
+packages=mono-2.0-gac mono-4.0-gac mono-2.0-service mono-4.0-service libmono-cil-dev
 # GROUP-END:mono
 
 source=http://%apt-cacher-3-prefix%archive.raspbian.org/raspbian 
