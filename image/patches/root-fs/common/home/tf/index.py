@@ -9,7 +9,10 @@ PATH_LOG      = os.path.join(PATH_PROGRAMS, '{0}', 'log')
 PATH_BIN      = os.path.join(PATH_PROGRAMS, '{0}', 'bin')
 
 def get_program_ids():
-    return os.listdir(PATH_PROGRAMS)
+    try:
+        return os.listdir(PATH_PROGRAMS)
+    except:
+        return []
 
 def read_name_from_config(config):
     with open(config, "r") as f:
@@ -66,7 +69,7 @@ PAGE = """
             <span class="byline">Currently there are <strong>{0}</strong> programs running on the RED Brick</span> 
         </div>
         <p>
-            For each program you can view the config, the logs and the binaries. If you uploaded a
+            For each program you can view the config, the logs and the binaries. If you uploaded an
             <strong>index.py</strong>, <strong>index.php</strong> or <strong>index.html</strong> 
             the respective file will be used as directory index for the binary folder.
         </p>
@@ -75,7 +78,7 @@ PAGE = """
             upload your program <strong>EXAMPLE</strong> with id <strong>EXAMPLEID</strong> that 
             includes an index.php as starting point. If you now go to this webpage and click on
             the "Bin" button for the newly created program, you will get a link to 
-            <strong>programs/EXAMPLEID/bin</strong>, which will directly execute the index.php
+            <strong>/programs/EXAMPLEID/bin</strong>, which will directly execute the index.php
             if opened.
         </p>
         <div id="three-column">
