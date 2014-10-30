@@ -1,6 +1,5 @@
-PATH := ../tools/gcc-linaro-arm-linux-gnueabihf-4.8-2013.10_linux/bin/
-ARCH := arm
-CC := $(PATH)arm-linux-gnueabihf-gcc
+CCPATH := ../tools/gcc-linaro-arm-linux-gnueabihf-4.8-2013.10_linux/bin/
+CC := $(CCPATH)arm-linux-gnueabihf-gcc
 
 FILES = hello.c
 OUT := hello
