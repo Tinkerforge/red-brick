@@ -258,6 +258,10 @@ mkdir -p /usr/tinkerforge/bindings
 cd /usr/tinkerforge/bindings
 wget http://download.tinkerforge.com/bindings/c/tinkerforge_c_bindings_latest.zip
 unzip -q -d c tinkerforge_c_bindings_latest.zip
+cd c
+make
+prefix=/usr make install
+cd /usr/tinkerforge/bindings
 wget http://download.tinkerforge.com/bindings/csharp/tinkerforge_csharp_bindings_latest.zip
 unzip -q -d csharp tinkerforge_csharp_bindings_latest.zip
 wget http://download.tinkerforge.com/bindings/delphi/tinkerforge_delphi_bindings_latest.zip
