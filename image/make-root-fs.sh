@@ -258,7 +258,7 @@ mkdir -p /usr/tinkerforge/bindings
 cd /usr/tinkerforge/bindings
 wget http://download.tinkerforge.com/bindings/c/tinkerforge_c_bindings_latest.zip
 unzip -q -d c tinkerforge_c_bindings_latest.zip
-cd c
+cd c/source/
 make
 prefix=/usr make install
 cd /usr/tinkerforge/bindings
