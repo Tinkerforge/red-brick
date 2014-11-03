@@ -269,6 +269,9 @@ cp Tinkerforge.dll /usr/lib/
 cd /usr/tinkerforge/bindings
 wget http://download.tinkerforge.com/bindings/delphi/tinkerforge_delphi_bindings_latest.zip
 unzip -q -d delphi tinkerforge_delphi_bindings_latest.zip
+cd delphi/
+chmod a+rw source/
+cd /usr/tinkerforge/bindings
 wget http://download.tinkerforge.com/bindings/java/tinkerforge_java_bindings_latest.zip
 unzip -q -d java tinkerforge_java_bindings_latest.zip
 wget http://download.tinkerforge.com/bindings/javascript/tinkerforge_javascript_bindings_latest.zip
