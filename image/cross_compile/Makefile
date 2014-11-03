@@ -4,16 +4,16 @@ CC := $(CCPATH)arm-linux-gnueabihf-gcc
 CFLAGS=-c -Wall
 EXE=hello
 SOURCES=hello.c
-OBJECTS=$(SOURCES:.cpp=.o)
+OBJECTS=$(SOURCES:.c=.o)
 
 # Build Rules
 all: $(SOURCES) $(EXE)
 
-.cpp.o:
+.c.o:
 	$(CC) $(CFLAGS) $< -o $@
 
 $(EXE): $(OBJECTS)
 	$(CC) $(OBJECTS) -o $(EXE)
 
-clean: 
+clean:
 	rm -f *.o $(EXE)
