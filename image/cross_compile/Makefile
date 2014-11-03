@@ -1,11 +1,19 @@
+# Defines
 CCPATH := ../tools/gcc-linaro-arm-linux-gnueabihf-4.8-2013.10_linux/bin/
 CC := $(CCPATH)arm-linux-gnueabihf-gcc
+CFLAGS=-c -Wall
+EXE=hello
+SOURCES=hello.c
+OBJECTS=$(SOURCES:.cpp=.o)
 
-FILES = hello.c
-OUT := hello
+# Build Rules
+all: $(SOURCES) $(EXE)
 
-default :
-	$(CC) $(FILES) -o $(OUT)
+.cpp.o:
+	$(CC) $(CFLAGS) $< -o $@
 
-clean :
-	/bin/rm -f *.o $(OUT)
+$(EXE): $(OBJECTS)
+	$(CC) $(OBJECTS) -o $(EXE)
+
+clean: 
+	rm -f *.o $(EXE)
