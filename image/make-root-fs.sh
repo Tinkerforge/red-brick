@@ -276,6 +276,9 @@ wget http://download.tinkerforge.com/bindings/java/tinkerforge_java_bindings_lat
 unzip -q -d java tinkerforge_java_bindings_latest.zip
 wget http://download.tinkerforge.com/bindings/javascript/tinkerforge_javascript_bindings_latest.zip
 unzip -q -d javascript tinkerforge_javascript_bindings_latest.zip
+cd javascript/
+npm -g install nodejs/tinkerforge.tgz
+cd /usr/tinkerforge/bindings
 wget http://download.tinkerforge.com/bindings/labview/tinkerforge_labview_bindings_latest.zip
 unzip -q -d labview tinkerforge_labview_bindings_latest.zip
 wget http://download.tinkerforge.com/bindings/mathematica/tinkerforge_mathematica_bindings_latest.zip
@@ -286,7 +289,7 @@ wget http://download.tinkerforge.com/bindings/perl/tinkerforge_perl_bindings_lat
 unzip -q -d perl tinkerforge_perl_bindings_latest.zip
 cd perl
 tar zxvf Tinkerforge.tar.gz
-cd Tinkerforge-*
+cd source/
 perl Makefile.PL
 make all
 make test
