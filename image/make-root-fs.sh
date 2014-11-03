@@ -264,6 +264,9 @@ prefix=/usr make install
 cd /usr/tinkerforge/bindings
 wget http://download.tinkerforge.com/bindings/csharp/tinkerforge_csharp_bindings_latest.zip
 unzip -q -d csharp tinkerforge_csharp_bindings_latest.zip
+cd csharp/
+cp Tinkerforge.dll /usr/lib/
+cd /usr/tinkerforge/bindings
 wget http://download.tinkerforge.com/bindings/delphi/tinkerforge_delphi_bindings_latest.zip
 unzip -q -d delphi tinkerforge_delphi_bindings_latest.zip
 wget http://download.tinkerforge.com/bindings/java/tinkerforge_java_bindings_latest.zip
