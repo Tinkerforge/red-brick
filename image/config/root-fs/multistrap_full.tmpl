@@ -152,9 +152,14 @@ components=main contrib non-free
 omitdebsrc=false
 
 [Raspbian]
+# GROUP-START:system
+packages=mono-complete
+# GROUP-END:system
+
 # GROUP-START:mono
-packages=mono-runtime libmono-2.0-1 mono-mcs
-packages=mono-dmcs mono-gmcs mono-vbnc
+packages=mono-runtime libmono-2.0-1 mono-mcs mono-dmcs mono-gmcs mono-vbnc
+packages=mono-runtime-sgen libmono-profiler mono-utils mono-jay mono-devel mono-csharp-shell
+packages=mono-2.0-gac mono-4.0-gac mono-2.0-service mono-4.0-service libmono-cil-dev
 # GROUP-END:mono
 
 source=http://%apt-cacher-3-prefix%archive.raspbian.org/raspbian 

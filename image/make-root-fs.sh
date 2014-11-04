@@ -84,13 +84,6 @@ then
     exit 1
 fi
 
-# Checking qemu support
-if [ ! -e $QEMU_BIN ]
-then
-    report_error "Install qemu support for ARM"
-    exit 1
-fi
-
 # Checking stray /proc and /dev/pts mount on root-fs directory
 set +e
 report_info "Checking stray /proc and /dev/pts mount on root-fs directory"
@@ -151,8 +144,26 @@ EOF
 chmod a+x $ROOTFS_DIR/usr/sbin/policy-rc.d
 
 # Copying qemu-arm-static to root-fs
-report_info "Copying qemu-arm-static to root-fs"
-cp $QEMU_BIN $ROOTFS_DIR/usr/bin/
+report_info "Compiling and copying qemu-arm-static to root-fs"
+cd $SOURCE_DIR
+
+if [ ! -f $SOURCE_DIR/qemu-2.1.2.tar.bz2 ]
+then
+    wget http://wiki.qemu-project.org/download/qemu-2.1.2.tar.bz2
+fi
+
+if [ ! -d $SOURCE_DIR/qemu-2.1.2 ]
+then
+    tar jxf qemu-2.1.2.tar.bz2
+    cd $SOURCE_DIR/qemu-2.1.2/
+    patch -p1 < $PATCHES_DIR/tools/qemu-2.1.2-sigrst-sigpwr.patch
+fi
+
+apt-get build-dep qemu-user-static
+cd $SOURCE_DIR/qemu-2.1.2/
+./configure --target-list="arm-linux-user" --static --disable-system
+make
+cp $SOURCE_DIR/qemu-2.1.2/arm-linux-user/qemu-arm $ROOTFS_DIR/usr/bin/qemu-arm-static
 
 # Configuring the generated root-fs
 report_info "Configuring the generated root-fs"
