@@ -99,6 +99,10 @@ serial console running on the USB OTG interface.
 Editing kernel config
 ---------------------
 
+First update the kernel sources::
+ 
+  ./update-source.sh
+
 Go to ``red-brick/image/source/red-brick-linux-sunxi/`` and copy full or fast config::
 
  cp ../../config/kernel/red_brick_{full|fast}_defconfig .config
