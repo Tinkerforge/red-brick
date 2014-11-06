@@ -453,6 +453,13 @@ pear install --onlyreqdeps XML_Parser XML_RPC
 # GROUP-END:php
 EOF
 
+# Ensure patched version of fpc config
+report_info "Ensure patched version of fpc config"
+chroot $ROOTFS_DIR<<EOF
+export LC_ALL=C LANGUAGE=C LANG=C LC_CTYPE=$LOCALE
+cp /tmp/fpc-2.6.0.cfg /etc
+EOF
+
 # Enable BASH completion
 report_info "Enabling BASH completion"
 chroot $ROOTFS_DIR<<EOF
