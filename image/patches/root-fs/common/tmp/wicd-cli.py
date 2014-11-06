@@ -15,6 +15,9 @@
 #       Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,
 #       MA 02110-1301, USA.
 
+#	This is a patched version of wicd-cli.py to work with
+#	Tinkerforge GmbH RED Brick
+
 import optparse
 import dbus
 import dbus.service
