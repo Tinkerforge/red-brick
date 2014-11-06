@@ -18,6 +18,7 @@ sudo apt-get update
 report_info "Installing tools (requires root access)"
 
 sudo apt-get install -y $REQUIRED_HOST_PACKAGES
+sudo apt-get build-dep -y qemu
 
 # Installing cross compiling toolchain
 report_info "Installing cross compiling toolchain"
