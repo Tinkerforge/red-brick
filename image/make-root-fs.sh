@@ -603,6 +603,14 @@ usermod -a -G crontab tf
 usermod -a -G netdev tf
 EOF
 
+# Copy RED Brick index website
+report_info "Copy RED Brick index websit"
+chroot $ROOTFS_DIR<<EOF
+export LC_ALL=C LANGUAGE=C LANG=C LC_CTYPE=$LOCALE
+cp /tmp/index.py /home/tf
+cp /tmp/red.css /home/tf
+EOF
+
 # Generating dpkg listing
 report_info "Generating dpkg listing"
 chroot $ROOTFS_DIR<<EOF
