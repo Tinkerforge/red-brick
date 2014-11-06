@@ -7,6 +7,13 @@ CONFIG_DIR="$BASE_DIR/config"
 
 . $CONFIG_DIR/common.conf
 
+
+# Update package index files
+
+report_info "Update package index files"
+
+sudo apt-get update
+
 # Installing tools
 report_info "Installing tools (requires root access)"
 
