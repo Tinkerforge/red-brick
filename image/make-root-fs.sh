@@ -159,7 +159,6 @@ then
     patch -p1 < $PATCHES_DIR/tools/qemu-2.1.2-sigrst-sigpwr.patch
 fi
 
-apt-get build-dep qemu-user-static
 cd $SOURCE_DIR/qemu-2.1.2/
 ./configure --target-list="arm-linux-user" --static --disable-system
 make
@@ -287,9 +286,6 @@ wget http://download.tinkerforge.com/bindings/java/tinkerforge_java_bindings_lat
 unzip -q -d java tinkerforge_java_bindings_latest.zip
 wget http://download.tinkerforge.com/bindings/javascript/tinkerforge_javascript_bindings_latest.zip
 unzip -q -d javascript tinkerforge_javascript_bindings_latest.zip
-cd javascript/
-npm -g install nodejs/tinkerforge.tgz
-cd /usr/tinkerforge/bindings
 wget http://download.tinkerforge.com/bindings/labview/tinkerforge_labview_bindings_latest.zip
 unzip -q -d labview tinkerforge_labview_bindings_latest.zip
 wget http://download.tinkerforge.com/bindings/mathematica/tinkerforge_mathematica_bindings_latest.zip
@@ -333,6 +329,16 @@ unzip -q -d vbnet tinkerforge_vbnet_bindings_latest.zip
 cd /usr/tinkerforge/bindings
 rm -rf *_bindings_latest.zip
 EOF
+
+
+# Install nodejs bindings. We can't install them through chroot, since
+# qemu does not support netlink (which is necessary for npm).
+# So instead we install them in a custom dir on the host system and
+# copy them into the rootfs afterwards.
+mkdir /tmp/red_brick_node
+npm install $ROOTFS_DIR/usr/tinkerforge/bindings/javascript/nodejs/tinkerforge.tgz -g --prefix /tmp/red_brick_node
+rsync -a --no-o --no-g /tmp/red_brick_node/lib $ROOTFS_DIR/usr/local
+rm -rf /tmp/red_brick_node
 
 # Installing Mono features
 report_info "Installing Mono features"
@@ -446,20 +452,6 @@ pear install --onlyreqdeps Math_Vector MDB2 Net_URL2 Services_JSON System_Comman
 pear install --onlyreqdeps XML_Parser XML_RPC
 # GROUP-END:php
 EOF
-
-# Installing Node.js features
-#report_info "Installing Node.js features"
-#chroot $ROOTFS_DIR<<EOF
-#export LC_ALL=C LANGUAGE=C LANG=C LC_CTYPE=$LOCALE
-#npm -g install node-dbi
-#npm -g install gui node-qt node-opengl
-#npm -g install science gsl numbers ico
-#npm -g install crypto
-#npm -g install node-pcap node-curl
-#npm -g install htmlparser
-#npm -g install opencv
-#npm -g install dnode now pdfkit
-#EOF
 
 # Enable BASH completion
 report_info "Enabling BASH completion"
