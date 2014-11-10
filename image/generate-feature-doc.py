@@ -25,14 +25,14 @@ if __name__ == "__main__":
         exit(1)
     
     # Getting available configurations
-    CONFIG_LIST = []
-    for file_name in listdir(CONFIG_DIR+"/root-fs"):
-        file_name_split_array_us = file_name.split("_")
-        file_name_split_array_dot = file_name_split_array_us[1].split(".")
-        CONFIG_LIST.append(file_name_split_array_dot[0])
-    if len(CONFIG_LIST) == 0:
-        print "\nError: No valid image configurations available\n"
-        exit(1)
+    CONFIG_LIST = ["full"]
+#    for file_name in listdir(CONFIG_DIR+"/root-fs"):
+#        file_name_split_array_us = file_name.split("_")
+#        file_name_split_array_dot = file_name_split_array_us[1].split(".")
+#        CONFIG_LIST.append(file_name_split_array_dot[0])
+#    if len(CONFIG_LIST) == 0:
+#        print "\nError: No valid image configurations available\n"
+#       exit(1)
 
     # Check for multistrap files
     MULTISTRAP_FILES_DICT = {}

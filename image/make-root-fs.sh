@@ -310,7 +310,8 @@ cd /usr/tinkerforge/bindings
 wget http://download.tinkerforge.com/bindings/python/tinkerforge_python_bindings_latest.zip
 unzip -q -d python tinkerforge_python_bindings_latest.zip
 cd python/source
-python setup.py install
+python2 setup.py install
+python3 setup.py install
 cd /usr/tinkerforge/bindings
 wget http://download.tinkerforge.com/bindings/ruby/tinkerforge_ruby_bindings_latest.zip
 unzip -q -d ruby tinkerforge_ruby_bindings_latest.zip
