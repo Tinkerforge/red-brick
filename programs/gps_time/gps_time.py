@@ -11,7 +11,7 @@ from threading import Semaphore, Timer
 
 HOST = "localhost"
 PORT = 4223
-SUDO_PASSWORD = b'tf'
+SUDO_PASSWORD = b'tf\n'
 
 class GPSTimeToLinuxTime:
     def __init__(self):
@@ -123,7 +123,7 @@ class GPSTimeToLinuxTime:
             # Set date as root
             command = ['/usr/bin/sudo', '-S']
             command.extend('/bin/date +%s -u -s @{0}'.format(self.gps_time.strftime("%s")).split(' '))
-            Popen(command, stdin=PIPE, stdout=PIPE).communicate(SUDO_PASSWORD)
+            Popen(command, stdout=PIPE, stdin=PIPE).communicate(SUDO_PASSWORD)
         except:
             return False
 
