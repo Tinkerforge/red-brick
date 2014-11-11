@@ -1,9 +1,9 @@
 Set GPS time as Linux system time
 ---------------------------------
 
-If you can't use ntp (i.e. the RED Brick does not have internet access), you canuse the GPS Bricklet to set a proper system time.
+If you can't use ntp (i.e. the RED Brick does not have internet access), you can use the GPS Bricklet to set a proper system time.
 
-For the gps_time.py script you might use the following settings:
+For the gps_time.py script the follwing settings will correct the system time every 6 hours:
 
 * 1 of 8:
 
