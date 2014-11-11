@@ -57,6 +57,8 @@ class GPSTimeToLinuxTime:
             pass
 
     def is_ntp_present(self):
+        # FIXME: Find out if we have internet access and ntp is working, in
+        #        that case we don't need to use the GPS time.
         return False
 
     def get_gps_uid(self):
