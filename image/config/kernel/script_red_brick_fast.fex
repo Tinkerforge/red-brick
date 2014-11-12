@@ -775,8 +775,8 @@ gpio_pin_13 = port:PG09<1><default><default><0>
 gpio_pin_14 = port:PB06<1><default><default><0>
 ; RXE (Receiver enable pin for modbus interface) and nRESET for Ethernet Extension
 gpio_pin_15 = port:PB13<1><default><default><1>
-; Stack Reset (TODO: Change to PB4 in final version)
-gpio_pin_16 = port:PG04<6><default><default><default>
+; Stack Reset
+gpio_pin_16 = port:PB05<6><default><default><default>
 ; nINT for Ethernet Extension (interrupt from W5X00)
 gpio_pin_17 = port:PB14<0><default><default><default>
 ; PWDN for Ethernet Extension
