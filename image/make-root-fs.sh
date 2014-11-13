@@ -565,7 +565,7 @@ report_info "Setting up fake-hwclock"
 chroot $ROOTFS_DIR<<EOF
 export LC_ALL=C LANGUAGE=C LANG=C LC_CTYPE=$LOCALE
 rm -rf /etc/cron.hourly/fake-hwclock
-chmod a+x /etc/cron.d/fake-hwclock
+chmod 0644 /etc/cron.d/fake-hwclock
 insserv -r /etc/init.d/hwclock.sh
 fake-hwclock
 EOF
