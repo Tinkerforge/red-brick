@@ -12,14 +12,15 @@
 	</Directory>
 
 	<Directory /home/tf>
-		Options Indexes FollowSymLinks MultiViews
+		Options Indexes FollowSymLinks MultiViews ExecCGI
 		AllowOverride None
+		MultiviewsMatch Handlers
+		AddHandler wsgi-script .py
+
+		DirectoryIndex index.html index.php index.py
+
 		Order allow,deny
 		allow from all
-		AddHandler mod_python .py
-		PythonHandler mod_python.publisher | .py
-		PythonDebug On
-		DirectoryIndex index.py index.php index.html index.htm
 	</Directory>
 
 	ErrorLog ${APACHE_LOG_DIR}/error.log
