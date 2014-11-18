@@ -1,6 +1,10 @@
 #!/usr/bin/env python
 # -*- coding: UTF-8 -*-
 
+from flask import Flask       # Use Flask framework
+application = Flask(__name__) # Function "application" is used by Apache/wsgi
+app = application             # Use shortcut for routing
+
 import os
 
 PATH_PROGRAMS = os.path.join('/', 'home', 'tf', 'programs')
@@ -22,7 +26,8 @@ def read_name_from_config(config):
 
     return "Unknown Name"
 
-def index(req):
+@app.route('/')
+def index():
     infos = {}
     for i in get_program_ids():
         infos[i] = {}
@@ -38,9 +43,6 @@ def index(req):
         boxes += PAGE_BOX.format(boxnum[i % 3], info['name'], info['url_log'], info['url_bin'], info['url_config'])
 
     return PAGE.format(str(len(infos)), boxes)
-
-
-
 
 PAGE = """
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
