@@ -424,6 +424,7 @@ export LC_ALL=C LANGUAGE=C LANG=C LC_CTYPE=$LOCALE
 easy_install --upgrade pip
 # GROUP-START:python
 pip install pycrypto
+pip install flask
 # GROUP-END:python
 pip install --upgrade netifaces
 EOF
