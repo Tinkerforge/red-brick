@@ -160,7 +160,7 @@ then
 fi
 
 cd $SOURCE_DIR/qemu-2.1.2/
-./configure --target-list="arm-linux-user" --static --disable-system
+./configure --target-list="arm-linux-user" --static --disable-system --disable-libssh2
 make
 cp $SOURCE_DIR/qemu-2.1.2/arm-linux-user/qemu-arm $ROOTFS_DIR/usr/bin/qemu-arm-static
 
