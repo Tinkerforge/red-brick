@@ -76,11 +76,11 @@ PAGE = """
             the respective file will be used as directory index for the binary folder.
         </p>
         <p>
-            Example: If you want to write a PHP website that controls Bricks/Bricklets you can
-            upload your program <strong>EXAMPLE</strong> with id <strong>EXAMPLEID</strong> that 
-            includes an index.php as starting point. If you now go to this webpage and click on
+            <strong>Example:</strong> If you want to write a PHP website that controls Bricks/Bricklets you can
+            upload your program <strong>EXAMPLE</strong> with identifier <strong>EXAMPLE-ID</strong> that
+            includes an index.php as starting point. If you now go to this website and click on
             the "Bin" button for the newly created program, you will get a link to 
-            <strong>/programs/EXAMPLEID/bin</strong>, which will directly execute the index.php
+            <strong>/programs/EXAMPLE-ID/bin</strong>, which will directly execute the index.php
             if opened.
         </p>
         <div id="three-column">
