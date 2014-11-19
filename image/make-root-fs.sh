@@ -279,8 +279,15 @@ cp Tinkerforge.dll /usr/lib/
 cd /usr/tinkerforge/bindings
 wget http://download.tinkerforge.com/bindings/delphi/tinkerforge_delphi_bindings_latest.zip
 unzip -q -d delphi tinkerforge_delphi_bindings_latest.zip
-cd delphi/
-chmod a+rw source/
+cd delphi/source/
+# FIXME: copying Makefile.fpc from /tmp is temporary until a bindings version with Makefile.fpc is released
+cp /tmp/Makefile.fpc Makefile.fpc
+export FPCDIR=/usr/lib/fpc/`ls /usr/lib/fpc/ | grep -E [0-9].[0-9].[0-9] | head -n1`
+fpcmake
+make
+make install
+make clean
+rm -rf units
 cd /usr/tinkerforge/bindings
 wget http://download.tinkerforge.com/bindings/java/tinkerforge_java_bindings_latest.zip
 unzip -q -d java tinkerforge_java_bindings_latest.zip
@@ -453,13 +460,6 @@ pear install --onlyreqdeps Math_Polynomial Math_Quaternion Math_Complex Math_Mat
 pear install --onlyreqdeps Math_Vector MDB2 Net_URL2 Services_JSON System_Command System_Daemon
 pear install --onlyreqdeps XML_Parser XML_RPC
 # GROUP-END:php
-EOF
-
-# Ensure patched version of fpc config
-report_info "Ensure patched version of fpc config"
-chroot $ROOTFS_DIR<<EOF
-export LC_ALL=C LANGUAGE=C LANG=C LC_CTYPE=$LOCALE
-cp /tmp/fpc-2.6.0.cfg /etc
 EOF
 
 # Enable BASH completion
