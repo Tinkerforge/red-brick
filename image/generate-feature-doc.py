@@ -32,7 +32,7 @@ if __name__ == "__main__":
         CONFIG_LIST.append(file_name_split_array_dot[0])
     if len(CONFIG_LIST) == 0:
         print "\nError: No valid image configurations available\n"
-       exit(1)
+        exit(1)
 
     # Check for multistrap files
     MULTISTRAP_FILES_DICT = {}
