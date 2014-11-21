@@ -606,7 +606,7 @@ usermod -a -G netdev tf
 EOF
 
 # Copy RED Brick index website
-report_info "Copy RED Brick index websit"
+report_info "Copy RED Brick index website"
 chroot $ROOTFS_DIR<<EOF
 export LC_ALL=C LANGUAGE=C LANG=C LC_CTYPE=$LOCALE
 cp /tmp/index.py /home/tf
