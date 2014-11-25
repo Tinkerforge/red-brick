@@ -757,7 +757,7 @@ hostname -F /etc/hostname
 # Generate feature table
 report_info "Generating feature table"
 cd $BASE_DIR
-python generate-feature-doc.py $CONFIG_NAME
+./generate-feature-doc.py $CONFIG_NAME
 
 # Built file that indicates rootfs was made
 touch $BUILD_DIR/root-fs-$CONFIG_NAME.built
