@@ -534,9 +534,6 @@ if __name__ == "__main__":
             if max_config_column_width < len(checkmark):
                 max_config_column_width = len(checkmark)
             
-            # Generating boilerplate code at the beginning of the file
-            boilerplate_beginning = ".. "+checkmark+" unicode:: 0x2713\n    :trim:\n\n"
-            
             # Generating language underline
             language_underline = ""
             for i in range (0, len(MAIN_DICT[language]["name"])):
@@ -604,8 +601,7 @@ if __name__ == "__main__":
                 table_rows += "\n"
 
              # Generating the reST code for the table
-            rst_table_code = boilerplate_beginning
-            rst_table_code += MAIN_DICT[language]["name"]+"\n"
+            rst_table_code = MAIN_DICT[language]["name"]+"\n"
             rst_table_code += language_underline+"\n"
             rst_table_code += table_border+"\n"
             rst_table_code += table_column_header_line+"\n"
@@ -614,7 +610,7 @@ if __name__ == "__main__":
             rst_table_code += table_border+"\n"
             
             # Writing the output file
-            file_handler = open(OUTPUT_DIR+"/"+language+"_features.table", "w")
+            file_handler = open(OUTPUT_DIR+"/RED_Brick_"+language+"_features.table", "w")
             if (file_handler):
                 file_handler.write(rst_table_code)
                 file_handler.close()
