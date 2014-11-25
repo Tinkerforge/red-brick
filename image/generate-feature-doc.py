@@ -24,15 +24,18 @@ if __name__ == "__main__":
         print "\nError: Wrong directory structure\n"
         exit(1)
     
-    # Getting available configurations
-    CONFIG_LIST = []
-    for file_name in listdir(CONFIG_DIR+"/root-fs"):
-        file_name_split_array_us = file_name.split("_")
-        file_name_split_array_dot = file_name_split_array_us[1].split(".")
-        CONFIG_LIST.append(file_name_split_array_dot[0])
-    if len(CONFIG_LIST) == 0:
-        print "\nError: No valid image configurations available\n"
-        exit(1)
+    if len(argv) == 2 and (argv[1] in ('full', 'fast')):
+        CONFIG_LIST = [argv[1]]
+    else:
+        # Getting available configurations
+        CONFIG_LIST = []
+        for file_name in listdir(CONFIG_DIR+"/root-fs"):
+            file_name_split_array_us = file_name.split("_")
+            file_name_split_array_dot = file_name_split_array_us[1].split(".")
+            CONFIG_LIST.append(file_name_split_array_dot[0])
+        if len(CONFIG_LIST) == 0:
+            print "\nError: No valid image configurations available\n"
+            exit(1)
 
     # Check for multistrap files
     MULTISTRAP_FILES_DICT = {}
