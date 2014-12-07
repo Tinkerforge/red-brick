@@ -671,13 +671,6 @@ PATH=\$PATH:/sbin:/usr/sbin
 export PATH" >> /etc/profile
 EOF
 
-# Patching Wicd client
-report_info "Patching Wicd manager settings file"
-chroot $ROOTFS_DIR<<EOF
-export LC_ALL=C LANGUAGE=C LANG=C LC_CTYPE=$LOCALE
-cp /tmp/wicd-cli.py /usr/share/wicd/cli/wicd-cli.py
-EOF
-
 # Reconfiguring locale
 report_info "Reconfiguring locale"
 chroot $ROOTFS_DIR<<EOF
