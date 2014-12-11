@@ -280,8 +280,6 @@ cd /usr/tinkerforge/bindings
 wget http://download.tinkerforge.com/bindings/delphi/tinkerforge_delphi_bindings_latest.zip
 unzip -q -d delphi tinkerforge_delphi_bindings_latest.zip
 cd delphi/source/
-# FIXME: copying Makefile.fpc from /tmp is temporary until a bindings version with Makefile.fpc is released
-cp /tmp/Makefile.fpc Makefile.fpc
 export FPCDIR=/usr/lib/fpc/`ls /usr/lib/fpc/ | grep -E [0-9].[0-9].[0-9] | head -n1`
 fpcmake
 make
