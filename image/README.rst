@@ -72,8 +72,8 @@ start the apt-cacher daemons by running::
 
  ./start-apt-cacher.sh
 
-Now ``./make-image.sh`` will automatically use the apt-cacher daemons instead of
-directly downloading from the Debian and Raspbian APT servers.
+Now ``./make-root-fs.sh`` will automatically use the apt-cacher daemons instead
+of directly downloading from the Debian and Raspbian APT servers.
 
 Writing the Image to a SD card
 ------------------------------
