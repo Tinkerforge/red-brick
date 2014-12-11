@@ -213,8 +213,8 @@ report_info "Installing brickd"
 chroot $ROOTFS_DIR<<EOF
 export LC_ALL=C LANGUAGE=C LANG=C LC_CTYPE=$LOCALE
 cd /tmp
-wget http://download.tinkerforge.com/tools/brickd/linux/brickd_linux_latest_redbrick_armhf.deb
-dpkg -i brickd_linux_latest_redbrick_armhf.deb
+wget http://download.tinkerforge.com/tools/brickd/linux/brickd_linux_latest+redbrick_armhf.deb
+dpkg -i brickd_linux_latest+redbrick_armhf.deb
 dpkg --configure -a
 # add true here to avoid having a dpkg error abort the whole script here
 true
