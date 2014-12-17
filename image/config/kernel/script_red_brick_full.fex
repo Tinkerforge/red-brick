@@ -784,7 +784,7 @@ gpio_pin_18 = port:PB19<1><default><default><0>
 ; STACK-SEL-EX-01 (setting I2C address of EEPROM chips)
 gpio_pin_19 = port:PG13<1><default><default><0>
 ; RXE (Receiver enable pin for modbus interface) and nRESET for Ethernet Extension
-gpio_pin_20 = port:PG02<1><default><default><1>
+gpio_pin_20 = port:PG05<1><default><default><1>
 ; nINT for Ethernet Extension (interrupt from W5X00)
 gpio_pin_21 = port:PG03<6><default><default><default>
 ; PWDN for Ethernet Extension
