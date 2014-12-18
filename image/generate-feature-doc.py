@@ -114,7 +114,7 @@ if __name__ == "__main__":
         "php":{"process":True, "name":"PHP","packages":[],},
         "python":{"process":True, "name":"Python","packages":[],},
         "ruby":{"process":True, "name":"Ruby","packages":[],},
-        "shell":{"process":False, "name":"Shell","packages":[],},
+        #"shell":{"process":False, "name":"Shell","packages":[],},
     }
     
     # Define the columns
