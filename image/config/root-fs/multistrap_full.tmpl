@@ -53,6 +53,10 @@ packages=firmware-realtek firmware-ralink firmware-libertas zd1211-firmware
 packages=libapache2-mod-wsgi socat logrotate
 # GROUP-END:system
 
+# GROUP-START:shell
+packages=bash dash
+# GROUP-END:shell
+
 # GROUP-START:test_tools
 packages=stress memtester hdparm sysbench
 # GROUP-END:test_tools
@@ -101,7 +105,7 @@ packages=python3-scipy
 # GROUP-END:python
 
 # GROUP-START:octave
-packages=octave octave-java
+packages=octave octave-common octave-java
 # GROUP-END:octave
 
 # GROUP-START:delphi

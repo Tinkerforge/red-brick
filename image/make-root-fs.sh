@@ -616,6 +616,9 @@ report_info "Generating dpkg listing"
 chroot $ROOTFS_DIR<<EOF
 export LC_ALL=C LANGUAGE=C LANG=C LC_CTYPE=$LOCALE
 dpkg-query -W -f='\${Package}<==>\${Version}<==>\${Description}\n' > /root/dpkg-$CONFIG_NAME.listing
+npmv=$(npm view npm version)
+npmd=$(npm view npm description)
+echo 'npm<==>'$npmv'<==>'$npmd >> /root/dpkg-$CONFIG_NAME.listing
 EOF
 mv $ROOTFS_DIR/root/dpkg-$CONFIG_NAME.listing $BUILD_DIR
 

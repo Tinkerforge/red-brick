@@ -103,18 +103,18 @@ if __name__ == "__main__":
     # The main dictionary
     MAIN_DICT = {
         "c":{"process":True, "name":"C/C++","packages":[],},
-        "delphi":{"process":False, "name":"Delphi","packages":[],},
+        "delphi":{"process":True, "name":"Delphi","packages":[],},
         "java":{"process":True, "name":"Java","packages":[],},
-        "node":{"process":False, "name":"Node.js","packages":[],},
+        "node":{"process":True, "name":"Node.js","packages":[],},
         #"labview":{"process":False, "name":"LabVIEW","packages":[],},
         #"mathematica":{"process":False, "name":"Mathematica","packages":[],},
-        "matlab":{"process":False, "name":"MATLAB/Octave","packages":[],},
+        "matlab":{"process":True, "name":"MATLAB/Octave","packages":[],},
         "mono":{"process":True, "name":"Mono","packages":[],},
         "perl":{"process":True, "name":"Perl","packages":[],},
         "php":{"process":True, "name":"PHP","packages":[],},
         "python":{"process":True, "name":"Python","packages":[],},
         "ruby":{"process":True, "name":"Ruby","packages":[],},
-        #"shell":{"process":False, "name":"Shell","packages":[],},
+        "shell":{"process":True, "name":"Shell","packages":[],},
     }
     
     # Define the columns
@@ -269,7 +269,7 @@ if __name__ == "__main__":
                             main_dict_packages_entry.append(package_description)
                             main_dict_packages_entry.append({config:True})
                             MAIN_DICT[language]["packages"].append(main_dict_packages_entry)
-                        
+
     # Function for populating MAIN_DICT for a given set of lines and a language
     # The information for each package is obtained from the ready listing files
     def populate_main_dict_from_ready_listing(language, config):
@@ -335,7 +335,7 @@ if __name__ == "__main__":
         get_packages_from_delimited_lines\
         (MULTISTRAP_FILES_DICT[config]["lines"], tag_start, tag_end, ["=", " "])
         populate_main_dict_from_dpkg_listing(language, config, package_list)
-        
+
         if len(make_root_fs_file_delimiters) == 2:
             package_list = []
             
@@ -366,11 +366,34 @@ if __name__ == "__main__":
                 if language == "c":
                     common_processing(language, config, [])
 
+                # Processing MAIN_DICT for Delphi
+                if language == "delphi":
+                    common_processing(language, config, [])
+                    package_list = []
+                    for line in DPKG_LISTING_FILES_DICT[config]["lines"]:
+                        line_split_array = line.split("<==>")
+                        if len(line_split_array) != 3:
+                            continue
+                        if 'fp-units-' not in unicode(line_split_array[0]):
+                            continue
+                        package_list.append(unicode(line_split_array[0]))
+
+                    populate_main_dict_from_dpkg_listing(language, config, package_list)
+
                 # Processing MAIN_DICT for Java
                 elif language == "java":
                     common_processing(language, config, [])
                     populate_main_dict_from_ready_listing(language, config)
-            
+
+                # Processing MAIN_DICT for Node.JS
+                elif language == "node":
+                    package_list = ['node', 'npm']
+                    populate_main_dict_from_dpkg_listing(language, config, package_list)
+
+                # Processing MAIN_DICT for MATLAB/Octave
+                elif language == "octave":
+                    common_processing(language, config, [])
+
                 # Processing MAIN_DICT for Mono
                 elif language == "mono":
                     common_processing(language, config, [])
@@ -498,6 +521,10 @@ if __name__ == "__main__":
                                     main_dict_packages_entry.append({config:True})
                                     MAIN_DICT[language]["packages"].append(main_dict_packages_entry)
                 
+                # Processing MAIN_DICT for Shell
+                elif language == "shell":
+                    common_processing(language, config, [])
+
                 else:
                     print "\nError: No proper key found for processing MAIN_DICT\n"
                     exit(1)
