@@ -616,9 +616,11 @@ report_info "Generating dpkg listing"
 chroot $ROOTFS_DIR<<EOF
 export LC_ALL=C LANGUAGE=C LANG=C LC_CTYPE=$LOCALE
 dpkg-query -W -f='\${Package}<==>\${Version}<==>\${Description}\n' > /root/dpkg-$CONFIG_NAME.listing
-npmv=$(npm view npm version)
-npmd=$(npm view npm description)
-echo 'npm<==>'$npmv'<==>'$npmd >> /root/dpkg-$CONFIG_NAME.listing
+cat /usr/local/lib/node_modules/npm/package.json | \
+python -c "import json;import sys;json_content = unicode(sys.stdin.read());\
+json_obj=json.loads(json_content);\
+print unicode(json_obj['name'])+'<==>'+unicode(json_obj['version'])+'<==>'+unicode(json_obj['description'])" \
+>> /root/dpkg-$CONFIG_NAME.listing
 EOF
 mv $ROOTFS_DIR/root/dpkg-$CONFIG_NAME.listing $BUILD_DIR
 
