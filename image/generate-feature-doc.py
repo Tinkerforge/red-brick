@@ -367,7 +367,7 @@ if __name__ == "__main__":
                     common_processing(language, config, [])
 
                 # Processing MAIN_DICT for Delphi
-                if language == "delphi":
+                elif language == "delphi":
                     common_processing(language, config, [])
                     package_list = []
                     for line in DPKG_LISTING_FILES_DICT[config]["lines"]:
@@ -391,7 +391,7 @@ if __name__ == "__main__":
                     populate_main_dict_from_dpkg_listing(language, config, package_list)
 
                 # Processing MAIN_DICT for MATLAB/Octave
-                elif language == "octave":
+                elif language == "matlab":
                     common_processing(language, config, [])
 
                 # Processing MAIN_DICT for Mono
