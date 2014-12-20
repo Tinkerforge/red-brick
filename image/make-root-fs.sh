@@ -719,6 +719,28 @@ chroot $ROOTFS_DIR<<EOF
 ln -s /usr/tinkerforge/bindings/javascript/browser/source/Tinkerforge.js /home/tf
 EOF
 
+# Compiling and installing hostapd and wpa_supplicant for access point mode support
+report_info "Compiling and installing hostapd and wpa_supplicant for access point mode support"
+chroot $ROOTFS_DIR<<EOF
+export LC_ALL=C LANGUAGE=C LANG=C LC_CTYPE=$LOCALE
+cd /tmp
+mkdir ./$HOSTAPD_WPA_SUPPLICANT_NAME
+tar jxvf $HOSTAPD_WPA_SUPPLICANT_NAME\
+$HOSTAPD_WPA_SUPPLICANT_VERSION\
+$HOSTAPD_WPA_SUPPLICANT_EXTENSION -C ./$HOSTAPD_WPA_SUPPLICANT_NAME
+mkdir -p /etc/hostapd
+cd ./$HOSTAPD_WPA_SUPPLICANT_NAME
+cp -ar *.conf /etc/hostapd
+cd ./$HOSTAPD_WPA_SUPPLICANT_NAME/hostapd
+make clean
+make
+make install
+cd ../wpa_supplicant
+make clean
+make
+make install
+EOF
+
 # Cleaning /tmp directory and make it r/w for everyone
 report_info "Cleaning /tmp directory"
 chroot $ROOTFS_DIR<<EOF
