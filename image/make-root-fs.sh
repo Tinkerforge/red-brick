@@ -473,8 +473,8 @@ chroot $ROOTFS_DIR<<EOF
 export LC_ALL=C LANGUAGE=C LANG=C LC_CTYPE=$LOCALE
 chmod 755 /etc/init.d/asplashscreen
 chmod 755 /etc/init.d/killasplashscreen
-insserv /etc/init.d/asplashscreen
-insserv /etc/init.d/killasplashscreen
+update-rc.d /etc/init.d/asplashscreen defaults
+update-rc.d /etc/init.d/killasplashscreen defaults
 EOF
 
 # Removing plymouth
@@ -565,7 +565,7 @@ chroot $ROOTFS_DIR<<EOF
 export LC_ALL=C LANGUAGE=C LANG=C LC_CTYPE=$LOCALE
 rm -rf /etc/cron.hourly/fake-hwclock
 chmod 0644 /etc/cron.d/fake-hwclock
-insserv -r /etc/init.d/hwclock.sh
+update-rc.d -f /etc/init.d/hwclock.sh remove
 fake-hwclock
 EOF
 
@@ -739,6 +739,14 @@ cd ../wpa_supplicant
 make clean
 make
 make install
+chmod 755 /etc/init.d/hostapd
+EOF
+
+# Do not run DHCP server at boot by default
+report_info "Do not run DHCP server at boot by default"
+chroot $ROOTFS_DIR<<EOF
+export LC_ALL=C LANGUAGE=C LANG=C LC_CTYPE=$LOCALE
+update-rc.d -f isc-dhcp-server remove
 EOF
 
 # Cleaning /tmp directory and make it r/w for everyone
