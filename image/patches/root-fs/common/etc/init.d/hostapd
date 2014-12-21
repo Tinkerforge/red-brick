@@ -14,7 +14,7 @@
 ### END INIT INFO
 
 PATH=/sbin:/bin:/usr/sbin:/usr/bin
-DAEMON_SBIN=/usr/sbin/hostapd
+DAEMON_SBIN=/usr/local/bin/hostapd
 DAEMON_DEFS=/etc/default/hostapd
 DAEMON_CONF=
 NAME=hostapd

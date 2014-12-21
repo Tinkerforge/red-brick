@@ -473,8 +473,8 @@ chroot $ROOTFS_DIR<<EOF
 export LC_ALL=C LANGUAGE=C LANG=C LC_CTYPE=$LOCALE
 chmod 755 /etc/init.d/asplashscreen
 chmod 755 /etc/init.d/killasplashscreen
-update-rc.d /etc/init.d/asplashscreen defaults
-update-rc.d /etc/init.d/killasplashscreen defaults
+update-rc.d asplashscreen defaults
+update-rc.d killasplashscreen defaults
 EOF
 
 # Removing plymouth
@@ -565,7 +565,7 @@ chroot $ROOTFS_DIR<<EOF
 export LC_ALL=C LANGUAGE=C LANG=C LC_CTYPE=$LOCALE
 rm -rf /etc/cron.hourly/fake-hwclock
 chmod 0644 /etc/cron.d/fake-hwclock
-update-rc.d -f /etc/init.d/hwclock.sh remove
+update-rc.d -f hwclock.sh remove
 fake-hwclock
 EOF
 
