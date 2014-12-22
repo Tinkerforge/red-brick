@@ -810,7 +810,7 @@ pin_16 = port:PG04<6><default><default><default>
 pin_17 = port:PB14<0><default><default><default>
 pin_18 = port:PB19<1><default><default><0>
 pin_19 = port:PG13<1><default><default><0>
-pin_20 = port:PG02<1><default><default><1>
+pin_20 = port:PG05<1><default><default><1>
 pin_21 = port:PG03<6><default><default><default>
 pin_22 = port:PG04<1><default><default><0>
 
