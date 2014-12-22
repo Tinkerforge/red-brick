@@ -132,6 +132,10 @@ report_info "Patching the root-fs"
 rsync -a --no-o --no-g $PATCHES_DIR/root-fs/common/ $ROOTFS_DIR/
 rsync -a --no-o --no-g $PATCHES_DIR/root-fs/$CONFIG_NAME/ $ROOTFS_DIR/
 
+# Write /etc/tf_image_version
+report_info "Write /etc/tf_image_version"
+echo "${IMAGE_DOT_VERSION} (${CONFIG_NAME})" > $ROOTFS_DIR/etc/tf_image_version
+
 # Fix mode of /tmp
 chmod 1777 $ROOTFS_DIR/tmp
 
