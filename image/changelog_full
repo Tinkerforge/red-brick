@@ -1,1 +1,5 @@
 1.0: Initial version
+1.1: Update C# bindings to version 2.1.5
+     Update Brick Viewer to version 2.2.1
+     Fix pin mapping for second Master Extension
+     Add missing Delphi, Octave, Shell and Node.js version information for Brick Viewer
