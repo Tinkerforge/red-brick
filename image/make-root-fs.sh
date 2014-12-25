@@ -746,11 +746,11 @@ make install
 chmod 755 /etc/init.d/hostapd
 EOF
 
-# Do not run DHCP server at boot by default
-report_info "Do not run DHCP server at boot by default"
+# Do not run DNS/DHCP server at boot by default
+report_info "Do not run DNS/DHCP server at boot by default"
 chroot $ROOTFS_DIR<<EOF
 export LC_ALL=C LANGUAGE=C LANG=C LC_CTYPE=$LOCALE
-update-rc.d -f isc-dhcp-server remove
+update-rc.d -f dnsmasq remove
 EOF
 
 # Cleaning /tmp directory and make it r/w for everyone
