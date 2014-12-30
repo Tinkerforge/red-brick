@@ -3,3 +3,6 @@
      Update Brick Viewer to version 2.2.1
      Fix pin mapping for second Master Extension
      Add missing Delphi, Octave, Shell and Node.js version information for Brick Viewer
+1.2: Update Delphi/Lazarus Bindings to version 2.1.5
+     Fix intermittent missing Loopback-Interface problem
+     Add gphoto2 and libgphoto2
