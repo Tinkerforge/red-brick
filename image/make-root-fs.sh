@@ -696,11 +696,12 @@ report_info "Installing kernel headers"
 rsync -a --no-o --no-g $KERNEL_HEADER_INCLUDE_DIR $ROOTFS_DIR/usr/
 rsync -a --no-o --no-g $KERNEL_HEADER_USR_DIR $ROOTFS_DIR
 
-# Cleaning /etc/resolv.conf
-report_info "Cleaning /etc/resolv.conf"
+# Cleaning /etc/resolv.conf and creating symbolic link for resolvconf
+report_info "Cleaning /etc/resolv.conf and creating symbolic link for resolvconf"
 chroot $ROOTFS_DIR<<EOF
 export LC_ALL=C LANGUAGE=C LANG=C LC_CTYPE=$LOCALE
 rm -rf /etc/resolv.conf
+ln -s /etc/resolvconf/run/resolv.conf /etc/resolv.conf
 EOF
 
 # Disabling the root user
