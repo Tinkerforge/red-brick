@@ -7,3 +7,4 @@
      Fix intermittent missing Loopback-Interface problem
      Fix mixing setuid flag in /usr/bin/sudo
      Add gphoto2 and libgphoto2
+1.3: Fix problems wit name resolution (DNS)
