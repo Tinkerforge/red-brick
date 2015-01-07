@@ -754,6 +754,13 @@ export LC_ALL=C LANGUAGE=C LANG=C LC_CTYPE=$LOCALE
 update-rc.d -f dnsmasq remove
 EOF
 
+# Remove apache init script dependency of DNS server
+report_info "Remove apache init script dependency of DNS server"
+chroot $ROOTFS_DIR<<EOF
+export LC_ALL=C LANGUAGE=C LANG=C LC_CTYPE=$LOCALE
+sed -i 's/$named//g' /etc/init.d/apache2
+EOF
+
 # Cleaning /tmp directory and make it r/w for everyone
 report_info "Cleaning /tmp directory"
 chroot $ROOTFS_DIR<<EOF
