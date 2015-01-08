@@ -754,6 +754,13 @@ export LC_ALL=C LANGUAGE=C LANG=C LC_CTYPE=$LOCALE
 update-rc.d -f dnsmasq remove
 EOF
 
+# Enabling X server in RED Brick way
+report_info "Enabling X server in RED Brick way"
+chroot $ROOTFS_DIR<<EOF
+export LC_ALL=C LANGUAGE=C LANG=C LC_CTYPE=$LOCALE
+touch /etc/tf_x_enabled
+EOF
+
 # Remove apache init script dependency of DNS server
 report_info "Remove apache init script dependency of DNS server"
 chroot $ROOTFS_DIR<<EOF
