@@ -7,9 +7,12 @@ CONFIG_DIR="$BASE_DIR/config"
 
 . $CONFIG_DIR/common.conf
 
+# Add i386 as architecture
+report_info "Add i386 as dpkg architecture"
+
+sudo dpkg --add-architecture i386
 
 # Update package index files
-
 report_info "Update package index files"
 
 sudo apt-get update
