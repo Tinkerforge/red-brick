@@ -35,13 +35,13 @@ function cleanup {
     then
         umount -f $ROOTFS_DIR/proc
     fi
-    
+
     if [ -d $ROOTFS_DIR/dev/pts ]
     then
         umount -f $ROOTFS_DIR/dev/pts
     fi
     set -e
-    
+
     # Ensure host name integrity
     hostname -F /etc/hostname
 }
@@ -148,25 +148,8 @@ EOF
 chmod a+x $ROOTFS_DIR/usr/sbin/policy-rc.d
 
 # Copying qemu-arm-static to root-fs
-report_info "Compiling and copying qemu-arm-static to root-fs"
-cd $SOURCE_DIR
-
-if [ ! -f $SOURCE_DIR/qemu-2.1.2.tar.bz2 ]
-then
-    wget http://wiki.qemu-project.org/download/qemu-2.1.2.tar.bz2
-fi
-
-if [ ! -d $SOURCE_DIR/qemu-2.1.2 ]
-then
-    tar jxf qemu-2.1.2.tar.bz2
-    cd $SOURCE_DIR/qemu-2.1.2/
-    patch -p1 < $PATCHES_DIR/tools/qemu-2.1.2-sigrst-sigpwr.patch
-fi
-
-cd $SOURCE_DIR/qemu-2.1.2/
-./configure --target-list="arm-linux-user" --static --disable-system --disable-libssh2
-make
-cp $SOURCE_DIR/qemu-2.1.2/arm-linux-user/qemu-arm $ROOTFS_DIR/usr/bin/qemu-arm-static
+report_info "Copying qemu-arm-static to root-fs"
+cp $TOOLS_DIR/$QEMU_BASE_NAME/arm-linux-user/qemu-arm $ROOTFS_DIR$QEMU_BIN
 
 # Configuring the generated root-fs
 report_info "Configuring the generated root-fs"
@@ -208,7 +191,7 @@ wget download.tinkerforge.com/_stuff/jdk-8-linux-arm-vfp-hflt.tar.gz
 tar zxf jdk-8-linux-arm-vfp-hflt.tar.gz -C /usr/lib/jvm
 update-alternatives --install /usr/bin/javac javac /usr/lib/jvm/jdk1.8.0/bin/javac 1
 update-alternatives --install /usr/bin/java java /usr/lib/jvm/jdk1.8.0/bin/java 1
-# we only have the java8 javac echo 3 | update-alternatives --config javac 
+# we only have the java8 javac echo 3 | update-alternatives --config javac
 echo 4 | update-alternatives --config java
 EOF
 

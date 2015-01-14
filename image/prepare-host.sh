@@ -45,30 +45,69 @@ fi
 
 popd > /dev/null
 
-# Compiling advanced cp and mv commands
+# Compiling advanced cp command
 report_info "Compiling advanced cp command"
+
 
 pushd $TOOLS_DIR > /dev/null
 
-if [ ! -f ./$COREUTILS_FILE_NAME ]
+if [ ! -f ./$COREUTILS_BASE_NAME.tar.xz ]
 then
-	wget $COREUTILS_URL
+	wget http://ftp.gnu.org/gnu/coreutils/$COREUTILS_BASE_NAME.tar.xz
 fi
 
-if [ ! -d ./$COREUTILS_DIR_NAME ]
+if [ ! -d ./$COREUTILS_BASE_NAME ]
 then
-	tar xJf ./$COREUTILS_FILE_NAME
+	tar xJf ./$COREUTILS_BASE_NAME.tar.xz
 fi
 
-if [ ! -f $ADVCP_CMD ]
+pushd ./$COREUTILS_BASE_NAME > /dev/null
+
+if [ ! -f ./$COREUTILS_BASE_NAME.patched ]
 then
-	pushd ./$COREUTILS_DIR_NAME > /dev/null
-	patch -p1 -i $PATCHES_DIR/tools/advcp-0.1-coreutils-8.21.patch
+	patch -p1 -i $PATCHES_DIR/tools/advcp-0.1-$COREUTILS_BASE_NAME.patch
+	touch ./$COREUTILS_BASE_NAME.patched
+fi
+
+if [ ! -f $ADVCP_BIN ]
+then
 	./configure
 	make
-	popd > /dev/null
 fi
 
+popd > /dev/null
+popd > /dev/null
+
+# Compiling qemu-arm-static
+report_info "Compiling qemu-arm-static"
+
+pushd $TOOLS_DIR > /dev/null
+
+if [ ! -f ./$QEMU_BASE_NAME.tar.bz2 ]
+then
+	wget http://wiki.qemu-project.org/download/$QEMU_BASE_NAME.tar.bz2
+fi
+
+if [ ! -d ./$QEMU_BASE_NAME ]
+then
+	tar xjf ./$QEMU_BASE_NAME.tar.bz2
+fi
+
+pushd ./$QEMU_BASE_NAME > /dev/null
+
+if [ ! -d ./$QEMU_BASE_NAME.patched ]
+then
+	patch -p1 -i $PATCHES_DIR/tools/$QEMU_BASE_NAME-sigrst-sigpwr.patch
+	touch ./$QEMU_BASE_NAME.patched
+fi
+
+if [ ! -f ./arm-linux-user/qemu-arm ]
+then
+	./configure --target-list="arm-linux-user" --static --disable-system --disable-libssh2
+	make
+fi
+
+popd > /dev/null
 popd > /dev/null
 
 report_info "Process finished"
