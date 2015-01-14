@@ -24,11 +24,26 @@ yet, then the ``prepare-host.sh`` script in the next step will install it.
 Building the Image
 ------------------
 
-First run::
+Because the Node.js and NPM packages are different between Ubuntu, Debian and
+different Debian versions you have to install it manually for now. On Ubuntu and
+Debian jessy and sid just install the ``npm`` package using::
+
+ sudo apt-get install npm
+
+On Debian wheezy follow this `setup instructions
+<https://github.com/joyent/node/wiki/installing-node.js-via-package-manager>`__
+to install Node.js including NPM. In short, run::
+
+ curl -sL https://deb.nodesource.com/setup | sudo bash -
+ sudo apt-get install nodejs
+
+After installing Node.js and NPM run::
 
  ./prepare-host.sh
 
-to install required tools. Next run::
+to install the remaining required tools and packages.
+
+Next run::
 
  ./update-source.sh
 
@@ -96,11 +111,11 @@ The default user name is ``tf`` with password ``tf``.
 The full image runs a LXDE desktop on the HDMI interface. All images have a
 serial console running on the USB OTG interface.
 
-Editing kernel config
+Editing Kernel Config
 ---------------------
 
 First update the kernel sources::
- 
+
   ./update-source.sh
 
 Go to ``red-brick/image/source/red-brick-linux-sunxi/`` and copy full or fast config::
@@ -116,7 +131,7 @@ copy config back::
  cp .config ../../config/kernel/red_brick_{full|fast}_defconfig
 
 
-Enable serial console for Debug Brick
+Enable Serial Console for Debug Brick
 -------------------------------------
 
 In ``config/kernel/red_brick_*_defconfig`` add::
