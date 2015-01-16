@@ -7,8 +7,8 @@ ROOT_UID="0"
 # Check if running as root
 if [ "$(id -u)" -ne "$ROOT_UID" ]
 then
-    report_error "You must be root to execute the script"
-    exit 1
+	report_error "You must be root to execute the script"
+	exit 1
 fi
 
 BASE_DIR=`pwd`
@@ -18,8 +18,8 @@ CONFIG_DIR="$BASE_DIR/config"
 
 # Getting the image configuration variables
 if [ "$#" -ne 1 ]; then
-    report_error "Too many or too few parameters (provide image configuration name)"
-    exit 1
+	report_error "Too many or too few parameters (provide image configuration name)"
+	exit 1
 fi
 
 CONFIG_NAME=$1
@@ -27,21 +27,21 @@ CONFIG_NAME=$1
 
 # Cleanup function in case of interrupts
 function cleanup {
-    report_info "Cleaning up before exit..."
+	report_info "Cleaning up before exit..."
 
-    # Unmount and release loop device
-    set +e
-    if [ -n "${loop_dev_p1+1}" ]
-    then
-        umount -f $loop_dev_p1
-        losetup -d $loop_dev_p1
-    fi
-    
-    if [ -n "${loop_dev+1}" ]
-    then
-        losetup -d $loop_dev
-    fi
-    set -e
+	# Unmount and release loop device
+	set +e
+	if [ -n "${loop_dev_p1+1}" ]
+	then
+		umount -f $loop_dev_p1
+		losetup -d $loop_dev_p1
+	fi
+
+	if [ -n "${loop_dev+1}" ]
+	then
+		losetup -d $loop_dev
+	fi
+	set -e
 }
 
 trap "cleanup" SIGHUP SIGINT SIGTERM SIGQUIT EXIT
@@ -49,35 +49,35 @@ trap "cleanup" SIGHUP SIGINT SIGTERM SIGQUIT EXIT
 # Checking if root-fs was generated for the provided image configuration
 if [ ! -e $BUILD_DIR/root-fs-$CONFIG_NAME.built ]
 then
-    report_error "Root-fs was not generated for the provided image configuration"
-    exit 1
+	report_error "Root-fs was not generated for the provided image configuration"
+	exit 1
 fi
 
 # Checking U-Boot
 if [ ! -e $UBOOT_IMAGE_FILE ]
 then
-    report_error "Please build U-Boot first"
-    exit 1
+	report_error "Please build U-Boot first"
+	exit 1
 fi
 
 # Checking kernel and boot script
 if [ ! -e $KERNEL_IMAGE_FILE ]
 then
-    report_error "Please build the kernel first"
-    exit 1
+	report_error "Please build the kernel first"
+	exit 1
 fi
 
 if [ ! -e $SCRIPT_BIN_FILE ]
 then
-    report_error "No boot script found"
-    exit 1
+	report_error "No boot script found"
+	exit 1
 fi
 
 # Checking kernel modules
 if [ ! -d $KERNEL_SRC_DIR/$KERNEL_MOD_DIR_NAME ]
 then
-    report_error "Build kernel modules first"
-    exit 1
+	report_error "Build kernel modules first"
+	exit 1
 fi
 
 # Checking stray /proc mount on root-fs directory
@@ -85,7 +85,7 @@ set +e
 report_info "Checking stray /proc mount on root-fs directory"
 if [ -d $ROOTFS_DIR/proc ]
 then
-    umount $ROOTFS_DIR/proc &> /dev/null
+	umount $ROOTFS_DIR/proc &> /dev/null
 fi
 set -e
 
@@ -97,7 +97,7 @@ rm -rf $OUTPUT_DIR/$IMAGE_NAME.img
 report_info "Making output directory if required"
 if [ ! -d $OUTPUT_DIR ]
 then
-    mkdir -p $OUTPUT_DIR
+	mkdir -p $OUTPUT_DIR
 fi
 
 # Creating empty image
@@ -144,10 +144,10 @@ dd bs=512 seek=$KERNEL_DD_SEEK if=$KERNEL_IMAGE_FILE of=$loop_dev
 report_info "Copying root-fs and kernel modules to the image"
 if [ ! -d $MOUNT_DIR ]
 then
-    mkdir -p $MOUNT_DIR
+	mkdir -p $MOUNT_DIR
 else
-    rm -rf $MOUNT_DIR
-    mkdir -p $MOUNT_DIR
+	rm -rf $MOUNT_DIR
+	mkdir -p $MOUNT_DIR
 fi
 mount $loop_dev_p1 $MOUNT_DIR
 $ADVCP_BIN -garp $ROOTFS_DIR/* $MOUNT_DIR/

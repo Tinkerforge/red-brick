@@ -48,7 +48,6 @@ popd > /dev/null
 # Compiling advanced cp command
 report_info "Compiling advanced cp command"
 
-
 pushd $TOOLS_DIR > /dev/null
 
 if [ ! -f ./$COREUTILS_BASE_NAME.tar.xz ]

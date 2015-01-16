@@ -7,8 +7,8 @@ ROOT_UID="0"
 # Check if running as root
 if [ "$(id -u)" -ne "$ROOT_UID" ]
 then
-    report_error "You must be root to execute the script"
-    exit 1
+	report_error "You must be root to execute the script"
+	exit 1
 fi
 
 BASE_DIR=`pwd`
@@ -18,8 +18,8 @@ CONFIG_DIR="$BASE_DIR/config"
 
 # Getting the image configuration variables
 if [ "$#" -ne 2 ]; then
-    report_error "Too many or too few parameters (provide image configuration name and device)"
-    exit 1
+	report_error "Too many or too few parameters (provide image configuration name and device)"
+	exit 1
 fi
 
 CONFIG_NAME=$1
@@ -28,15 +28,15 @@ DEVICE=$2
 
 # Cleanup function in case of interrupts
 function cleanup {
-    report_info "Cleaning up before exit..."
+	report_info "Cleaning up before exit..."
 
-    # Checking stray mounts
-    set +e
-    if [ -d $MOUNT_DIR ]
-    then
-        umount -f $MOUNT_DIR
-    fi
-    set -e
+	# Checking stray mounts
+	set +e
+	if [ -d $MOUNT_DIR ]
+	then
+		umount -f $MOUNT_DIR
+	fi
+	set -e
 }
 
 trap "cleanup" SIGHUP SIGINT SIGTERM SIGQUIT EXIT
@@ -44,15 +44,15 @@ trap "cleanup" SIGHUP SIGINT SIGTERM SIGQUIT EXIT
 # Checking image file
 if [ ! -e $KERNEL_IMAGE_FILE ]
 then
-    report_error "Please build kernel first"
-    exit 1
+	report_error "Please build kernel first"
+	exit 1
 fi
 
 # Checking device
 if [ ! -e $DEVICE ]
 then
-    report_error "SD card does not exist"
-    exit 1
+	report_error "SD card does not exist"
+	exit 1
 fi
 
 # Copying the kernel to the SD card
@@ -67,10 +67,10 @@ dd bs=512 seek=$KERNEL_DD_SEEK if=$KERNEL_IMAGE_FILE of=$DEVICE
 report_info "Copying kernel modules to the SD card"
 if [ -d $MOUNT_DIR ]
 then
-    rm -rf $MOUNT_DIR
-    mkdir -p $MOUNT_DIR
+	rm -rf $MOUNT_DIR
+	mkdir -p $MOUNT_DIR
 else
-    mkdir -p $MOUNT_DIR
+	mkdir -p $MOUNT_DIR
 fi
 mount -t ext3 -o offset=$((512*$ROOT_PART_START_SECTOR)) $DEVICE $MOUNT_DIR
 rsync -arpc $KERNEL_SRC_DIR/$KERNEL_MOD_DIR_NAME/lib/modules $MOUNT_DIR/lib/

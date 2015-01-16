@@ -8,21 +8,21 @@ CONFIG_DIR="$BASE_DIR/config"
 . $CONFIG_DIR/common.conf
 
 update () {
-    display_name=$1
-    target_dir=$2
-    git_url=$3
-    git_branch=$4
+	display_name=$1
+	target_dir=$2
+	git_url=$3
+	git_branch=$4
 
-    if [ ! -d $target_dir ]
-    then
-        report_info "Cloning $display_name source"
-        git clone --depth 1 -b $git_branch $git_url $target_dir
-    else
-        report_info "Clone of $display_name source already exists, updating it"
-        pushd $target_dir > /dev/null
-        git pull origin $git_branch
-        popd > /dev/null
-    fi
+	if [ ! -d $target_dir ]
+	then
+		report_info "Cloning $display_name source"
+		git clone --depth 1 -b $git_branch $git_url $target_dir
+	else
+		report_info "Clone of $display_name source already exists, updating it"
+		pushd $target_dir > /dev/null
+		git pull origin $git_branch
+		popd > /dev/null
+	fi
 }
 
 # Clone/Pull U-Boot source

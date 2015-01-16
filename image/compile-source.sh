@@ -9,8 +9,8 @@ CONFIG_DIR="$BASE_DIR/config"
 
 # Getting the image configuration variables
 if [ "$#" -ne 1 ]; then
-    report_error "Too many or too few parameters (provide image configuration name)"
-    exit 1
+	report_error "Too many or too few parameters (provide image configuration name)"
+	exit 1
 fi
 
 CONFIG_NAME=$1
@@ -22,7 +22,7 @@ rm -rf $SCRIPT_BIN_FILE
 # Checking for the build directory
 if [ ! -d $BUILD_DIR ]
 then
-    mkdir -p $BUILD_DIR
+	mkdir -p $BUILD_DIR
 fi
 
 # Cleaning up .built files
@@ -33,22 +33,22 @@ rm -f $BUILD_DIR/kernel-headers-*.built
 # Check U-Boot source directory
 if [ ! -d $UBOOT_SRC_DIR/arch ]
 then
-    report_error "U-boot source not found"
-    exit 1
+	report_error "U-boot source not found"
+	exit 1
 fi
 
 # Check kernel source directory
 if [ ! -d $KERNEL_SRC_DIR/arch ]
 then
-    report_error "Kernel source not found"
-    exit 1
+	report_error "Kernel source not found"
+	exit 1
 fi
 
 # Check sunxi-tools directory
 if [ ! -d $SUNXI_TOOLS_SRC_DIR ]
 then
-    report_error "Sunxi-tools source not found"
-    exit 1
+	report_error "Sunxi-tools source not found"
+	exit 1
 fi
 
 # Adding the toolchain to the subshell environment
@@ -58,7 +58,7 @@ export PATH=$TOOLS_DIR/$TC_DIR_NAME/bin:$PATH
 pushd $UBOOT_SRC_DIR > /dev/null
 if [ $CLEAN_BEFORE_COMPILE == "yes" ]
 then
-    make ARCH=arm CROSS_COMPILE=$TC_PREFIX clean
+	make ARCH=arm CROSS_COMPILE=$TC_PREFIX clean
 fi
 make ARCH=arm CROSS_COMPILE=$TC_PREFIX $UBOOT_CONFIG_NAME
 # set GAS_BUG_12532 to n. we use gas 2.23, the bug was fixed in 2.22, but due to the
@@ -87,7 +87,7 @@ touch $BUILD_DIR/kernel-headers-$CONFIG_NAME.built
 pushd $SUNXI_TOOLS_SRC_DIR > /dev/null
 if [ $CLEAN_BEFORE_COMPILE == "yes" ]
 then
-    make clean
+	make clean
 fi
 make all
 ./fex2bin $SCRIPT_FEX_FILE $SCRIPT_BIN_FILE

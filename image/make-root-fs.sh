@@ -7,8 +7,8 @@ ROOT_UID="0"
 # Check if running as root
 if [ "$(id -u)" -ne "$ROOT_UID" ]
 then
-    report_error "You must be root to execute the script"
-    exit 1
+	report_error "You must be root to execute the script"
+	exit 1
 fi
 
 BASE_DIR=`pwd`
@@ -18,8 +18,8 @@ CONFIG_DIR="$BASE_DIR/config"
 
 # Getting the image configuration variables
 if [ "$#" -ne 1 ]; then
-    report_error "Too many or too few parameters (provide image configuration name)"
-    exit 1
+	report_error "Too many or too few parameters (provide image configuration name)"
+	exit 1
 fi
 
 CONFIG_NAME=$1
@@ -27,23 +27,23 @@ CONFIG_NAME=$1
 
 # Cleanup function in case of interrupts
 function cleanup {
-    report_info "Cleaning up before exit..."
+	report_info "Cleaning up before exit..."
 
-    # Checking stray /proc and /dev/pts mount on root-fs directory
-    set +e
-    if [ -d $ROOTFS_DIR/proc ]
-    then
-        umount -f $ROOTFS_DIR/proc
-    fi
+	# Checking stray /proc and /dev/pts mount on root-fs directory
+	set +e
+	if [ -d $ROOTFS_DIR/proc ]
+	then
+		umount -f $ROOTFS_DIR/proc
+	fi
 
-    if [ -d $ROOTFS_DIR/dev/pts ]
-    then
-        umount -f $ROOTFS_DIR/dev/pts
-    fi
-    set -e
+	if [ -d $ROOTFS_DIR/dev/pts ]
+	then
+		umount -f $ROOTFS_DIR/dev/pts
+	fi
+	set -e
 
-    # Ensure host name integrity
-    hostname -F /etc/hostname
+	# Ensure host name integrity
+	hostname -F /etc/hostname
 }
 
 trap "cleanup" SIGHUP SIGINT SIGTERM SIGQUIT EXIT
@@ -51,37 +51,37 @@ trap "cleanup" SIGHUP SIGINT SIGTERM SIGQUIT EXIT
 # Checking if kernel and U-Boot were compiled for current configuration
 if [ ! -e $BUILD_DIR/u-boot-$CONFIG_NAME.built ]
 then
-    report_error "U-Boot was not built for the current image configuration"
-    exit 1
+	report_error "U-Boot was not built for the current image configuration"
+	exit 1
 fi
 if [ ! -e $SCRIPT_BIN_FILE ]
 then
-    report_error "Boot script was not built for the current image configuration"
-    exit 1
+	report_error "Boot script was not built for the current image configuration"
+	exit 1
 fi
 if [ ! -e $BUILD_DIR/kernel-$CONFIG_NAME.built ]
 then
-    report_error "Kernel was not built for the current image configuration"
-    exit 1
+	report_error "Kernel was not built for the current image configuration"
+	exit 1
 fi
 if [ ! -e $BUILD_DIR/kernel-headers-$CONFIG_NAME.built ]
 then
-    report_error "Kernel headers were not installed for the current image configuration"
-    exit 1
+	report_error "Kernel headers were not installed for the current image configuration"
+	exit 1
 fi
 
 # Checking kernel modules
 if [ ! -d $KERNEL_SRC_DIR/$KERNEL_MOD_DIR_NAME ]
 then
-    report_error "Build kernel modules first"
-    exit 1
+	report_error "Build kernel modules first"
+	exit 1
 fi
 
 # Checking multistrap config
 if [ ! -e $MULTISTRAP_TEMPLATE_FILE ]
 then
-    report_error "Multistrap config not found"
-    exit 1
+	report_error "Multistrap config not found"
+	exit 1
 fi
 
 # Checking stray /proc and /dev/pts mount on root-fs directory
@@ -89,11 +89,11 @@ set +e
 report_info "Checking stray /proc and /dev/pts mount on root-fs directory"
 if [ -d $ROOTFS_DIR/proc ]
 then
-    umount $ROOTFS_DIR/proc
+	umount $ROOTFS_DIR/proc
 fi
 if [ -d $ROOTFS_DIR/dev/pts ]
 then
-    umount $ROOTFS_DIR/dev/pts
+	umount $ROOTFS_DIR/dev/pts
 fi
 set -e
 
@@ -101,9 +101,9 @@ set -e
 report_info "Cleaning up root-fs directory"
 if [ -d $ROOTFS_DIR ]
 then
-    rm -rf $ROOTFS_DIR/*
+	rm -rf $ROOTFS_DIR/*
 else
-    mkdir -p $ROOTFS_DIR
+	mkdir -p $ROOTFS_DIR
 fi
 
 # Mount /proc
@@ -323,7 +323,6 @@ cd /usr/tinkerforge/bindings
 rm -rf *_bindings_latest.zip
 EOF
 
-
 # Install nodejs bindings. We can't install them through chroot, since
 # qemu does not support netlink (which is necessary for npm).
 # So instead we install them in a custom dir on the host system and
@@ -374,11 +373,11 @@ cd /tmp/features/mono_features/xml-rpc.net/
 cp ./*.dll /usr/lib/mono/2.0/
 if  [ "$CONFIG_NAME" = "full" ]
 then
-    cd /tmp/features/mono_features/
-    unzip -q opentk-2014-06-20.zip -d ./OpenTK
-    cd ./OpenTK/Binaries/OpenTK/Release/
-    cp ./*.dll /usr/lib/mono/2.0/
-    cp ./*.config /usr/lib/mono/2.0/
+	cd /tmp/features/mono_features/
+	unzip -q opentk-2014-06-20.zip -d ./OpenTK
+	cd ./OpenTK/Binaries/OpenTK/Release/
+	cp ./*.dll /usr/lib/mono/2.0/
+	cp ./*.config /usr/lib/mono/2.0/
 fi
 EOF
 
@@ -403,9 +402,9 @@ gem install --no-ri --no-rdoc prawn god
 # GROUP-END:ruby
 if [ "$CONFIG_NAME" = "full" ]
 then
-    # GROUP-START-FULL:ruby
-    gem install --no-ri --no-rdoc gtk2 gtk3 opengl
-    # GROUP-END-FULL:ruby
+	# GROUP-START-FULL:ruby
+	gem install --no-ri --no-rdoc gtk2 gtk3 opengl
+	# GROUP-END-FULL:ruby
 fi
 EOF
 
