@@ -390,9 +390,11 @@ cd /tmp/features/java_features/
 cp ./*.jar /usr/share/java/
 EOF
 
-# Installing Ruby features
-report_info "Installing Ruby features"
-chroot $ROOTFS_DIR<<EOF
+if [ "$DRAFT_MODE" = "no" ]
+then
+	# Installing Ruby features
+	report_info "Installing Ruby features"
+	chroot $ROOTFS_DIR<<EOF
 export LC_ALL=C LANGUAGE=C LANG=C LC_CTYPE=$LOCALE
 # GROUP-START:ruby
 gem install --no-ri --no-rdoc mysql2 sqlite3
@@ -408,6 +410,7 @@ then
 	# GROUP-END-FULL:ruby
 fi
 EOF
+fi
 
 # Installing Python features
 report_info "Installing Python features"
