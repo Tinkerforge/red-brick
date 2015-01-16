@@ -327,10 +327,11 @@ EOF
 # qemu does not support netlink (which is necessary for npm).
 # So instead we install them in a custom dir on the host system and
 # copy them into the rootfs afterwards.
-mkdir /tmp/red_brick_node
-npm install $ROOTFS_DIR/usr/tinkerforge/bindings/javascript/nodejs/tinkerforge.tgz -g --prefix /tmp/red_brick_node
-rsync -a --no-o --no-g /tmp/red_brick_node/lib $ROOTFS_DIR/usr/local
-rm -rf /tmp/red_brick_node
+rm -rf $BUILD_DIR/nodejs_tmp
+mkdir -p $BUILD_DIR/nodejs_tmp
+npm install $ROOTFS_DIR/usr/tinkerforge/bindings/javascript/nodejs/tinkerforge.tgz -g --prefix $BUILD_DIR/nodejs_tmp
+rsync -a --no-o --no-g $BUILD_DIR/nodejs_tmp/lib $ROOTFS_DIR/usr/local
+rm -rf $BUILD_DIR/nodejs_tmp
 
 # Installing Mono features
 report_info "Installing Mono features"
