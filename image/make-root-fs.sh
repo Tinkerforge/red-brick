@@ -25,6 +25,9 @@ fi
 CONFIG_NAME=$1
 . $CONFIG_DIR/image.conf
 
+# Some helper variables and functions
+CHROOT="env -i PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin LANG=$LOCALE LANGUAGE=$LANGUAGE LC_ALL=$LOCALE DEBIAN_FRONTEND=noninteractive DEBCONF_NONINTERACTIVE_SEEN=true chroot $ROOTFS_DIR"
+
 function unmount {
 	report_info "Unmounting /proc and /dev/pts from root-fs"
 
@@ -151,9 +154,7 @@ cp $TOOLS_DIR/$QEMU_BASE_NAME/arm-linux-user/qemu-arm $ROOTFS_DIR$QEMU_BIN
 # Configuring the generated root-fs
 report_info "Configuring the generated root-fs"
 cp /etc/resolv.conf $ROOTFS_DIR/etc/resolv.conf
-chroot $ROOTFS_DIR<<EOF
-export DEBIAN_FRONTEND=noninteractive DEBCONF_NONINTERACTIVE_SEEN=true
-export LC_ALL=C LANGUAGE=C LANG=C LC_CTYPE=$LOCALE
+$CHROOT <<EOF
 wget http://archive.raspbian.org/raspbian.public.key -O - | apt-key add -
 wget http://archive.raspberrypi.org/debian/raspberrypi.gpg.key -O - | apt-key add -
 /var/lib/dpkg/info/dash.preinst install
@@ -182,7 +183,7 @@ EOF
 
 # Installing Java 8
 report_info "Installing Java 8"
-chroot $ROOTFS_DIR<<EOF
+$CHROOT <<EOF
 cd /tmp
 wget download.tinkerforge.com/_stuff/jdk-8-linux-arm-vfp-hflt.tar.gz
 tar zxf jdk-8-linux-arm-vfp-hflt.tar.gz -C /usr/lib/jvm
@@ -194,8 +195,7 @@ EOF
 
 # Installing brickd
 report_info "Installing brickd"
-chroot $ROOTFS_DIR<<EOF
-export LC_ALL=C LANGUAGE=C LANG=C LC_CTYPE=$LOCALE
+$CHROOT <<EOF
 cd /tmp
 wget http://download.tinkerforge.com/tools/brickd/linux/brickd_linux_latest+redbrick_armhf.deb
 dpkg -i brickd_linux_latest+redbrick_armhf.deb
@@ -206,8 +206,7 @@ EOF
 
 # Installing redapid
 report_info "Installing redapid"
-chroot $ROOTFS_DIR<<EOF
-export LC_ALL=C LANGUAGE=C LANG=C LC_CTYPE=$LOCALE
+$CHROOT <<EOF
 cd /tmp
 wget http://download.tinkerforge.com/tools/redapid/linux/redapid_linux_latest_armhf.deb
 dpkg -i redapid_linux_latest_armhf.deb
@@ -218,8 +217,7 @@ EOF
 
 # Installing Node.js and NPM
 report_info "Installing Node.js and NPM"
-chroot $ROOTFS_DIR<<EOF
-export LC_ALL=C LANGUAGE=C LANG=C LC_CTYPE=$LOCALE
+$CHROOT <<EOF
 cd /tmp
 dpkg -i node_*
 dpkg --configure -a
@@ -229,8 +227,7 @@ EOF
 
 # Updating Perl modules
 report_info "Updating Perl modules"
-chroot $ROOTFS_DIR<<EOF
-export LC_ALL=C LANGUAGE=C LANG=C LC_CTYPE=$LOCALE
+$CHROOT <<EOF
 rm -rf /root/.cpanm/
 # GROUP-START:perl
 cpanm install -n Thread::Queue
@@ -239,15 +236,13 @@ EOF
 
 # Setting up scripts directory (red-brick's brickv mechanism)
 report_info "Setting up scripts directory"
-chroot $ROOTFS_DIR<<EOF
-export LC_ALL=C LANGUAGE=C LANG=C LC_CTYPE=$LOCALE LC_CTYPE=$LOCALE
+$CHROOT <<EOF
 mkdir -p /usr/local/scripts
 EOF
 
 # Setting up all the bindings
 report_info "Setting up all the bindings"
-chroot $ROOTFS_DIR<<EOF
-export LC_ALL=C LANGUAGE=C LANG=C LC_CTYPE=$LOCALE LC_CTYPE=$LOCALE
+$CHROOT <<EOF
 mkdir -p /usr/tinkerforge/bindings
 cd /usr/tinkerforge/bindings
 wget http://download.tinkerforge.com/bindings/c/tinkerforge_c_bindings_latest.zip
@@ -332,8 +327,7 @@ rm -rf $BUILD_DIR/nodejs_tmp
 
 # Installing Mono features
 report_info "Installing Mono features"
-chroot $ROOTFS_DIR<<EOF
-export LC_ALL=C LANGUAGE=C LANG=C LC_CTYPE=$LOCALE
+$CHROOT <<EOF
 cd /tmp/features/mono_features/
 unzip -q ./MathNet.Numerics-3.0.1.zip
 unzip -q ./mysql-connector-net-6.8.3-noinstall.zip -d ./mysql-connector-net
@@ -381,8 +375,7 @@ EOF
 
 # Installing Java features
 report_info "Installing Java features"
-chroot $ROOTFS_DIR<<EOF
-export LC_ALL=C LANGUAGE=C LANG=C LC_CTYPE=$LOCALE
+$CHROOT <<EOF
 cd /tmp/features/java_features/
 cp ./*.jar /usr/share/java/
 EOF
@@ -391,8 +384,7 @@ if [ "$DRAFT_MODE" = "no" ]
 then
 	# Installing Ruby features
 	report_info "Installing Ruby features"
-	chroot $ROOTFS_DIR<<EOF
-export LC_ALL=C LANGUAGE=C LANG=C LC_CTYPE=$LOCALE
+	$CHROOT <<EOF
 # GROUP-START:ruby
 gem install --no-ri --no-rdoc mysql2 sqlite3
 gem install --no-ri --no-rdoc rubyvis plotrb statsample distribution minimization integration
@@ -411,8 +403,7 @@ fi
 
 # Installing Python features
 report_info "Installing Python features"
-chroot $ROOTFS_DIR<<EOF
-export LC_ALL=C LANGUAGE=C LANG=C LC_CTYPE=$LOCALE
+$CHROOT <<EOF
 easy_install --upgrade pip
 # GROUP-START:python
 pip install pycrypto
@@ -423,8 +414,7 @@ EOF
 
 # Installing Perl features
 report_info "Installing Perl features"
-chroot $ROOTFS_DIR<<EOF
-export LC_ALL=C LANGUAGE=C LANG=C LC_CTYPE=$LOCALE
+$CHROOT <<EOF
 # GROUP-START:perl
 cpanm install -n RPC::Simple
 # GROUP-END:perl
@@ -432,8 +422,7 @@ EOF
 
 # Installing PHP features
 report_info "Installing PHP features"
-chroot $ROOTFS_DIR<<EOF
-export LC_ALL=C LANGUAGE=C LANG=C LC_CTYPE=$LOCALE
+$CHROOT <<EOF
 pear config-set preferred_state alpha
 # GROUP-START:php
 pear install --onlyreqdeps FSM Archive_Tar Archive_Zip
@@ -449,15 +438,13 @@ EOF
 
 # Enable BASH completion
 report_info "Enabling BASH completion"
-chroot $ROOTFS_DIR<<EOF
-export LC_ALL=C LANGUAGE=C LANG=C LC_CTYPE=$LOCALE
+$CHROOT <<EOF
 . /etc/bash_completion
 EOF
 
 # Configuring boot splash image
 report_info "Configuring boot splash image"
-chroot $ROOTFS_DIR<<EOF
-export LC_ALL=C LANGUAGE=C LANG=C LC_CTYPE=$LOCALE
+$CHROOT <<EOF
 chmod 755 /etc/init.d/asplashscreen
 chmod 755 /etc/init.d/killasplashscreen
 update-rc.d asplashscreen defaults
@@ -466,8 +453,7 @@ EOF
 
 # Removing plymouth
 report_info "Removing plymouth"
-chroot $ROOTFS_DIR<<EOF
-export LC_ALL=C LANGUAGE=C LANG=C LC_CTYPE=$LOCALE
+$CHROOT <<EOF
 apt-get purge plymouth -y
 dpkg --configure -a
 # add true here to avoid having a dpkg error abort the whole script here
@@ -483,8 +469,7 @@ then
 
 	# Configuring Mali GPU
 	report_info "Configuring Mali GPU"
-	chroot $ROOTFS_DIR<<EOF
-export LC_ALL=C LANGUAGE=C LANG=C LC_CTYPE=$LOCALE
+	$CHROOT <<EOF
 cd /tmp/mali-gpu
 dpkg -i ./libdri2-1_1.0-2_armhf.deb
 dpkg -i ./libsunxi-mali-x11_1.0-4_armhf.deb
@@ -500,16 +485,14 @@ EOF
 
 	# Setting up XDM logo and desktop wallpaper
 	report_info "Setting up XDM logo and desktop wallpaper"
-	chroot $ROOTFS_DIR<<EOF
-export LC_ALL=C LANGUAGE=C LANG=C LC_CTYPE=$LOCALE
+	$CHROOT <<EOF
 rm -rf /etc/alternatives/desktop-background
 ln -s /usr/share/images/tf-image.png /etc/alternatives/desktop-background
 EOF
 
 	# Installing brickv
 	report_info "Installing brickv"
-	chroot $ROOTFS_DIR<<EOF
-export LC_ALL=C LANGUAGE=C LANG=C LC_CTYPE=$LOCALE
+	$CHROOT <<EOF
 cd /tmp
 wget http://download.tinkerforge.com/tools/brickv/linux/brickv_linux_latest.deb
 dpkg -i brickv_linux_latest.deb
@@ -521,8 +504,7 @@ fi
 
 # Setting Java class path
 report_info "Setting Java class path"
-chroot $ROOTFS_DIR<<EOF
-export LC_ALL=C LANGUAGE=C LANG=C LC_CTYPE=$LOCALE
+$CHROOT <<EOF
 echo "
 # Setting Java class path
 CLASSPATH=\$CLASSPATH:/usr/share/java
@@ -531,8 +513,7 @@ EOF
 
 # Fixing, cleaning and updating APT
 report_info "Fixing, cleaning and updating APT"
-chroot $ROOTFS_DIR<<EOF
-export LC_ALL=C LANGUAGE=C LANG=C LC_CTYPE=$LOCALE
+$CHROOT <<EOF
 cat /etc/apt/sources.list.d/* > /tmp/sources.list.tmp
 rm -rf /etc/apt/sources.list.d/*
 if [ -n "$aptcacher" ]
@@ -548,8 +529,7 @@ EOF
 
 # Setting up fake-hwclock
 report_info "Setting up fake-hwclock"
-chroot $ROOTFS_DIR<<EOF
-export LC_ALL=C LANGUAGE=C LANG=C LC_CTYPE=$LOCALE
+$CHROOT <<EOF
 rm -rf /etc/cron.hourly/fake-hwclock
 chmod 0644 /etc/cron.d/fake-hwclock
 update-rc.d -f hwclock.sh remove
@@ -558,8 +538,7 @@ EOF
 
 # Adding new user
 report_info "Adding new user"
-chroot $ROOTFS_DIR<<EOF
-export LC_ALL=C LANGUAGE=C LANG=C LC_CTYPE=$LOCALE
+$CHROOT <<EOF
 rm -rf /home/
 adduser tf
 tf
@@ -574,8 +553,7 @@ EOF
 
 # User group setup
 report_info "User group setup"
-chroot $ROOTFS_DIR<<EOF
-export LC_ALL=C LANGUAGE=C LANG=C LC_CTYPE=$LOCALE
+$CHROOT <<EOF
 usermod -a -G adm tf
 usermod -a -G dialout tf
 usermod -a -G cdrom tf
@@ -592,16 +570,14 @@ EOF
 
 # Copy RED Brick index website
 report_info "Copy RED Brick index website"
-chroot $ROOTFS_DIR<<EOF
-export LC_ALL=C LANGUAGE=C LANG=C LC_CTYPE=$LOCALE
+$CHROOT <<EOF
 cp /tmp/index.py /home/tf
 cp /tmp/red.css /home/tf
 EOF
 
 # Generating dpkg listing
 report_info "Generating dpkg listing"
-chroot $ROOTFS_DIR<<EOF
-export LC_ALL=C LANGUAGE=C LANG=C LC_CTYPE=$LOCALE
+$CHROOT <<EOF
 dpkg-query -W -f='\${Package}<==>\${Version}<==>\${Description}\n' > /root/dpkg-$CONFIG_NAME.listing
 cat /usr/local/lib/node_modules/npm/package.json | \
 python -c "import json;import sys;json_content = unicode(sys.stdin.read());\
@@ -613,16 +589,14 @@ mv $ROOTFS_DIR/root/dpkg-$CONFIG_NAME.listing $BUILD_DIR
 
 # Generating Perl listing
 report_info "Generating Perl listing"
-chroot $ROOTFS_DIR<<EOF
-export LC_ALL=C LANGUAGE=C LANG=C LC_CTYPE=$LOCALE
+$CHROOT <<EOF
 pmall > /root/perl-$CONFIG_NAME.listing
 EOF
 mv $ROOTFS_DIR/root/perl-$CONFIG_NAME.listing $BUILD_DIR
 
 # Generating PHP listing
 report_info "Generating PHP listing"
-chroot $ROOTFS_DIR<<EOF
-export LC_ALL=C LANGUAGE=C LANG=C LC_CTYPE=$LOCALE
+$CHROOT <<EOF
 mv /usr/share/php/PEAR/Frontend/CLI.php /usr/share/php/PEAR/Frontend/CLI.php.org
 mv /tmp/CLI.php /usr/share/php/PEAR/Frontend/
 pear list-all > /dev/null
@@ -633,8 +607,7 @@ mv $ROOTFS_DIR/root/php-$CONFIG_NAME.listing $BUILD_DIR
 
 # Generating Python listing
 report_info "Generating Python listing"
-chroot $ROOTFS_DIR<<EOF
-export LC_ALL=C LANGUAGE=C LANG=C LC_CTYPE=$LOCALE
+$CHROOT <<EOF
 mv /usr/local/lib/python2.7/dist-packages/pip-1.5.6-py2.7.egg/pip/commands/list.py /usr/local/lib/python2.7/dist-packages/pip-1.5.6-py2.7.egg/pip/commands/list.py.org
 mv /tmp/list.py /usr/local/lib/python2.7/dist-packages/pip-1.5.6-py2.7.egg/pip/commands/
 pip list > /root/python.listing
@@ -645,16 +618,14 @@ mv $ROOTFS_DIR/root/python-$CONFIG_NAME.listing $BUILD_DIR
 
 # Generating Ruby listing
 report_info "Generating Ruby listing"
-chroot $ROOTFS_DIR<<EOF
-export LC_ALL=C LANGUAGE=C LANG=C LC_CTYPE=$LOCALE
+$CHROOT <<EOF
 gem list --local --details > /root/ruby-$CONFIG_NAME.listing
 EOF
 mv $ROOTFS_DIR/root/ruby-$CONFIG_NAME.listing $BUILD_DIR
 
 # Updating user PATH
 report_info "Updating user PATH"
-chroot $ROOTFS_DIR<<EOF
-export LC_ALL=C LANGUAGE=C LANG=C LC_CTYPE=$LOCALE
+$CHROOT <<EOF
 echo "
 # Updating user PATH
 PATH=\$PATH:/sbin:/usr/sbin
@@ -663,8 +634,7 @@ EOF
 
 # Reconfiguring locale
 report_info "Reconfiguring locale"
-chroot $ROOTFS_DIR<<EOF
-export LC_ALL=C LANGUAGE=C LANG=C LC_CTYPE=$LOCALE
+$CHROOT <<EOF
 update-locale LANG=$LOCALE LANGUAGE=$LANGUAGE LC_ALL=$LOCALE
 echo $LOCALE_CHARSET > /etc/locale.gen
 locale-gen
@@ -681,36 +651,32 @@ rsync -a --no-o --no-g $KERNEL_HEADER_USR_DIR $ROOTFS_DIR
 
 # Cleaning /etc/resolv.conf and creating symbolic link for resolvconf
 report_info "Cleaning /etc/resolv.conf and creating symbolic link for resolvconf"
-chroot $ROOTFS_DIR<<EOF
-export LC_ALL=C LANGUAGE=C LANG=C LC_CTYPE=$LOCALE
+$CHROOT <<EOF
 rm -rf /etc/resolv.conf
 ln -s /etc/resolvconf/run/resolv.conf /etc/resolv.conf
 EOF
 
 # Disabling the root user
 report_info "Disabling the root user"
-chroot $ROOTFS_DIR<<EOF
-export LC_ALL=C LANGUAGE=C LANG=C LC_CTYPE=$LOCALE
+$CHROOT <<EOF
 passwd -l root
 EOF
 
 # Fix apache server name problem
 report_info "Fix apache server name problem"
-chroot $ROOTFS_DIR<<EOF
-export LC_ALL=C LANGUAGE=C LANG=C LC_CTYPE=$LOCALE
+$CHROOT <<EOF
 cp -ar /tmp/apache2.conf /etc/apache2/
 EOF
 
 # Generate Tinkerforge.js symlink
 report_info "Generating Tinkerforge.js symlink"
-chroot $ROOTFS_DIR<<EOF
+$CHROOT <<EOF
 ln -s /usr/tinkerforge/bindings/javascript/browser/source/Tinkerforge.js /home/tf
 EOF
 
 # Compiling and installing hostapd and wpa_supplicant for access point mode support
 report_info "Compiling and installing hostapd and wpa_supplicant for access point mode support"
-chroot $ROOTFS_DIR<<EOF
-export LC_ALL=C LANGUAGE=C LANG=C LC_CTYPE=$LOCALE
+$CHROOT <<EOF
 cd /tmp
 mkdir ./$HOSTAPD_WPA_SUPPLICANT_NAME
 tar jxvf $HOSTAPD_WPA_SUPPLICANT_NAME\
@@ -731,29 +697,25 @@ EOF
 
 # Do not run DNS/DHCP server at boot by default
 report_info "Do not run DNS/DHCP server at boot by default"
-chroot $ROOTFS_DIR<<EOF
-export LC_ALL=C LANGUAGE=C LANG=C LC_CTYPE=$LOCALE
+$CHROOT <<EOF
 update-rc.d -f dnsmasq remove
 EOF
 
 # Enabling X11 server in RED Brick way
 report_info "Enabling X server in RED Brick way"
-chroot $ROOTFS_DIR<<EOF
-export LC_ALL=C LANGUAGE=C LANG=C LC_CTYPE=$LOCALE
+$CHROOT <<EOF
 touch /etc/tf_x11_enabled
 EOF
 
 # Remove apache init script dependency of DNS server
 report_info "Remove apache init script dependency of DNS server"
-chroot $ROOTFS_DIR<<EOF
-export LC_ALL=C LANGUAGE=C LANG=C LC_CTYPE=$LOCALE
+$CHROOT <<EOF
 sed -i 's/\$named//g' /etc/init.d/apache2
 EOF
 
 # Cleaning /tmp directory and make it r/w for everyone
 report_info "Cleaning /tmp directory"
-chroot $ROOTFS_DIR<<EOF
-export LC_ALL=C LANGUAGE=C LANG=C LC_CTYPE=$LOCALE
+$CHROOT <<EOF
 rm -rf /tmp/*
 updatedb
 chmod a+rw /tmp/
