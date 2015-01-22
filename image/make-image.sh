@@ -31,6 +31,7 @@ function cleanup {
 
 	# Unmount and release loop device
 	set +e
+
 	if [ -n "${loop_dev_p1+1}" ]
 	then
 		umount -f $loop_dev_p1
@@ -41,10 +42,11 @@ function cleanup {
 	then
 		losetup -d $loop_dev
 	fi
+
 	set -e
 }
 
-trap "cleanup" SIGHUP SIGINT SIGTERM SIGQUIT EXIT
+trap "cleanup" SIGHUP SIGINT SIGTERM SIGQUIT
 
 # Checking if root-fs was generated for the provided image configuration
 if [ ! -e $BUILD_DIR/root-fs-$CONFIG_NAME.built ]
@@ -155,11 +157,7 @@ rsync -a --no-o --no-g $KERNEL_SRC_DIR/$KERNEL_MOD_DIR_NAME/lib/modules $MOUNT_D
 rsync -a --no-o --no-g $KERNEL_SRC_DIR/$KERNEL_MOD_DIR_NAME/lib/firmware $MOUNT_DIR/lib/
 umount $loop_dev_p1
 
-# Releasing loop device
-report_info "Releasing loop device"
-losetup -d $loop_dev
-losetup -d $loop_dev_p1
-
+cleanup
 report_info "Process finished"
 
 exit 0

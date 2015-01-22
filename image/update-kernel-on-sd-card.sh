@@ -32,14 +32,16 @@ function cleanup {
 
 	# Checking stray mounts
 	set +e
+
 	if [ -d $MOUNT_DIR ]
 	then
 		umount -f $MOUNT_DIR
 	fi
+
 	set -e
 }
 
-trap "cleanup" SIGHUP SIGINT SIGTERM SIGQUIT EXIT
+trap "cleanup" SIGHUP SIGINT SIGTERM SIGQUIT
 
 # Checking image file
 if [ ! -e $KERNEL_IMAGE_FILE ]
@@ -77,6 +79,7 @@ rsync -arpc $KERNEL_SRC_DIR/$KERNEL_MOD_DIR_NAME/lib/modules $MOUNT_DIR/lib/
 rsync -arpc $KERNEL_SRC_DIR/$KERNEL_MOD_DIR_NAME/lib/firmware $MOUNT_DIR/lib/
 umount $MOUNT_DIR
 
+cleanup
 report_info "Process finished"
 
 exit 0
