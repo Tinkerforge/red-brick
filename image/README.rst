@@ -141,6 +141,4 @@ In ``patches/root-fs/{full|fast}/etc/inittab`` uncomment::
 
  T1:23:respawn:/sbin/getty --autologin tf -L ttyS0 115200 vt100
 
-In ``/etc/securetty`` uncomment::
-
- ttyS0
+Finally, rebuild the image.
