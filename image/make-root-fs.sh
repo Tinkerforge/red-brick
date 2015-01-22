@@ -136,7 +136,8 @@ rsync -a --no-o --no-g $PATCHES_DIR/root-fs/$CONFIG_NAME/ $ROOTFS_DIR/
 report_info "Write /etc/tf_image_version"
 echo "${IMAGE_DOT_VERSION} (${CONFIG_NAME})" > $ROOTFS_DIR/etc/tf_image_version
 
-# Fix mode of /tmp
+# Create /tmp and set correct mode
+mkdir -p $ROOTFS_DIR/tmp
 chmod 1777 $ROOTFS_DIR/tmp
 
 # Disable starting daemons in the chroot
@@ -711,12 +712,14 @@ $CHROOT <<EOF
 sed -i 's/\$named//g' /etc/init.d/apache2
 EOF
 
-# Cleaning /tmp directory and make it r/w for everyone
+# Cleaning /tmp directory
 report_info "Cleaning /tmp directory"
+rm -rf $ROOTFS_DIR/tmp/*
+
+# Updating locate database
+report_info "Updating locate database"
 $CHROOT <<EOF
-rm -rf /tmp/*
 updatedb
-chmod a+rw /tmp/
 EOF
 
 # Clearing bash history of the root user
