@@ -118,18 +118,12 @@ First update the kernel sources::
 
   ./update-source.sh
 
-Go to ``red-brick/image/source/red-brick-linux-sunxi/`` and copy full or fast config::
+Then run the edit script that starts the graphical config editor::
 
- cp ../../config/kernel/red_brick_{full|fast}_defconfig .config
+  ./edit-kernel-config.sh <config-name>
 
-run xconfig::
-
- make ARCH=arm xconfig
-
-copy config back::
-
- cp .config ../../config/kernel/red_brick_{full|fast}_defconfig
-
+After you edited and saved the config changes close the config editor and the
+edit script will take care of the rest.
 
 Enable Serial Console for Debug Brick
 -------------------------------------
