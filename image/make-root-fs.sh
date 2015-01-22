@@ -278,9 +278,7 @@ wget http://download.tinkerforge.com/bindings/matlab/tinkerforge_matlab_bindings
 unzip -q -d matlab tinkerforge_matlab_bindings_latest.zip
 wget http://download.tinkerforge.com/bindings/perl/tinkerforge_perl_bindings_latest.zip
 unzip -q -d perl tinkerforge_perl_bindings_latest.zip
-cd perl
-tar zxvf Tinkerforge.tar.gz
-cd source/
+cd perl/source
 perl Makefile.PL
 make all
 make test
