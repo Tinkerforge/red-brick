@@ -25,12 +25,11 @@ fi
 CONFIG_NAME=$1
 . $CONFIG_DIR/image.conf
 
-# Cleanup function in case of interrupts
-function cleanup {
-	report_info "Cleaning up before exit..."
+function unmount {
+	report_info "Unmounting /proc and /dev/pts from root-fs"
 
-	# Checking stray /proc and /dev/pts mount on root-fs directory
 	set +e
+
 	if [ -d $ROOTFS_DIR/proc ]
 	then
 		umount -f $ROOTFS_DIR/proc
@@ -40,7 +39,15 @@ function cleanup {
 	then
 		umount -f $ROOTFS_DIR/dev/pts
 	fi
+
 	set -e
+}
+
+# Cleanup function in case of interrupts
+function cleanup {
+	report_info "Cleaning up before exit..."
+
+	unmount
 
 	# Ensure host name integrity
 	hostname -F /etc/hostname
@@ -84,18 +91,8 @@ then
 	exit 1
 fi
 
-# Checking stray /proc and /dev/pts mount on root-fs directory
-set +e
-report_info "Checking stray /proc and /dev/pts mount on root-fs directory"
-if [ -d $ROOTFS_DIR/proc ]
-then
-	umount $ROOTFS_DIR/proc
-fi
-if [ -d $ROOTFS_DIR/dev/pts ]
-then
-	umount $ROOTFS_DIR/dev/pts
-fi
-set -e
+# Unmounting stray mounts from the root-fs
+unmount
 
 # Cleaning up root-fs directory
 report_info "Cleaning up root-fs directory"
@@ -106,8 +103,8 @@ else
 	mkdir -p $ROOTFS_DIR
 fi
 
-# Mount /proc
-report_info "Mounting /proc and /dev/pts in root-fs directory"
+# Mounting stuff in root-fs directory
+report_info "Mounting stuff in root-fs directory"
 mkdir -p $ROOTFS_DIR/proc
 mount -t proc none $ROOTFS_DIR/proc
 mkdir -p $ROOTFS_DIR/dev/pts
@@ -771,10 +768,8 @@ touch $ROOTFS_DIR/root/.bash_history
 report_info "Removing qemu-arm-static from the root-fs"
 rm -rf $ROOTFS_DIR$QEMU_BIN
 
-# Unmounting /proc from the root-fs
-report_info "Unmounting /proc and /dev/pts from the root-fs"
-umount $ROOTFS_DIR/proc
-umount $ROOTFS_DIR/dev/pts
+# Unmounting stuff from the root-fs
+unmount
 
 # Enable starting daemons in the chroot
 report_info "Enable starting daemons in the chroot"
