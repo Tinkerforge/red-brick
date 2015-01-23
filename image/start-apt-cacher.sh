@@ -35,14 +35,6 @@ then
 	apt-cacher -d -c $CONFIG_DIR/apt-cacher.conf -p $APTCACHER_DIR/pid-2 cache_dir=$APTCACHER_DIR/cache-2 log_dir=$APTCACHER_DIR/log-2 daemon_port=3152
 fi
 
-mkdir -p $APTCACHER_DIR/cache-3
-mkdir -p $APTCACHER_DIR/log-3
-
-if [ `netstat -lnt | awk '$6 == "LISTEN" && $4 ~ ".3153"' | wc -l` -eq 0 ]
-then
-	apt-cacher -d -c $CONFIG_DIR/apt-cacher.conf -p $APTCACHER_DIR/pid-3 cache_dir=$APTCACHER_DIR/cache-3 log_dir=$APTCACHER_DIR/log-3 daemon_port=3153
-fi
-
 report_info "Process finished"
 
 exit 0

@@ -29,7 +29,7 @@ CONFIG_NAME=$1
 CHROOT="env -i PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin LANG=$LOCALE LANGUAGE=$LANGUAGE LC_ALL=$LOCALE DEBIAN_FRONTEND=noninteractive DEBCONF_NONINTERACTIVE_SEEN=true chroot $ROOTFS_DIR"
 
 function unmount {
-	report_info "Unmounting /proc and /dev/pts from root-fs"
+	report_info "Unmounting /proc, /dev/pts and /dev/(u)random from the root-fs directory"
 
 	set +e
 
@@ -41,6 +41,16 @@ function unmount {
 	if [ -d $ROOTFS_DIR/dev/pts ]
 	then
 		umount -f $ROOTFS_DIR/dev/pts
+	fi
+
+	if [ -e $ROOTFS_DIR/dev/random ]
+	then
+		umount -f $ROOTFS_DIR/dev/random
+	fi
+
+	if [ -e $ROOTFS_DIR/dev/urandom ]
+	then
+		umount -f $ROOTFS_DIR/dev/urandom
 	fi
 
 	set -e
@@ -112,6 +122,10 @@ mkdir -p $ROOTFS_DIR/proc
 mount -t proc none $ROOTFS_DIR/proc
 mkdir -p $ROOTFS_DIR/dev/pts
 mount --bind /dev/pts $ROOTFS_DIR/dev/pts
+touch $ROOTFS_DIR/dev/random
+mount --bind /dev/random $ROOTFS_DIR/dev/random
+touch $ROOTFS_DIR/dev/urandom
+mount --bind /dev/urandom $ROOTFS_DIR/dev/urandom
 
 # Starting multistrap
 aptcacher=`netstat -lnt | awk '$6 == "LISTEN" && $4 ~ ".3150"'`
@@ -154,28 +168,27 @@ cp $TOOLS_DIR/$QEMU_BASE_NAME/arm-linux-user/qemu-arm $ROOTFS_DIR$QEMU_BIN
 
 # Configuring the generated root-fs
 report_info "Configuring the generated root-fs"
+# FIXME: using host resolv.conf might not be the right thing to do here
 cp /etc/resolv.conf $ROOTFS_DIR/etc/resolv.conf
 $CHROOT <<EOF
-wget http://archive.raspbian.org/raspbian.public.key -O - | apt-key add -
-wget http://archive.raspberrypi.org/debian/raspberrypi.gpg.key -O - | apt-key add -
+echo $LOCALE_CHARSET > /etc/locale.gen
+locale-gen
+update-locale LANG=$LOCALE LANGUAGE=$LANGUAGE LC_ALL=$LOCALE
 /var/lib/dpkg/info/dash.preinst install
 echo "dash dash/sh boolean false" | debconf-set-selections
 echo "tzdata tzdata/Areas select $TZDATA_AREA" | debconf-set-selections
 echo "tzdata tzdata/Zones/Europe select $TZDATA_ZONE" | debconf-set-selections
-update-locale LANG=$LOCALE LANGUAGE=$LANGUAGE LC_ALL=$LOCALE
-echo $LOCALE_CHARSET > /etc/locale.gen
-locale-gen
-echo -e "# KEYBOARD CONFIGURATION FILE
+echo '# KEYBOARD CONFIGURATION FILE
 
 # Consult the keyboard(5) manual page.
 
-XKBMODEL=\"$KB_MODEL\"
-XKBLAYOUT=\"$KB_LAYOUT\"
-XKBVARIANT=\"$KB_VARIANT\"
-XKBOPTIONS=\"$KB_OPTIONS\"
+XKBMODEL="$KB_MODEL"
+XKBLAYOUT="$KB_LAYOUT"
+XKBVARIANT="$KB_VARIANT"
+XKBOPTIONS="$KB_OPTIONS"
 
-BACKSPACE=\"$KB_BACKSPACE\"
-" > /etc/default/keyboard
+BACKSPACE="$KB_BACKSPACE"
+' > /etc/default/keyboard
 setupcon
 dpkg --configure -a
 # add true here to avoid having a dpkg error abort the whole script here
@@ -190,8 +203,9 @@ wget download.tinkerforge.com/_stuff/jdk-8-linux-arm-vfp-hflt.tar.gz
 tar zxf jdk-8-linux-arm-vfp-hflt.tar.gz -C /usr/lib/jvm
 update-alternatives --install /usr/bin/javac javac /usr/lib/jvm/jdk1.8.0/bin/javac 1
 update-alternatives --install /usr/bin/java java /usr/lib/jvm/jdk1.8.0/bin/java 1
-# we only have the java8 javac echo 3 | update-alternatives --config javac
-echo 4 | update-alternatives --config java
+# we only have the java8 javac
+#echo 3 | update-alternatives --config javac
+echo 2 | update-alternatives --config java
 EOF
 
 # Installing brickd
@@ -211,16 +225,6 @@ $CHROOT <<EOF
 cd /tmp
 wget http://download.tinkerforge.com/tools/redapid/linux/redapid_linux_latest_armhf.deb
 dpkg -i redapid_linux_latest_armhf.deb
-dpkg --configure -a
-# add true here to avoid having a dpkg error abort the whole script here
-true
-EOF
-
-# Installing Node.js and NPM
-report_info "Installing Node.js and NPM"
-$CHROOT <<EOF
-cd /tmp
-dpkg -i node_*
 dpkg --configure -a
 # add true here to avoid having a dpkg error abort the whole script here
 true
@@ -306,7 +310,6 @@ unzip -q -d shell tinkerforge_shell_bindings_latest.zip
 cd shell
 cp ./tinkerforge /usr/local/bin/
 cp tinkerforge-bash-completion.sh /etc/bash_completion.d/
-. /etc/bash_completion
 cd /usr/tinkerforge/bindings
 wget http://download.tinkerforge.com/bindings/vbnet/tinkerforge_vbnet_bindings_latest.zip
 unzip -q -d vbnet tinkerforge_vbnet_bindings_latest.zip
@@ -403,12 +406,9 @@ fi
 # Installing Python features
 report_info "Installing Python features"
 $CHROOT <<EOF
-easy_install --upgrade pip
 # GROUP-START:python
 pip install pycrypto
-pip install flask
 # GROUP-END:python
-pip install --upgrade netifaces
 EOF
 
 # Installing Perl features
@@ -433,12 +433,6 @@ pear install --onlyreqdeps Math_Polynomial Math_Quaternion Math_Complex Math_Mat
 pear install --onlyreqdeps Math_Vector MDB2 Net_URL2 Services_JSON System_Command System_Daemon
 pear install --onlyreqdeps XML_Parser XML_RPC
 # GROUP-END:php
-EOF
-
-# Enable BASH completion
-report_info "Enabling BASH completion"
-$CHROOT <<EOF
-. /etc/bash_completion
 EOF
 
 # Configuring boot splash image
@@ -473,9 +467,7 @@ cd /tmp/mali-gpu
 dpkg -i ./libdri2-1_1.0-2_armhf.deb
 dpkg -i ./libsunxi-mali-x11_1.0-4_armhf.deb
 dpkg -i ./libvdpau-sunxi_1.0-1_armhf.deb
-dpkg -i ./libvpx0_0.9.7.p1-2_armhf.deb
 dpkg -i ./sunxi-disp-test_1.0-1_armhf.deb
-dpkg -i ./udevil_0.4.1-3_armhf.deb
 dpkg -i ./xserver-xorg-video-sunximali_1.0-3_armhf.deb
 dpkg --configure -a
 # add true here to avoid having a dpkg error abort the whole script here
@@ -523,7 +515,7 @@ else
 fi
 apt-get clean
 apt-get update
-apt-get -f install
+apt-get -f install -y
 EOF
 
 # Setting up fake-hwclock
@@ -574,53 +566,51 @@ cp /tmp/index.py /home/tf
 cp /tmp/red.css /home/tf
 EOF
 
-# Generating dpkg listing
-report_info "Generating dpkg listing"
-$CHROOT <<EOF
+if [ "$DRAFT_MODE" = "no" ]
+then
+	# Generating dpkg listing
+	report_info "Generating dpkg listing"
+	$CHROOT <<EOF
 dpkg-query -W -f='\${Package}<==>\${Version}<==>\${Description}\n' > /root/dpkg-$CONFIG_NAME.listing
-cat /usr/local/lib/node_modules/npm/package.json | \
-python -c "import json;import sys;json_content = unicode(sys.stdin.read());\
-json_obj=json.loads(json_content);\
-print unicode(json_obj['name'])+'<==>'+unicode(json_obj['version'])+'<==>'+unicode(json_obj['description'])" \
->> /root/dpkg-$CONFIG_NAME.listing
 EOF
-mv $ROOTFS_DIR/root/dpkg-$CONFIG_NAME.listing $BUILD_DIR
+	mv $ROOTFS_DIR/root/dpkg-$CONFIG_NAME.listing $BUILD_DIR
 
-# Generating Perl listing
-report_info "Generating Perl listing"
-$CHROOT <<EOF
+	# Generating Perl listing
+	report_info "Generating Perl listing"
+	$CHROOT <<EOF
 pmall > /root/perl-$CONFIG_NAME.listing
 EOF
-mv $ROOTFS_DIR/root/perl-$CONFIG_NAME.listing $BUILD_DIR
+	mv $ROOTFS_DIR/root/perl-$CONFIG_NAME.listing $BUILD_DIR
 
-# Generating PHP listing
-report_info "Generating PHP listing"
-$CHROOT <<EOF
+	# Generating PHP listing
+	report_info "Generating PHP listing"
+	$CHROOT <<EOF
 mv /usr/share/php/PEAR/Frontend/CLI.php /usr/share/php/PEAR/Frontend/CLI.php.org
-mv /tmp/CLI.php /usr/share/php/PEAR/Frontend/
+mv /tmp/pear-CLI.php /usr/share/php/PEAR/Frontend/CLI.php
 pear list-all > /dev/null
 mv /usr/share/php/PEAR/Frontend/CLI.php.org /usr/share/php/PEAR/Frontend/CLI.php
 mv /root/php.listing /root/php-$CONFIG_NAME.listing
 EOF
-mv $ROOTFS_DIR/root/php-$CONFIG_NAME.listing $BUILD_DIR
+	mv $ROOTFS_DIR/root/php-$CONFIG_NAME.listing $BUILD_DIR
 
-# Generating Python listing
-report_info "Generating Python listing"
-$CHROOT <<EOF
-mv /usr/local/lib/python2.7/dist-packages/pip-1.5.6-py2.7.egg/pip/commands/list.py /usr/local/lib/python2.7/dist-packages/pip-1.5.6-py2.7.egg/pip/commands/list.py.org
-mv /tmp/list.py /usr/local/lib/python2.7/dist-packages/pip-1.5.6-py2.7.egg/pip/commands/
+	# Generating Python listing
+	report_info "Generating Python listing"
+	$CHROOT <<EOF
+mv /usr/lib/python2.7/dist-packages/pip/commands/list.py /usr/lib/python2.7/dist-packages/pip/commands/list.py.org
+mv /tmp/pip-list.py /usr/lib/python2.7/dist-packages/pip/commands/list.py
 pip list > /root/python.listing
-mv /usr/local/lib/python2.7/dist-packages/pip-1.5.6-py2.7.egg/pip/commands/list.py.org /usr/local/lib/python2.7/dist-packages/pip-1.5.6-py2.7.egg/pip/commands/list.py
+mv /usr/lib/python2.7/dist-packages/pip/commands/list.py.org /usr/lib/python2.7/dist-packages/pip/commands/list.py
 mv /root/python.listing /root/python-$CONFIG_NAME.listing
 EOF
-mv $ROOTFS_DIR/root/python-$CONFIG_NAME.listing $BUILD_DIR
+	mv $ROOTFS_DIR/root/python-$CONFIG_NAME.listing $BUILD_DIR
 
-# Generating Ruby listing
-report_info "Generating Ruby listing"
-$CHROOT <<EOF
+	# Generating Ruby listing
+	report_info "Generating Ruby listing"
+	$CHROOT <<EOF
 gem list --local --details > /root/ruby-$CONFIG_NAME.listing
 EOF
-mv $ROOTFS_DIR/root/ruby-$CONFIG_NAME.listing $BUILD_DIR
+	mv $ROOTFS_DIR/root/ruby-$CONFIG_NAME.listing $BUILD_DIR
+fi
 
 # Updating user PATH
 report_info "Updating user PATH"
@@ -634,9 +624,9 @@ EOF
 # Reconfiguring locale
 report_info "Reconfiguring locale"
 $CHROOT <<EOF
-update-locale LANG=$LOCALE LANGUAGE=$LANGUAGE LC_ALL=$LOCALE
 echo $LOCALE_CHARSET > /etc/locale.gen
 locale-gen
+update-locale LANG=$LOCALE LANGUAGE=$LANGUAGE LC_ALL=$LOCALE
 setupcon
 dpkg --configure -a
 # add true here to avoid having a dpkg error aborit the whole script here
@@ -742,10 +732,14 @@ rm -rf $ROOTFS_DIR/usr/sbin/policy-rc.d
 report_info "Ensure host name integrity"
 hostname -F /etc/hostname
 
-# Generate feature table
-report_info "Generating feature table"
-cd $BASE_DIR
-./generate-feature-doc.py $CONFIG_NAME
+if [ "$DRAFT_MODE" = "no" ]
+then
+	# Generate feature table
+	report_info "Generating feature table"
+	pushd $BASE_DIR > /dev/null
+	./generate-feature-doc.py $CONFIG_NAME
+	popd > /dev/null
+fi
 
 # Built file that indicates rootfs was made
 touch $BUILD_DIR/root-fs-$CONFIG_NAME.built

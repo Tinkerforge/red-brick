@@ -58,11 +58,11 @@ configurations. For example::
 
  ./compile-source.sh full
 
-The next step is to create the root-fs. This will download several Debian and
-Raspbian packages. If you intent to create different root-fs it's useful to
-setup apt-cacher daemons to avoid downloading all the packages multiple times,
-see the apt-cacher section below for further details. Whether you decided to
-use apt-cacher or not the next step is the same::
+The next step is to create the root-fs. This will download several Debian
+packages. If you intent to create different root-fs it's useful to setup
+apt-cacher daemons to avoid downloading all the packages multiple times, see
+the apt-cacher section below for further details. Whether you decided to use
+apt-cacher or not the next step is the same::
 
  sudo ./make-root-fs.sh <config-name>
 
@@ -88,7 +88,7 @@ start the apt-cacher daemons by running::
  ./start-apt-cacher.sh
 
 Now ``./make-root-fs.sh`` will automatically use the apt-cacher daemons instead
-of directly downloading from the Debian and Raspbian APT servers.
+of directly downloading from the Debian APT servers.
 
 Writing the Image to a SD card
 ------------------------------

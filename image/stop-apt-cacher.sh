@@ -38,16 +38,6 @@ then
 	rm $APTCACHER_DIR/pid-2
 fi
 
-if [ -f $APTCACHER_DIR/pid-3 ]
-then
-	if [ `netstat -lnt | awk '$6 == "LISTEN" && $4 ~ ".3153"' | wc -l` -ne 0 ]
-	then
-		kill `cat $APTCACHER_DIR/pid-3`
-	fi
-
-	rm $APTCACHER_DIR/pid-3
-fi
-
 report_info "Process finished"
 
 exit 0
