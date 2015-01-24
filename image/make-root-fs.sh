@@ -706,8 +706,8 @@ EOF
 report_info "Installing tinkerforge touch calibrator"
 $CHROOT <<EOF
 cp /tmp/tinkerforge_touch_calibrator/tinkerforge_touch_calibrator.png /usr/share/icons
-cp /tmp/tinkerforge_touch_calibrator.py /usr/bin
-cp /tmp/tinkerforge_touch_calibrator.desktop /home/tf/Desktop
+cp /tmp/tinkerforge_touch_calibrator/tinkerforge_touch_calibrator.py /usr/bin
+cp /tmp/tinkerforge_touch_calibrator/tinkerforge_touch_calibrator.desktop /home/tf/Desktop
 EOF
 
 # Cleaning /tmp directory
