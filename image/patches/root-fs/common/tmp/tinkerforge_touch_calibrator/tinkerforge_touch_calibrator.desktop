@@ -1,0 +1,8 @@
+[Desktop Entry]
+Encoding=UTF-8
+Name=Tinkerforge Touch Calibrator
+Comment=Calibrate Tinkerforge supported touch displays
+Icon=/usr/share/icons/tinkerforge_touch_calibrator.png
+Exec=/usr/bin/tinkerforge_touch_calibrator.py
+Terminal=False
+Type=Application

@@ -702,6 +702,14 @@ $CHROOT <<EOF
 sed -i 's/\$named//g' /etc/init.d/apache2
 EOF
 
+# Installing tinkerforge touch calibrator
+report_info "Installing tinkerforge touch calibrator"
+$CHROOT <<EOF
+cp /tmp/tinkerforge_touch_calibrator/tinkerforge_touch_calibrator.png /usr/share/icons
+cp /tmp/tinkerforge_touch_calibrator.py /usr/bin
+cp /tmp/tinkerforge_touch_calibrator.desktop /home/tf/Desktop
+EOF
+
 # Cleaning /tmp directory
 report_info "Cleaning /tmp directory"
 rm -rf $ROOTFS_DIR/tmp/*
