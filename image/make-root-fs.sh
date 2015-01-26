@@ -1,5 +1,7 @@
 #! /bin/bash -exu
 
+START_DATE=`date '+%Y-%m-%d %H:%M:%S'`
+
 . ./utilities.sh
 
 ROOT_UID="0"
@@ -733,6 +735,6 @@ fi
 touch $BUILD_DIR/root-fs-$CONFIG_NAME.built
 
 cleanup
-report_info "Process finished"
+report_info "Process finished (started $START_DATE)"
 
 exit 0
