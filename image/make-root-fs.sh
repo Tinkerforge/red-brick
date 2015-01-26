@@ -663,27 +663,6 @@ $CHROOT <<EOF
 ln -s /usr/tinkerforge/bindings/javascript/browser/source/Tinkerforge.js /home/tf
 EOF
 
-# Compiling and installing hostapd and wpa_supplicant for access point mode support
-report_info "Compiling and installing hostapd and wpa_supplicant for access point mode support"
-$CHROOT <<EOF
-cd /tmp
-mkdir ./$HOSTAPD_WPA_SUPPLICANT_NAME
-tar jxvf $HOSTAPD_WPA_SUPPLICANT_NAME\
-$HOSTAPD_WPA_SUPPLICANT_VERSION\
-$HOSTAPD_WPA_SUPPLICANT_EXTENSION -C ./$HOSTAPD_WPA_SUPPLICANT_NAME
-mkdir -p /etc/hostapd
-cd ./$HOSTAPD_WPA_SUPPLICANT_NAME
-cd ./$HOSTAPD_WPA_SUPPLICANT_NAME/hostapd
-make clean
-make
-make install
-cd ../wpa_supplicant
-make clean
-make
-make install
-chmod 755 /etc/init.d/hostapd
-EOF
-
 # Do not run DNS/DHCP server at boot by default
 report_info "Do not run DNS/DHCP server at boot by default"
 $CHROOT <<EOF
