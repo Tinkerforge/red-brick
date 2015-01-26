@@ -1,5 +1,6 @@
 *~
 image/build
+image/local_packages
 image/source
 image/tools
 image/patches/root-fs/common/etc/tf_installed_versions
