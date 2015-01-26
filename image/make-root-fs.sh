@@ -197,6 +197,12 @@ dpkg --configure -a
 true
 EOF
 
+# Enabling ttyGS0 systemd service
+report_info "Enabling ttyGS0 systemd service"
+$CHROOT <<EOF
+systemctl enable serial-getty@ttyGS0.service
+EOF
+
 # Installing Java 8
 report_info "Installing Java 8"
 $CHROOT <<EOF
