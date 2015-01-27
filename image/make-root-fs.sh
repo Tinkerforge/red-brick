@@ -252,6 +252,12 @@ dpkg --configure -a
 true
 EOF
 
+# Provide node command using nodejs (for backward compatibility)
+report_info "Provide node command using nodejs (for backward compatibility)"
+$CHROOT <<EOF
+update-alternatives --install /usr/local/bin/node node /usr/bin/nodejs 900
+EOF
+
 # Updating Perl modules
 report_info "Updating Perl modules"
 $CHROOT <<EOF
