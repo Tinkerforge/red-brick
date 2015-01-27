@@ -203,6 +203,12 @@ $CHROOT <<EOF
 systemctl enable serial-getty@ttyGS0.service
 EOF
 
+# Enabling tty2 systemd service (used for X server)
+report_info "Enabling tty2 systemd service (used for X server)"
+$CHROOT <<EOF
+systemctl enable getty@tty2.service
+EOF
+
 # Installing Java 8
 report_info "Installing Java 8"
 $CHROOT <<EOF
