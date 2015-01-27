@@ -346,7 +346,7 @@ EOF
 rm -rf $BUILD_DIR/nodejs_tmp
 mkdir -p $BUILD_DIR/nodejs_tmp
 npm install $ROOTFS_DIR/usr/tinkerforge/bindings/javascript/nodejs/tinkerforge.tgz -g --prefix $BUILD_DIR/nodejs_tmp
-rsync -a --no-o --no-g $BUILD_DIR/nodejs_tmp/lib $ROOTFS_DIR/usr/local
+rsync -a --no-o --no-g $BUILD_DIR/nodejs_tmp/lib/node_modules $ROOTFS_DIR/usr/local
 rm -rf $BUILD_DIR/nodejs_tmp
 
 # Installing Mono features
