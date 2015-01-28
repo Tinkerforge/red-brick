@@ -25,8 +25,8 @@ Building the Image
 ------------------
 
 Because the Node.js and NPM packages are different between Ubuntu, Debian and
-different Debian versions you have to install it manually for now. On Ubuntu and
-Debian jessy and sid just install the ``npm`` package using::
+different Debian versions you have to install them manually for now. On Ubuntu
+and Debian jessie and sid just install the ``npm`` package using::
 
  sudo apt-get install npm
 
@@ -116,11 +116,11 @@ Editing Kernel Config
 
 First update the kernel sources::
 
-  ./update-source.sh
+ ./update-source.sh
 
 Then run the edit script that starts the graphical config editor::
 
-  ./edit-kernel-config.sh <config-name>
+ ./edit-kernel-config.sh <config-name>
 
 After you edited and saved the config changes close the config editor and the
 edit script will take care of the rest.
@@ -128,13 +128,11 @@ edit script will take care of the rest.
 Enable Serial Console for Debug Brick
 -------------------------------------
 
-In ``config/kernel/red_brick_*_defconfig`` add::
+In ``config/kernel/red_brick_*_defconfig`` add this to ``CONFIG_CMDLINE``::
 
  console=ttyS0,115200
 
-to ``CONFIG_CMDLINE`` and ensure that the following two are set::
+For kernel debug output you can set these values too::
 
  CONFIG_SW_DEBUG_UART=3
  CONFIG_DEBUG_LL=y
-
-Finally, rebuild the image.
