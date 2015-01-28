@@ -473,9 +473,7 @@ EOF
 report_info "Configuring boot splash image"
 $CHROOT <<EOF
 chmod 755 /etc/init.d/asplashscreen
-chmod 755 /etc/init.d/killasplashscreen
-update-rc.d asplashscreen defaults
-update-rc.d killasplashscreen defaults
+systemctl enable asplashscreen
 EOF
 
 # Removing plymouth
@@ -565,7 +563,7 @@ report_info "Setting up fake-hwclock"
 $CHROOT <<EOF
 rm -rf /etc/cron.hourly/fake-hwclock
 chmod 0644 /etc/cron.d/fake-hwclock
-update-rc.d -f hwclock.sh remove
+systemctl disable hwclock.sh
 fake-hwclock
 EOF
 
@@ -708,7 +706,7 @@ EOF
 # Do not run DNS/DHCP server at boot by default
 report_info "Do not run DNS/DHCP server at boot by default"
 $CHROOT <<EOF
-update-rc.d -f dnsmasq remove
+systemctl disable dnsmasq
 EOF
 
 # Enabling X11 server in RED Brick way

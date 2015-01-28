@@ -10,8 +10,7 @@
 ### END INIT INFO
 
 do_start () {
-
-    /usr/bin/fbi -a --fitwidth -T 1 -noverbose /usr/share/images/tf-image.png 2> /dev/null
+	/usr/bin/fbi -T 1 -noverbose /usr/share/images/tf-image.png &> /dev/null
     exit 0
 }
 
