@@ -223,36 +223,34 @@ echo 2 | update-alternatives --config java
 EOF
 
 # Installing brickd
-if [ "$USE_LOCAL_PACKAGES" = "yes" ] && [ -f local_packages/brickd_linux_latest+redbrick_armhf.deb ]
+if [ "$USE_LOCAL_PACKAGES" = "yes" ] && [ -f $BASE_DIR/local_packages/brickd_linux_latest+redbrick_armhf.deb ]
 then
 	report_info "Installing brickd (using local package)"
-	cp local_packages/brickd_linux_latest+redbrick_armhf.deb $ROOTFS_DIR/tmp
+	cp $BASE_DIR/local_packages/brickd_linux_latest+redbrick_armhf.deb $ROOTFS_DIR/tmp
 else
 	report_info "Installing brickd"
 	wget -P $ROOTFS_DIR/tmp http://download.tinkerforge.com/tools/brickd/linux/brickd_linux_latest+redbrick_armhf.deb
 fi
 
 $CHROOT <<EOF
-cd /tmp
-dpkg -i brickd_linux_latest+redbrick_armhf.deb
+dpkg -i /tmp/brickd_linux_latest+redbrick_armhf.deb
 dpkg --configure -a
 # add true here to avoid having a dpkg error abort the whole script here
 true
 EOF
 
 # Installing redapid
-if [ "$USE_LOCAL_PACKAGES" = "yes" ] && [ -f local_packages/redapid_linux_latest_armhf.deb ]
+if [ "$USE_LOCAL_PACKAGES" = "yes" ] && [ -f $BASE_DIR/local_packages/redapid_linux_latest_armhf.deb ]
 then
 	report_info "Installing redapid (using local package)"
-	cp local_packages/redapid_linux_latest_armhf.deb $ROOTFS_DIR/tmp
+	cp $BASE_DIR/local_packages/redapid_linux_latest_armhf.deb $ROOTFS_DIR/tmp
 else
 	report_info "Installing redapid"
 	wget -P $ROOTFS_DIR/tmp http://download.tinkerforge.com/tools/redapid/linux/redapid_linux_latest_armhf.deb
 fi
 
 $CHROOT <<EOF
-cd /tmp
-dpkg -i redapid_linux_latest_armhf.deb
+dpkg -i /tmp/redapid_linux_latest_armhf.deb
 dpkg --configure -a
 # add true here to avoid having a dpkg error abort the whole script here
 true
@@ -515,18 +513,17 @@ ln -s /usr/share/images/tf-image.png /etc/alternatives/desktop-background
 EOF
 
 	# Installing brickv
-	if [ "$USE_LOCAL_PACKAGES" = "yes" ] && [ -f local_packages/brickv_linux_latest.deb ]
+	if [ "$USE_LOCAL_PACKAGES" = "yes" ] && [ -f $BASE_DIR/local_packages/brickv_linux_latest.deb ]
 	then
 		report_info "Installing brickv (using local package)"
-		cp local_packages/brickv_linux_latest.deb $ROOTFS_DIR/tmp
+		cp $BASE_DIR/local_packages/brickv_linux_latest.deb $ROOTFS_DIR/tmp
 	else
 		report_info "Installing brickv"
 		wget -P $ROOTFS_DIR/tmp http://download.tinkerforge.com/tools/brickv/linux/brickv_linux_latest.deb
 	fi
 
 	$CHROOT <<EOF
-cd /tmp
-dpkg -i brickv_linux_latest.deb
+dpkg -i /tmp/brickv_linux_latest.deb
 dpkg --configure -a
 # add true here to avoid having a dpkg error abort the whole script here
 true
