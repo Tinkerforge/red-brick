@@ -30,12 +30,12 @@ def handle_notification(title, message, notification_type):
         os.system(cmd)
     except Exception as e:
         syslog.syslog(syslog.LOG_ERR, e)
-        exit(-1)
+        exit(1)
 
 # Checking for dialog tool
 if not os.path.isfile('/usr/bin/zenity'):
     syslog.syslog(syslog.LOG_ERR, 'Zenity not available')
-    exit(-1)
+    exit(1)
 
 # Ask for password
 try:
@@ -48,7 +48,7 @@ try:
         handle_notification(DIALOG_TITLE_ERROR,
                             ps_get_devices.communicate()[1],
                             DIALOG_NOTIFICATION_ERROR)
-        exit(-1)
+        exit(1)
     
     password = ps_get_password.communicate()[0].strip()
 
@@ -56,18 +56,18 @@ try:
         handle_notification(DIALOG_TITLE_ERROR,
                             DIALOG_MESSAGE_ERROR_EMPTY_PASSWORD,
                             DIALOG_NOTIFICATION_ERROR)
-        exit(-1)
+        exit(1)
 
 except Exception as e:
     handle_notification(DIALOG_TITLE_ERROR, e, DIALOG_NOTIFICATION_ERROR)
-    exit(-1)
+    exit(1)
 
 # Checking for the calibrator
 if not os.path.isfile('/usr/bin/xinput_calibrator'):
     handle_notification(DIALOG_TITLE_ERROR,
                         DIALOG_MESSAGE_ERROR_CALIBRATOR,
                         DIALOG_NOTIFICATION_ERROR)
-    exit(-1)
+    exit(1)
 
 # Get device ID and check
 try:
@@ -79,10 +79,10 @@ try:
         handle_notification(DIALOG_TITLE_ERROR,
                             ps_get_devices.communicate()[1],
                             DIALOG_NOTIFICATION_ERROR)
-        exit(-1)
+        exit(1)
 except Exception as e:
     handle_notification(DIALOG_TITLE_ERROR, e, DIALOG_NOTIFICATION_ERROR)
-    exit(-1)
+    exit(1)
 
 ps_get_devices_stdout = ps_get_devices.communicate()[0]
 lines = ps_get_devices_stdout.splitlines()
@@ -105,7 +105,7 @@ if not device_found:
     handle_notification(DIALOG_TITLE_ERROR,
                         DIALOG_MESSAGE_ERROR_HARDWARE,
                         DIALOG_NOTIFICATION_ERROR)
-    exit(-1)
+    exit(1)
 
 try:
     ps_xinput_calibrate = subprocess.Popen('/usr/bin/xinput_calibrator --device '+ device_id,
@@ -115,10 +115,10 @@ try:
         handle_notification(DIALOG_TITLE_ERROR,
                             ps_xinput_calibrate.communicate()[1],
                             DIALOG_NOTIFICATION_ERROR)
-        exit(-1)
+        exit(1)
 except Exception as e:
     handle_notification(DIALOG_TITLE_ERROR, e, DIALOG_NOTIFICATION_ERROR)
-    exit(-1)
+    exit(1)
 
 ps_xinput_calibrate_stdout = ps_xinput_calibrate.communicate()[0]
 ps_xinput_calibrate_stdout_split = ps_xinput_calibrate_stdout.split('Section "InputClass"')
@@ -127,7 +127,7 @@ if len(ps_xinput_calibrate_stdout_split) != 2:
     handle_notification(DIALOG_TITLE_ERROR,
                         DIALOG_MESSAGE_ERROR_ABORTED,
                         DIALOG_NOTIFICATION_ERROR)
-    exit(-1)
+    exit(1)
 
 config_content = 'Section "InputClass"'+ps_xinput_calibrate_stdout_split[1]
 
@@ -140,10 +140,10 @@ try:
         handle_notification(DIALOG_TITLE_ERROR,
                             DIALOG_MESSAGE_ERROR_FILE_WRITE,
                             DIALOG_NOTIFICATION_ERROR)
-        exit(-1)
+        exit(1)
     handle_notification(DIALOG_TITLE_INFO,
                         DIALOG_MESSAGE_INFO_CALIBRATION,
                         DIALOG_NOTIFICATION_INFO)
 except Exception as e:
     handle_notification(DIALOG_TITLE_ERROR, e, DIALOG_NOTIFICATION_ERROR)
-    exit(-1)
+    exit(1)
