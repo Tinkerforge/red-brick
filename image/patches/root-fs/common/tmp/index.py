@@ -6,6 +6,7 @@ application = Flask(__name__) # Function "application" is used by Apache/wsgi
 app = application             # Use shortcut for routing
 
 import os
+import cgi
 
 PATH_PROGRAMS = os.path.join('/', 'home', 'tf', 'programs')
 PATH_CONFIG   = os.path.join(PATH_PROGRAMS, '{0}', 'program.conf')
@@ -22,9 +23,9 @@ def read_name_from_config(config):
     with open(config, "r") as f:
         for line in f:
             if line.startswith('custom.name ='):
-                return line.replace('custom.name =', '').replace('\n', '').strip()
+                return line[len('custom.name ='):].strip().decode('string_escape')
 
-    return "Unknown Name"
+    return '<unknown>'
 
 @app.route('/')
 def index():
@@ -40,7 +41,7 @@ def index():
     boxnum = ['A', 'B', 'C']
     boxes = ''
     for i, info in enumerate(sorted(infos.values())):
-        boxes += PAGE_BOX.format(boxnum[i % 3], info['name'], info['url_log'], info['url_bin'], info['url_config'])
+        boxes += PAGE_BOX.format(boxnum[i % 3], cgi.escape(info['name']), info['url_log'], info['url_bin'], info['url_config'])
 
     return PAGE.format(str(len(infos)), boxes)
 
