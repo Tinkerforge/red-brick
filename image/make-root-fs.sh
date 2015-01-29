@@ -745,6 +745,7 @@ $CHROOT <<EOF
 cp /tmp/tinkerforge_touch_calibrator/tinkerforge_touch_calibrator.png /usr/share/icons
 cp /tmp/tinkerforge_touch_calibrator/tinkerforge_touch_calibrator.py /usr/bin
 cp /tmp/tinkerforge_touch_calibrator/tinkerforge_touch_calibrator.desktop /home/tf/Desktop
+chmod 777 /usr/share/X11/xorg.conf.d
 EOF
 
 # Cleaning /tmp directory

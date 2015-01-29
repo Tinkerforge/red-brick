@@ -14,8 +14,6 @@ DIALOG_TITLE_ERROR = 'Error | Tinkerforge Touch Calibrator'
 DIALOG_MESSAGE_ERROR_CALIBRATOR = 'Error: Calibration program unavailable'
 DIALOG_MESSAGE_ERROR_HARDWARE = 'Error: No supported hardware found'
 DIALOG_MESSAGE_ERROR_ABORTED = 'Error: Calibration process aborted'
-DIALOG_MESSAGE_ERROR_FILE_WRITE = 'Error: Error occured while writing configuration file'
-DIALOG_MESSAGE_ERROR_EMPTY_PASSWORD = 'Error: You must enter a password'
 DIALOG_MESSAGE_INFO_CALIBRATION = 'Calibration applied and saved'
 INPUT_DEVICE = ' "Microchip Technology Inc. AR1100 HID-MOUSE" '
 CONFIG_FILE = '/usr/share/X11/xorg.conf.d/99-calibration.conf'
@@ -35,31 +33,6 @@ def handle_notification(title, message, notification_type):
 # Checking for dialog tool
 if not os.path.isfile('/usr/bin/zenity'):
     syslog.syslog(syslog.LOG_ERR, 'Zenity not available')
-    exit(1)
-
-# Ask for password
-try:
-    cmd = '''/usr/bin/zenity --title "{0}" --password'''.format(DIALOG_TITLE_INPUT)
-    ps_get_password = subprocess.Popen(cmd,
-                                       shell=True,
-                                       stdout=subprocess.PIPE)
-
-    if ps_get_password.returncode:
-        handle_notification(DIALOG_TITLE_ERROR,
-                            ps_get_devices.communicate()[1],
-                            DIALOG_NOTIFICATION_ERROR)
-        exit(1)
-    
-    password = ps_get_password.communicate()[0].strip()
-
-    if not password:
-        handle_notification(DIALOG_TITLE_ERROR,
-                            DIALOG_MESSAGE_ERROR_EMPTY_PASSWORD,
-                            DIALOG_NOTIFICATION_ERROR)
-        exit(1)
-
-except Exception as e:
-    handle_notification(DIALOG_TITLE_ERROR, e, DIALOG_NOTIFICATION_ERROR)
     exit(1)
 
 # Checking for the calibrator
@@ -132,15 +105,9 @@ if len(ps_xinput_calibrate_stdout_split) != 2:
 config_content = 'Section "InputClass"'+ps_xinput_calibrate_stdout_split[1]
 
 try:
-    cmd = '''/bin/echo "{0}" | /usr/bin/sudo -S sh -c \'/bin/echo -e "{1}" >  {2}\''''.format(password,
-                                                                                              config_content.replace('"', '\\"'),
-                                                                                              CONFIG_FILE)
+    with open(CONFIG_FILE, "w") as fh_config:
+        fh_config.write(config_content)
 
-    if os.system(cmd):
-        handle_notification(DIALOG_TITLE_ERROR,
-                            DIALOG_MESSAGE_ERROR_FILE_WRITE,
-                            DIALOG_NOTIFICATION_ERROR)
-        exit(1)
     handle_notification(DIALOG_TITLE_INFO,
                         DIALOG_MESSAGE_INFO_CALIBRATION,
                         DIALOG_NOTIFICATION_INFO)
