@@ -748,6 +748,12 @@ cp /tmp/tinkerforge_touch_calibrator/tinkerforge_touch_calibrator.desktop /home/
 chmod 777 /usr/share/X11/xorg.conf.d
 EOF
 
+# Enabling set UID of /bin/ping
+report_info "Enabling set UID of /bin/ping"
+$CHROOT <<EOF
+chmod u+s /bin/ping
+EOF
+
 # Cleaning /tmp directory
 report_info "Cleaning /tmp directory"
 rm -rf $ROOTFS_DIR/tmp/*
