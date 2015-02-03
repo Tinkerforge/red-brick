@@ -5,10 +5,3 @@
   are we missing a kernel module for this?
 
 - use noatime,nodiratime for file system mounting
-
-- Merge fast and full image, use "service selection" in brickv:
-  * [ ] Use GPU
-  * [ ] Start X
-  * [ ] Start Apache (webserver)
-  * [ ] Use splashscreen
-  * [ ] ...
