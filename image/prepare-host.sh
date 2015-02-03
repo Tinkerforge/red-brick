@@ -94,7 +94,7 @@ fi
 
 pushd ./$QEMU_BASE_NAME > /dev/null
 
-if [ ! -d ./$QEMU_BASE_NAME.patched ]
+if [ ! -f ./$QEMU_BASE_NAME.patched ]
 then
 	patch -p1 -i $PATCHES_DIR/tools/$QEMU_BASE_NAME-sigrst-sigpwr.patch
 	touch ./$QEMU_BASE_NAME.patched
