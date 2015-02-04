@@ -14,3 +14,4 @@
      Make services configurable: GPU, desktop, web server, splash screen, access point
      Enable kernel drivers for FTDI dongles and USB gadgets (Ethernet and mass storage)
      Add touch screen input calibrator
+1.5: Fix bug with Ethernet Extension driver

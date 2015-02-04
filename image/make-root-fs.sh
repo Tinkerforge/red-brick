@@ -754,6 +754,13 @@ $CHROOT <<EOF
 chmod u+s /bin/ping
 EOF
 
+# Make sure w5x00 driver is available where brickd searches for it
+report_info "Make sure w5x00 driver is available where brickd searches for it"
+$CHROOT <<EOF
+ln -s /lib/modules/3.4.103+/kernel/drivers/net/ethernet/wiznet/w5x00.ko /lib/modules/3.4.90+/kernel/drivers/net/ethernet/wiznet/
+EOF
+
+
 # Cleaning /tmp directory
 report_info "Cleaning /tmp directory"
 rm -rf $ROOTFS_DIR/tmp/*
