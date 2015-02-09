@@ -180,6 +180,8 @@ update-locale LANG=$LOCALE LANGUAGE=$LANGUAGE LC_ALL=$LOCALE
 echo "dash dash/sh boolean false" | debconf-set-selections
 echo "tzdata tzdata/Areas select $TZDATA_AREA" | debconf-set-selections
 echo "tzdata tzdata/Zones/Europe select $TZDATA_ZONE" | debconf-set-selections
+echo "nagios3-cgi nagios3/adminpassword string tf" | debconf-set-selections
+echo "nagios3-cgi nagios3/adminpassword-repeat string tf" | debconf-set-selections
 echo '# KEYBOARD CONFIGURATION FILE
 
 # Consult the keyboard(5) manual page.
@@ -550,6 +552,7 @@ then
 else
     cat /tmp/sources.list.tmp > /etc/apt/sources.list
 fi
+/etc/init.d/hostname.sh
 apt-get clean
 apt-get update
 apt-get -f install -y
