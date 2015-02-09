@@ -442,6 +442,7 @@ report_info "Installing Python features"
 $CHROOT <<EOF
 # GROUP-START:python
 pip install pycrypto
+pip install pynag
 # GROUP-END:python
 EOF
 
