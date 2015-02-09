@@ -758,6 +758,18 @@ $CHROOT <<EOF
 chmod u+s /bin/ping
 EOF
 
+# Installing openHAB
+report_info "Installing openHAB"
+$CHROOT <<EOF
+echo 'deb http://repository-openhab.forge.cloudbees.com/release/1.6.1/apt-repo/ /' > /etc/apt/sources.list.d/openhab.list
+apt-get update
+apt-get install openhab-runtime openhab-addon-binding-tinkerforge
+y
+systemctl daemon-reload
+systemctl disable openhab.service
+chown openhab:openhab /usr/share/openhab/webapps/static
+EOF
+
 # Cleaning /tmp directory
 report_info "Cleaning /tmp directory"
 rm -rf $ROOTFS_DIR/tmp/*
