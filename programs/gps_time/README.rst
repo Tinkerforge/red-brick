@@ -4,8 +4,9 @@ Set GPS time as system time
 If you can't use NTP (i.e. the RED Brick does not have Internet access), you
 can use the GPS Bricklet to set a proper system time.
 
-For the ``gps_time.py`` script the following program settings will correct the
-system time every 6 hours:
+Upload this program to the RED Brick using Brick Viewer's New Program wizard.
+With the following program settings the system time will be corrected every
+6 hours:
 
 * 1 of 8:
 

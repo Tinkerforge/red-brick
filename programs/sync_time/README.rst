@@ -5,6 +5,7 @@ If you can't use NTP (i.e. the RED Brick does not have Internet access) or a
 GPS Bricklet to set a proper system time, you can manually synchronize it using
 your web browser.
 
+Upload this program to the RED Brick using Brick Viewer's New Program wizard.
 The following program settings will provide you with website for system time
 synchronization:
 
