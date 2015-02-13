@@ -443,6 +443,7 @@ $CHROOT <<EOF
 # GROUP-START:python
 pip install pycrypto
 pip install pynag
+pip install watchdog
 # GROUP-END:python
 EOF
 
