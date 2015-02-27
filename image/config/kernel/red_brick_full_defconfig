@@ -431,7 +431,7 @@ CONFIG_ALIGNMENT_TRAP=y
 # CONFIG_USE_OF is not set
 CONFIG_ZBOOT_ROM_TEXT=0
 CONFIG_ZBOOT_ROM_BSS=0
-CONFIG_CMDLINE="mem=512M@0x40000000 sunxi_ve_mem_reserve=0 sunxi_g2d_mem_reserve=0 sunxi_fb_mem_reserve=16 root=/dev/mmcblk0p1 init=/sbin/init quiet splash loglevel=0 panic=0 disp.screen0_output_mode=EDID:1280x720p60 hdmi.audio=EDID:0 consoleblank=0"
+CONFIG_CMDLINE="mem=512M@0x40000000 sunxi_ve_mem_reserve=0 sunxi_g2d_mem_reserve=0 sunxi_fb_mem_reserve=16 root=/dev/mmcblk0p1 init=/sbin/init quiet splash loglevel=0 panic=0 disp.screen0_output_mode=EDID:800x480p60 hdmi.audio=EDID:0 consoleblank=0"
 # CONFIG_CMDLINE_FROM_BOOTLOADER is not set
 # CONFIG_CMDLINE_EXTEND is not set
 CONFIG_CMDLINE_FORCE=y
