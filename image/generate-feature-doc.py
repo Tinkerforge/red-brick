@@ -387,7 +387,7 @@ if __name__ == "__main__":
 
                 # Processing MAIN_DICT for Node.JS
                 elif language == "node":
-                    package_list = ['node', 'npm']
+                    package_list = ['nodejs', 'npm']
                     populate_main_dict_from_dpkg_listing(language, config, package_list)
 
                 # Processing MAIN_DICT for MATLAB/Octave
