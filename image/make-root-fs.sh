@@ -712,7 +712,7 @@ report_info "Compiling and installing hostapd and wpa_supplicant for access poin
 $CHROOT <<EOF
 cd /tmp
 mkdir ./$HOSTAPD_WPA_SUPPLICANT_NAME
-tar jxvf $HOSTAPD_WPA_SUPPLICANT_NAME\
+tar jxf $HOSTAPD_WPA_SUPPLICANT_NAME\
 $HOSTAPD_WPA_SUPPLICANT_VERSION\
 $HOSTAPD_WPA_SUPPLICANT_EXTENSION -C ./$HOSTAPD_WPA_SUPPLICANT_NAME
 mkdir -p /etc/hostapd
