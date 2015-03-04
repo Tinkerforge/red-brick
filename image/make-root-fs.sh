@@ -605,7 +605,9 @@ EOF
 report_info "Copy RED Brick index website"
 $CHROOT <<EOF
 cp /tmp/index.py /home/tf
+chown tf:tf /home/tf/index.py
 cp /tmp/red.css /home/tf
+chown tf:tf /home/tf/red.css
 EOF
 
 if [ "$DRAFT_MODE" = "no" ]
@@ -753,8 +755,8 @@ cp /tmp/tinkerforge_touch_calibrator/tinkerforge_touch_calibrator.desktop /home/
 chmod 777 /usr/share/X11/xorg.conf.d
 EOF
 
-# Enabling set UID of /bin/ping
-report_info "Enabling set UID of /bin/ping"
+# Enabling setuid of /bin/ping
+report_info "Enabling setuid of /bin/ping"
 $CHROOT <<EOF
 chmod u+s /bin/ping
 EOF
