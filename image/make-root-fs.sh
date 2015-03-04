@@ -145,8 +145,8 @@ multistrap -d $ROOTFS_DIR -f $MULTISTRAP_CONFIG_FILE
 
 # Patching the root-fs
 report_info "Patching the root-fs"
-rsync -a --no-o --no-g $PATCHES_DIR/root-fs/common/ $ROOTFS_DIR/
-rsync -a --no-o --no-g $PATCHES_DIR/root-fs/$CONFIG_NAME/ $ROOTFS_DIR/
+rsync -ac --no-o --no-g $PATCHES_DIR/root-fs/common/ $ROOTFS_DIR/
+rsync -ac --no-o --no-g $PATCHES_DIR/root-fs/$CONFIG_NAME/ $ROOTFS_DIR/
 
 # Write /etc/tf_image_version
 report_info "Write /etc/tf_image_version"
@@ -358,7 +358,7 @@ EOF
 rm -rf $BUILD_DIR/nodejs_tmp
 mkdir -p $BUILD_DIR/nodejs_tmp
 npm install $ROOTFS_DIR/usr/tinkerforge/bindings/javascript/nodejs/tinkerforge.tgz -g --prefix $BUILD_DIR/nodejs_tmp
-rsync -a --no-o --no-g $BUILD_DIR/nodejs_tmp/lib/node_modules $ROOTFS_DIR/usr/local
+rsync -ac --no-o --no-g $BUILD_DIR/nodejs_tmp/lib/node_modules $ROOTFS_DIR/usr/local
 rm -rf $BUILD_DIR/nodejs_tmp
 
 # Installing Mono features
@@ -677,8 +677,8 @@ EOF
 
 # Installing kernel headers
 report_info "Installing kernel headers"
-rsync -a --no-o --no-g $KERNEL_HEADER_INCLUDE_DIR $ROOTFS_DIR/usr/
-rsync -a --no-o --no-g $KERNEL_HEADER_USR_DIR $ROOTFS_DIR
+rsync -ac --no-o --no-g $KERNEL_HEADER_INCLUDE_DIR $ROOTFS_DIR/usr/
+rsync -ac --no-o --no-g $KERNEL_HEADER_USR_DIR $ROOTFS_DIR
 
 # Cleaning /etc/resolv.conf and creating symbolic link for resolvconf
 report_info "Cleaning /etc/resolv.conf and creating symbolic link for resolvconf"
