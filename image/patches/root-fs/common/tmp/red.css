@@ -535,7 +535,7 @@ ul.contact li a.icon-rss:before { background: #F2600B; }
 }
 
 /*********************************************************************************/
-/* Featured                                                                      */
+/* Box                                                                           */
 /*********************************************************************************/
 
 .box
@@ -547,23 +547,83 @@ ul.contact li a.icon-rss:before { background: #F2600B; }
 	text-align: center;
 }
 
-#extra
+/*********************************************************************************/
+/* Programs                                                                      */
+/*********************************************************************************/
+
+#programs
 {
 	overflow: hidden;
 	padding: 5em 0em;
 }
 
-#extra .title
+#programs .title
 {
 	text-align: center;
 }
 
-#extra .button
+#programs .button
 {
 	margin-top: 5em;
 }
 
-#extra .fa
+#programs .fa
+{
+	display: block;
+	margin-bottom: 0.5em;
+	text-align: center;
+	font-size: 3em;
+}
+
+/*********************************************************************************/
+/* openHAB                                                                       */
+/*********************************************************************************/
+
+#openhab
+{
+	overflow: hidden;
+	padding: 0em 0em 5em 0em;
+}
+
+#openhab .title
+{
+	text-align: center;
+}
+
+#openhab .button
+{
+	margin-top: 5em;
+}
+
+#openhab .fa
+{
+	display: block;
+	margin-bottom: 0.5em;
+	text-align: center;
+	font-size: 3em;
+}
+
+/*********************************************************************************/
+/* Server Monitoring                                                             */
+/*********************************************************************************/
+
+#servermonitoring
+{
+	overflow: hidden;
+	padding: 0em 0em 5em 0em;
+}
+
+#servermonitoring .title
+{
+	text-align: center;
+}
+
+#servermonitoring .button
+{
+	text-align: center;
+}
+
+#servermonitoring .fa
 {
 	display: block;
 	margin-bottom: 0.5em;

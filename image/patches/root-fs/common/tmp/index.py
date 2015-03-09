@@ -1,17 +1,15 @@
 #!/usr/bin/env python
 # -*- coding: UTF-8 -*-
 
-from flask import Flask       # Use Flask framework
-application = Flask(__name__) # Function "application" is used by Apache/wsgi
-app = application             # Use shortcut for routing
+from flask import Flask, request # Use Flask framework
+application = Flask(__name__)    # Function "application" is used by Apache/WSGI
+app = application                # Use shortcut for routing
 
 import os
 import cgi
 
 PATH_PROGRAMS = os.path.join('/', 'home', 'tf', 'programs')
-PATH_CONFIG   = os.path.join(PATH_PROGRAMS, '{0}', 'program.conf')
-PATH_LOG      = os.path.join(PATH_PROGRAMS, '{0}', 'log')
-PATH_BIN      = os.path.join(PATH_PROGRAMS, '{0}', 'bin')
+PATH_OPENHAB = os.path.join('/', 'etc', 'openhab', 'configurations', 'sitemaps')
 
 def get_program_ids():
     try:
@@ -19,31 +17,62 @@ def get_program_ids():
     except:
         return []
 
-def read_name_from_config(config):
-    with open(config, "r") as f:
+def get_program_name(config_path):
+    with open(config_path, 'r') as f:
         for line in f:
             if line.startswith('custom.name ='):
                 return line[len('custom.name ='):].strip().decode('string_escape')
 
     return '<unknown>'
 
+def get_openhab_sitemaps():
+    try:
+        return [c for c in os.listdir(PATH_OPENHAB) if c.endswith('.sitemap') and c != '.sitemap']
+    except:
+        return []
+
 @app.route('/')
 def index():
-    infos = {}
+    program_infos = {}
     for i in get_program_ids():
-        infos[i] = {}
-        path_config = PATH_CONFIG.format(i)
-        infos[i]['name'] = read_name_from_config(path_config)
-        infos[i]['url_config'] = os.path.join('/', 'programs', i, 'program.conf')
-        infos[i]['url_log'] = os.path.join('/', 'programs', i, 'log')
-        infos[i]['url_bin'] = os.path.join('/', 'programs', i, 'bin')
+        program_infos[i] = {}
+        program_infos[i]['name'] = get_program_name(os.path.join(PATH_PROGRAMS, i, 'program.conf'))
+        program_infos[i]['url_config'] = os.path.join('/', 'programs', i, 'program.conf')
+        program_infos[i]['url_log'] = os.path.join('/', 'programs', i, 'log')
+        program_infos[i]['url_bin'] = os.path.join('/', 'programs', i, 'bin')
 
-    boxnum = ['A', 'B', 'C']
-    boxes = ''
-    for i, info in enumerate(sorted(infos.values())):
-        boxes += PAGE_BOX.format(boxnum[i % 3], cgi.escape(info['name']), info['url_log'], info['url_bin'], info['url_config'])
+    openhab_infos = {}
+    for s in get_openhab_sitemaps():
+        openhab_infos[s] = {}
+        openhab_infos[s]['name'] = s[:-len('.sitemap')]
+        openhab_infos[s]['url_sitemap'] = 'http://{0}:8080/openhab.app?sitemap={1}'.format(request.host, s[:-len('.sitemap')])
 
-    return PAGE.format(str(len(infos)), boxes)
+    box_num = ['A', 'B', 'C']
+    program_boxes = ''
+    for i, program_info in enumerate(sorted(program_infos.values())):
+        program_boxes += PROGRAM_BOX.format(box_num[i % 3],
+                                            cgi.escape(program_info['name']),
+                                            program_info['url_log'],
+                                            program_info['url_bin'],
+                                            program_info['url_config'])
+
+    openhab_boxes = ''
+    for i, openhab_info in enumerate(sorted(openhab_infos.values())):
+        openhab_boxes += OPENHAB_BOX.format(box_num[i % 3],
+                                            cgi.escape(openhab_info['name']),
+                                            openhab_info['url_sitemap'])
+
+    if os.path.isfile('/etc/tf_server_monitoring_enabled'):
+        nagios_status = 'enabled'
+    else:
+        nagios_status = 'disabled'
+
+    return PAGE.format(len(program_infos),
+                       program_boxes,
+                       len(openhab_infos),
+                       openhab_boxes,
+                       nagios_status)
+
 
 PAGE = """
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
@@ -66,10 +95,10 @@ PAGE = """
             </ul>
         </div>
     </div>
-    <div id="extra" class="container">
+    <div id="programs" class="container">
         <div class="title">
             <h2>Programs</h2>
-            <span class="byline">Currently there are <strong>{0}</strong> programs running on the RED Brick</span> 
+            <span class="byline">Currently there are <strong>{0}</strong> programs available on the RED Brick</span> 
         </div>
         <p>
             For each program you can view the config, the logs and the binaries. If you uploaded an
@@ -88,18 +117,53 @@ PAGE = """
 {1}
         </div>
     </div>
+    <div id="openhab" class="container">
+        <div class="title">
+            <h2>openHAB</h2>
+            <span class="byline">Currently there are <strong>{2}</strong> openHAB configurations available on the RED Brick</span> 
+        </div>
+        <p>
+            For each configuration you can view the sitemap. New configurations can be added and existing ones can be edited and deleted
+            using the openHAB settings tab of Brick Viewer.
+        </p>
+        <div id="three-column">
+{3}
+        </div>
+    </div>
+    <div id="servermonitoring" class="container">
+        <div class="title">
+            <h2>Server Monitoring</h2>
+            <span class="byline">Currently this service is <strong>{4}</strong> on the RED Brick</span> 
+        </div>
+        <p>
+            Monitoring rules for different Bricklets can be configured using the server monitoring settings tab of Brick Viewer.
+            For more advanced configurations you can directly access the Nagios configuration web interface using the link below.
+        </p>
+        <ul class="actions">
+            <li><a href="/nagios3" class="smallbutton">Nagios Status and Configuration</a></li>
+        </ul>
+    </div>
 </div>
 </body>
 </html>
 """
 
-PAGE_BOX = """
+PROGRAM_BOX = """
             <div class="box{0}">
                 <div class="box">
                     <p><strong>{1}</strong></p>
                     <a href="{2}" class="smallbutton">Log</a>
                     <a href="{3}" class="smallbutton">Bin</a>
                     <a href="{4}" class="smallbutton">Config</a>
+                </div>
+            </div>
+"""
+
+OPENHAB_BOX = """
+            <div class="box{0}">
+                <div class="box">
+                    <p><strong>{1}</strong></p>
+                    <a href="{2}" class="smallbutton">Sitemap</a>
                 </div>
             </div>
 """
