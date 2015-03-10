@@ -138,6 +138,7 @@ PAGE = """
         <p>
             Monitoring rules for different Bricklets can be configured using the server monitoring settings tab of Brick Viewer.
             For more advanced configurations you can directly access the Nagios configuration web interface using the link below.
+            The default username is <strong>nagiosadmin</strong> and the default password is <strong>tf</strong>.
         </p>
         <ul class="actions">
             <li><a href="/nagios3" class="smallbutton">Nagios Status and Configuration</a></li>
