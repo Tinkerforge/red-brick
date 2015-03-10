@@ -764,12 +764,11 @@ EOF
 # Installing openHAB
 report_info "Installing openHAB"
 $CHROOT <<EOF
-echo 'deb http://repository-openhab.forge.cloudbees.com/release/1.6.1/apt-repo/ /' > /etc/apt/sources.list.d/openhab.list
+echo 'deb http://repository-openhab.forge.cloudbees.com/release/1.6.2/apt-repo/ /' > /etc/apt/sources.list.d/openhab.list
 apt-get update
-apt-get install openhab-runtime openhab-addon-binding-tinkerforge
-y
+apt-get install -y --force-yes openhab-runtime openhab-addon-binding-tinkerforge
 systemctl daemon-reload
-systemctl disable openhab.service
+systemctl disable openhab
 chown openhab:openhab /usr/share/openhab/webapps/static
 EOF
 
