@@ -195,6 +195,9 @@ BACKSPACE="$KB_BACKSPACE"
 ' > /etc/default/keyboard
 setupcon
 dpkg --configure -a
+# run dpkg a second time to install the nagios packages that might not have been
+# installed the first time due to a missing dependency to dnsmasq
+dpkg --configure -a
 # add true here to avoid having a dpkg error abort the whole script here
 true
 EOF
