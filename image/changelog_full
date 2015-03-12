@@ -15,3 +15,8 @@
      Enable kernel drivers for FTDI dongles and USB gadgets (Ethernet and mass storage)
      Add touch screen input calibrator
 1.5: Fix bug with Ethernet Extension driver
+1.6: Add Nagios for Starter Kit: Server Room Monitoring
+     Add openHAB with Tinkerforge bindings
+     Add missing DNS reverse lookup for wireless access point mode
+     Enable kernel drivers for several Bluetooth dongles
+     Set default HDMI fallback resolution to 800x480
