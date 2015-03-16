@@ -7,13 +7,14 @@ Requirements
 ------------
 
 This scripts require a recent Debian or Ubuntu installation with Internet
-connection. Also make sure that the filesystem you're running this on is not
-mounted with the ``nodev`` or ``noexec`` options as they hinder the root-fs
-generation process. If you're using a separate partition for ``/home`` then it
-is likely to be mounted with ``nodev`` and ``noexec``. In this case an easy
-workaround is to build the image in a directory that is mounted without this
-options, or to remount ``/home`` without this options. Building the image might
-also not work inside an encrypted home directory.
+connection and at least 15GB free disk space. Also make sure that the
+filesystem you're running this on is not mounted with the ``nodev`` or
+``noexec`` options as they hinder the root-fs generation process. If you're
+using a separate partition for ``/home`` then it is likely to be mounted with
+``nodev`` and ``noexec``. In this case an easy workaround is to build the image
+in a directory that is mounted without this options, or to remount ``/home``
+without this options. Building the image might also not work inside an
+encrypted home directory.
 
 In Ubuntu 14.04 the multistrap package has a bug. The ``/usr/sbin/multistrap``
 script is written in Perl and it uses an undefined ``$forceyes`` variable in
