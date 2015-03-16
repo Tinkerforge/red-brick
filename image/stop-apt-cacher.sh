@@ -41,6 +41,6 @@ then
 	rm $APTCACHER_DIR/pid-2
 fi
 
-report_info "Process finished"
+report_process_finish
 
 exit 0

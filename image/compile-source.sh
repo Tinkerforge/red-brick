@@ -95,6 +95,6 @@ make all
 ./fex2bin $SCRIPT_FEX_FILE $SCRIPT_BIN_FILE
 popd > /dev/null
 
-report_info "Process finished"
+report_process_finish
 
 exit 0

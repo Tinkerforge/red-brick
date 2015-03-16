@@ -111,6 +111,6 @@ fi
 popd > /dev/null
 popd > /dev/null
 
-report_info "Process finished"
+report_process_finish
 
 exit 0

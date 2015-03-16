@@ -151,6 +151,6 @@ rsync -ac --no-o --no-g $KERNEL_SRC_DIR/$KERNEL_MOD_DIR_NAME/lib/firmware $MOUNT
 umount $loop_dev_p1
 
 cleanup
-report_info "Process finished"
+report_process_finish
 
 exit 0

@@ -38,6 +38,6 @@ report_info "Writing image to the SD card"
 
 pv -tpreb $IMAGE_FILE | dd of=$DEVICE bs=64M
 
-report_info "Process finished"
+report_process_finish
 
 exit 0

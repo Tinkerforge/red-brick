@@ -24,6 +24,6 @@ make ARCH=arm xconfig
 popd > /dev/null
 cp $KERNEL_SRC_DIR/.config $KERNEL_CONFIG_FILE
 
-report_info "Process finished"
+report_process_finish
 
 exit 0
