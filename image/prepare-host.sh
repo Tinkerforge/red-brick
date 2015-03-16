@@ -2,6 +2,8 @@
 
 . ./utilities.sh
 
+ensure_running_as_user
+
 BASE_DIR=`pwd`
 CONFIG_DIR="$BASE_DIR/config"
 

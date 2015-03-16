@@ -4,14 +4,7 @@ START_DATE=`date '+%Y-%m-%d %H:%M:%S'`
 
 . ./utilities.sh
 
-ROOT_UID="0"
-
-# Check if running as root
-if [ "$(id -u)" -ne "$ROOT_UID" ]
-then
-	report_error "You must be root to execute the script"
-	exit 1
-fi
+ensure_running_as_root
 
 BASE_DIR=`pwd`
 CONFIG_DIR="$BASE_DIR/config"
