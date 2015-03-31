@@ -514,7 +514,7 @@ then
 	$CHROOT <<EOF
 cd /tmp/mali-gpu
 dpkg -i libdri2-1_1.0-2_armhf.deb
-dpkg -i libsunxi-mali-x11_1.0-5_armhf.deb
+dpkg -i libsunxi-mali-x11_1.0-6_armhf.deb
 dpkg -i libvdpau-sunxi_1.0-1_armhf.deb
 dpkg -i sunxi-disp-test_1.0-1_armhf.deb
 dpkg -i libump_3.0-0sunxi1_armhf.deb
