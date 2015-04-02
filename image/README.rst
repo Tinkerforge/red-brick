@@ -22,8 +22,8 @@ one place. To fix the problem you need to edit ``/usr/sbin/multistrap`` and
 remove ``$forceyes`` from it. If you don't have the multistrap package installed
 yet, then the ``prepare-host.sh`` script in the next step will install it.
 
-Building the Image
-------------------
+Preparations
+------------
 
 Because the Node.js and NPM packages are different between Ubuntu, Debian and
 different Debian versions you have to install them manually for now. On Ubuntu
@@ -44,7 +44,10 @@ After installing Node.js and NPM run::
 
 to install the remaining required tools and packages.
 
-Next run::
+Building the Image
+------------------
+
+After the preparations are done run::
 
  ./update-source.sh
 
@@ -91,8 +94,8 @@ start the apt-cacher daemons by running::
 Now ``./make-root-fs.sh`` will automatically use the apt-cacher daemons instead
 of directly downloading from the Debian APT servers.
 
-Writing the Image to a SD card
-------------------------------
+Writing the Image to an SD Card
+-------------------------------
 
 The image can be transferred to an SD card with::
 
@@ -112,8 +115,8 @@ The default user name is ``tf`` with password ``tf``.
 The full image runs a LXDE desktop on the HDMI interface. All images have a
 serial console running on the USB OTG interface.
 
-Editing Kernel Config
----------------------
+Editing the Kernel Config
+-------------------------
 
 First update the kernel sources::
 
@@ -124,7 +127,20 @@ Then run the edit script that starts the graphical config editor::
  ./edit-kernel-config.sh <config-name>
 
 After you edited and saved the config changes close the config editor and the
-edit script will take care of the rest.
+edit script will take care of the rest. Then recompile the kernel::
+
+ ./compile-source.sh <config-name>
+
+If you already have an image written to a SD card then you can update the
+kernel on it::
+
+ sudo ./update-kernel-on-sd-card.sh <config-name> <device>
+
+For example (assuming that ``/dev/sdb`` is your SD card)::
+
+ sudo ./update-kernel-on-sd-card.sh full /dev/sdb
+
+Now the SD card contains the modified kernel.
 
 Enable Serial Console for Debug Brick
 -------------------------------------
