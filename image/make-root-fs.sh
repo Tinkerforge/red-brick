@@ -743,6 +743,14 @@ make install
 chmod 755 /etc/init.d/hostapd
 EOF
 
+# Installing umtskeeper for mobile internet
+report_info "Installing umtskeeper for mobile internet
+$CHROOT <<EOF
+cd /tmp
+tar jxf umtskeeper.tar.bz2 -C /usr
+chmod 755 /usr/umtskeeper/sakis3g
+EOF
+
 # Do not run DNS/DHCP server at boot by default
 report_info "Do not run DNS/DHCP server at boot by default"
 $CHROOT <<EOF
