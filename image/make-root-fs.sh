@@ -744,7 +744,7 @@ chmod 755 /etc/init.d/hostapd
 EOF
 
 # Installing umtskeeper for mobile internet
-report_info "Installing umtskeeper for mobile internet
+report_info "Installing umtskeeper for mobile internet"
 $CHROOT <<EOF
 cd /tmp
 tar jxf umtskeeper.tar.bz2 -C /usr
