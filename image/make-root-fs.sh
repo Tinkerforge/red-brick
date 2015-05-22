@@ -726,13 +726,11 @@ EOF
 report_info "Compiling and installing hostapd and wpa_supplicant for access point mode support"
 $CHROOT <<EOF
 cd /tmp
-mkdir ./$HOSTAPD_WPA_SUPPLICANT_NAME
-tar jxf $HOSTAPD_WPA_SUPPLICANT_NAME\
-$HOSTAPD_WPA_SUPPLICANT_VERSION\
-$HOSTAPD_WPA_SUPPLICANT_EXTENSION -C ./$HOSTAPD_WPA_SUPPLICANT_NAME
+mkdir ./wpa_supplicant_hostapd
+tar jxf wpa_supplicant_hostapd_v4.0.2_9000.20130911.tar.bz2 -C ./wpa_supplicant_hostapd
 mkdir -p /etc/hostapd
-cd ./$HOSTAPD_WPA_SUPPLICANT_NAME
-cd ./$HOSTAPD_WPA_SUPPLICANT_NAME/hostapd
+cd ./wpa_supplicant_hostapd
+cd ./wpa_supplicant_hostapd/hostapd
 make clean
 make
 make install
@@ -741,6 +739,23 @@ make clean
 make
 make install
 chmod 755 /etc/init.d/hostapd
+EOF
+
+# Installing usb_modeswitch for mobile internet.
+# Not using the version from repo in this case
+# because the repo version is not updated enough
+# and doesn't include some devices for auto mode switching
+report_info "Installing usb_modeswitch for mobile internet"
+$CHROOT <<EOF
+cd /tmp
+tar jxf usb-modeswitch-2.2.1.tar.bz2
+cd ./usb-modeswitch-2.2.1
+make all
+make install
+cd /tmp
+tar jxf usb-modeswitch-data-20150115.tar.bz2
+cd ./usb-modeswitch-data-20150115
+make install
 EOF
 
 # Installing umtskeeper for mobile internet
