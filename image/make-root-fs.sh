@@ -755,7 +755,9 @@ make install
 cd /tmp
 tar jxf usb-modeswitch-data-20150115.tar.bz2
 cd ./usb-modeswitch-data-20150115
-make install
+make all
+make files-install
+make db-install
 EOF
 
 # Installing umtskeeper for mobile internet
