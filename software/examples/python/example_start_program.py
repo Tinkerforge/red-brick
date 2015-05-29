@@ -4,13 +4,13 @@
 HOST = "localhost"
 PORT = 4223
 UID = "3dfgRc" # Change to your UID
-PROGRAM = "test"
+PROGRAM = "test" # Change to your program identifier
 
 from tinkerforge.ip_connection import IPConnection
 from tinkerforge.brick_red import RED
 
 def check_error(error_code, *args):
-    if error_code != RED.ERROR_CODE_SUCCESS:
+    if error_code != 0:
         print("RED Brick error occurred: {0}".format(error_code))
         exit(1)
 
