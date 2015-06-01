@@ -155,8 +155,27 @@ dd bs=512 seek=$SCRIPT_DD_SEEK if=$SCRIPT_BIN_FILE of=$loop_dev
 report_info "Installing the kernel to the image"
 dd bs=512 seek=$KERNEL_DD_SEEK if=$KERNEL_IMAGE_FILE of=$loop_dev
 
-# Copying root-fs and kernel modules to the image
-report_info "Copying root-fs and kernel modules to the image"
+# Preparing kernel source
+report_info "Preparing kernel source"
+KERNEL_SRC_COPY_DIR="$BUILD_DIR/kernel_source_copy"
+if [ ! -d $KERNEL_SRC_COPY_DIR ]
+then
+	mkdir -p $KERNEL_SRC_COPY_DIR
+else
+	rm -rf $KERNEL_SRC_COPY_DIR
+	mkdir -p $KERNEL_SRC_COPY_DIR
+fi
+$ADVCP_BIN -garp $KERNEL_SRC_DIR/. $KERNEL_SRC_COPY_DIR
+pushd $KERNEL_SRC_COPY_DIR > /dev/null
+make ARCH=arm CROSS_COMPILE=$TC_PREFIX clean
+make ARCH=arm CROSS_COMPILE=$TC_PREFIX $KERNEL_CONFIG_NAME
+KERNEL_RELEASE=`make -s ARCH=arm CROSS_COMPILE=$TC_PREFIX kernelrelease`
+KERNEL_RELEASE=`python -c 'import sys; print sys.argv[1].rstrip("+") + "+"' $KERNEL_RELEASE`
+filter_kernel_source
+popd
+
+# Copying root-fs and kernel modules and source to the image
+report_info "Copying root-fs and kernel modules and source to the image"
 if [ ! -d $MOUNT_DIR ]
 then
 	mkdir -p $MOUNT_DIR
@@ -168,6 +187,15 @@ mount $loop_dev_p1 $MOUNT_DIR
 $ADVCP_BIN -garp $ROOTFS_DIR/* $MOUNT_DIR/
 rsync -ac --no-o --no-g $KERNEL_SRC_DIR/$KERNEL_MOD_DIR_NAME/lib/modules $MOUNT_DIR/lib/
 rsync -ac --no-o --no-g $KERNEL_SRC_DIR/$KERNEL_MOD_DIR_NAME/lib/firmware $MOUNT_DIR/lib/
+if [ -h $MOUNT_DIR/lib/modules/$KERNEL_RELEASE/source ]
+then
+	rm -rf $MOUNT_DIR/lib/modules/$KERNEL_RELEASE/source
+fi
+if [ -h $MOUNT_DIR/lib/modules/$KERNEL_RELEASE/build ]
+then
+	rm -rf $MOUNT_DIR/lib/modules/$KERNEL_RELEASE/build
+fi
+$ADVCP_BIN -garp $KERNEL_SRC_COPY_DIR/. $MOUNT_DIR/lib/modules/$KERNEL_RELEASE/build
 umount $loop_dev_p1
 
 cleanup
