@@ -14,7 +14,8 @@ public class ExampleStartProgram {
 		}
 	}
 
-	private static boolean startProgram(BrickRED red, String identifier) throws TinkerforgeException {
+	private static boolean startProgram(BrickRED red, String identifier)
+	  throws TinkerforgeException {
 		// Create session and get program list
 		BrickRED.CreateSession session = red.createSession(10);
 		checkError(session.errorCode);
@@ -29,26 +30,32 @@ public class ExampleStartProgram {
 		boolean started = false;
 
 		for (int i = 0; i < programCount.length; i++) {
-			BrickRED.ListItem program = red.getListItem(programs.programsListId, i, session.sessionId);
+			BrickRED.ListItem program = red.getListItem(programs.programsListId, i,
+			                                            session.sessionId);
 			checkError(program.errorCode);
 
 			// Get program identifer string
-			BrickRED.ProgramIdentifier programIdentifier = red.getProgramIdentifier(program.itemObjectId, session.sessionId);
+			BrickRED.ProgramIdentifier programIdentifier =
+			  red.getProgramIdentifier(program.itemObjectId, session.sessionId);
 			checkError(programIdentifier.errorCode);
 
-			BrickRED.StringLength stringLength = red.getStringLength(programIdentifier.identifierStringId);
+			BrickRED.StringLength stringLength =
+			  red.getStringLength(programIdentifier.identifierStringId);
 			checkError(stringLength.errorCode);
 
 			String stringData = "";
 
 			while (stringData.length() < stringLength.length) {
-				BrickRED.StringChunk chunk = red.getStringChunk(programIdentifier.identifierStringId, stringData.length());
+				BrickRED.StringChunk chunk =
+				  red.getStringChunk(programIdentifier.identifierStringId,
+				                     stringData.length());
 				checkError(chunk.errorCode);
 
 				stringData += chunk.buffer;
 			}
 
-			checkError(red.releaseObject(programIdentifier.identifierStringId, session.sessionId));
+			checkError(red.releaseObject(programIdentifier.identifierStringId,
+			                             session.sessionId));
 
 			// Check if this is the program to be started
 			if (stringData.equalsIgnoreCase(identifier)) {
