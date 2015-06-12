@@ -71,9 +71,6 @@ then
 	exit 1
 fi
 
-# Adding the toolchain to the subshell environment
-export PATH=$TOOLS_DIR/$TC_DIR_NAME/bin:$PATH
-
 # Copying u-boot image to the SD card
 report_info "Copying u-boot image to the SD card"
 dd bs=512 seek=$UBOOT_DD_SEEK if=$UBOOT_IMAGE_FILE of=$DEVICE
@@ -95,52 +92,15 @@ else
 fi
 mount -t ext3 -o offset=$((512*$ROOT_PART_START_SECTOR)) $DEVICE $MOUNT_DIR
 
-# Preparing kernel source
-report_info "Preparing kernel source"
-KERNEL_SRC_COPY_DIR="$BUILD_DIR/kernel_source_copy"
-if [ ! -d $KERNEL_SRC_COPY_DIR ]
-then
-	mkdir -p $KERNEL_SRC_COPY_DIR
-else
-	rm -rf $KERNEL_SRC_COPY_DIR
-	mkdir -p $KERNEL_SRC_COPY_DIR
-fi
-$ADVCP_BIN -garp $KERNEL_SRC_DIR/. $KERNEL_SRC_COPY_DIR
-pushd $KERNEL_SRC_COPY_DIR > /dev/null
-make ARCH=arm CROSS_COMPILE=$TC_PREFIX clean
-make ARCH=arm CROSS_COMPILE=$TC_PREFIX $KERNEL_CONFIG_NAME
-KERNEL_RELEASE=`make -s ARCH=arm CROSS_COMPILE=$TC_PREFIX kernelrelease`
-KERNEL_RELEASE=`python -c 'import sys; print sys.argv[1].rstrip("+") + "+"' $KERNEL_RELEASE`
-filter_kernel_source
-popd
-
 # Copying kernel headers to the SD card
 report_info "Copying kernel headers to the SD card"
 rsync -ac --no-o --no-g $KERNEL_HEADER_INCLUDE_DIR $MOUNT_DIR/usr/
 rsync -ac --no-o --no-g $KERNEL_HEADER_USR_DIR $MOUNT_DIR
 
-# Copying kernel modules and sources to the SD card
-report_info "Copying kernel modules and sources to the SD card"
-if [ -h $KERNEL_SRC_DIR/$KERNEL_MOD_DIR_NAME/lib/modules/$KERNEL_RELEASE/source ]
-then
-	rm -rf $KERNEL_SRC_DIR/$KERNEL_MOD_DIR_NAME/lib/modules/$KERNEL_RELEASE/source
-fi
-if [ -h $KERNEL_SRC_DIR/$KERNEL_MOD_DIR_NAME/lib/modules/$KERNEL_RELEASE/build ]
-then
-	rm -rf $KERNEL_SRC_DIR/$KERNEL_MOD_DIR_NAME/lib/modules/$KERNEL_RELEASE/build
-fi
+# Copying kernel modules to the SD card
+report_info "Copying kernel modules to the SD card"
 rsync -ac --no-o --no-g $KERNEL_SRC_DIR/$KERNEL_MOD_DIR_NAME/lib/modules $MOUNT_DIR/lib/
 rsync -ac --no-o --no-g $KERNEL_SRC_DIR/$KERNEL_MOD_DIR_NAME/lib/firmware $MOUNT_DIR/lib/
-if [ -h $MOUNT_DIR/lib/modules/$KERNEL_RELEASE/source ]
-then
-	rm -rf $MOUNT_DIR/lib/modules/$KERNEL_RELEASE/source
-fi
-if [ -h $MOUNT_DIR/lib/modules/$KERNEL_RELEASE/build ]
-then
-	rm -rf $MOUNT_DIR/lib/modules/$KERNEL_RELEASE/build
-fi
-$ADVCP_BIN -garp $KERNEL_SRC_COPY_DIR/. $MOUNT_DIR/lib/modules/$KERNEL_RELEASE/build
-
 umount $MOUNT_DIR
 
 cleanup

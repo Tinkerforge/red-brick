@@ -812,6 +812,40 @@ systemctl disable openhab
 chown openhab:openhab /usr/share/openhab/webapps/static
 EOF
 
+# Preparing kernel source
+report_info "Preparing kernel source"
+if [ ! -d $KERNEL_SRC_COPY_DIR ]
+then
+	mkdir -p $KERNEL_SRC_COPY_DIR
+else
+	rm -rf $KERNEL_SRC_COPY_DIR
+	mkdir -p $KERNEL_SRC_COPY_DIR
+fi
+$ADVCP_BIN -garp $KERNEL_SRC_DIR/. $KERNEL_SRC_COPY_DIR
+pushd $KERNEL_SRC_COPY_DIR > /dev/null
+make ARCH=arm CROSS_COMPILE=$TC_PREFIX clean
+make ARCH=arm CROSS_COMPILE=$TC_PREFIX $KERNEL_CONFIG_NAME
+KERNEL_RELEASE=`make -s ARCH=arm CROSS_COMPILE=$TC_PREFIX kernelrelease`
+KERNEL_RELEASE=`python -c 'import sys; print sys.argv[1].rstrip("+") + "+"' $KERNEL_RELEASE`
+filter_kernel_source
+popd
+
+# Copying kernel modules and source
+report_info "Copying kernel modules and source"
+
+rsync -ac --no-o --no-g $KERNEL_SRC_DIR/$KERNEL_MOD_DIR_NAME/lib/modules $ROOTFS_DIR/lib/
+rsync -ac --no-o --no-g $KERNEL_SRC_DIR/$KERNEL_MOD_DIR_NAME/lib/firmware $ROOTFS_DIR/lib/
+
+rm $ROOTFS_DIR/lib/modules/$KERNEL_RELEASE/build
+rm $ROOTFS_DIR/lib/modules/$KERNEL_RELEASE/source
+
+$ADVCP_BIN -garp $KERNEL_SRC_COPY_DIR/. $ROOTFS_DIR/lib/modules/$KERNEL_RELEASE/build
+
+$CHROOT <<EOF
+cd /lib/modules/$KERNEL_RELEASE/build
+make -B scripts
+EOF
+
 # Cleaning /tmp directory
 report_info "Cleaning /tmp directory"
 rm -rf $ROOTFS_DIR/tmp/*
