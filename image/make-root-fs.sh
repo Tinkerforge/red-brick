@@ -625,6 +625,21 @@ cp /tmp/red.css /home/tf
 chown tf:tf /home/tf/red.css
 EOF
 
+# Downgrading GNU Octave so the Tinkerforge bindings can be used with callbacks (version 3.6)
+# Keeping the not working GNU Octave version in multistrap configuration for the purpose of
+# proper version listing
+report_info "Downgrading GNU Octave"
+$CHROOT <<EOF
+echo -e "deb [arch=armhf] http://ftp.debian.org/debian wheezy main contrib non-free\n\
+deb-src http://ftp.debian.org/debian wheezy main contrib non-free\n" > /etc/apt/sources.list.d/wheezy.list
+apt-get update
+apt-get remove octave octave-* -y
+apt-get purge octave octave-* -y
+aptitude install octave=3.6.2-5+deb7u1 octave-common=3.6.2-5+deb7u1 octave-java=1.2.8-6 -y
+apt-get clean
+apt-get -f install -y
+EOF
+
 if [ "$DRAFT_MODE" = "no" ]
 then
 	# Generating dpkg listing
