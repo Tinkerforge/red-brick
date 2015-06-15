@@ -19,7 +19,7 @@ def check_error(error_code, *args):
 
     return args
 
-def start_program(red, identifer):
+def start_program(red, identifier):
     # Create session and get program list
     session_id = check_error(*red.create_session(10))
     program_list_id = check_error(*red.get_programs(session_id))
@@ -30,7 +30,7 @@ def start_program(red, identifer):
     for i in range(check_error(*red.get_list_length(program_list_id))):
         program_id, _ = check_error(*red.get_list_item(program_list_id, i, session_id))
 
-        # Get program identifer string
+        # Get program identifier string
         string_id = check_error(*red.get_program_identifier(program_id, session_id))
         string_length = check_error(*red.get_string_length(string_id))
         string_data = ''
@@ -41,7 +41,7 @@ def start_program(red, identifer):
         check_error(red.release_object(string_id, session_id))
 
         # Check if this is the program to be started
-        if string_data.decode('utf-8') == identifer:
+        if string_data.decode('utf-8') == identifier:
             check_error(red.start_program(program_id))
             started = True
 
