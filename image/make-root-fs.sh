@@ -130,7 +130,7 @@ report_info "Mounting critical filesystems on root-fs"
 mkdir -p $ROOTFS_DIR/proc
 mount -t proc none $ROOTFS_DIR/proc
 mkdir -p $ROOTFS_DIR/sys
-mount -o bind /sys $ROOTFS_DIR/sys
+mount -t sysfs none $ROOTFS_DIR/sys
 mkdir -p $ROOTFS_DIR/dev
 mount -o bind /dev $ROOTFS_DIR/dev
 
