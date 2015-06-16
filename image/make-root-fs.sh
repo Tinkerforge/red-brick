@@ -43,7 +43,7 @@ CONFIG_NAME=$1
 CHROOT="env -i PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin LANG=$LOCALE LANGUAGE=$LANGUAGE LC_ALL=$LOCALE DEBIAN_FRONTEND=noninteractive DEBCONF_NONINTERACTIVE_SEEN=true chroot $ROOTFS_DIR"
 
 function unmount {
-	report_info "Unmounting /proc, /dev/pts and /dev/(u)random from the root-fs directory"
+	report_info "Unmounting /proc, /sys and /dev from the root-fs directory"
 
 	set +e
 
@@ -52,19 +52,14 @@ function unmount {
 		umount -f $ROOTFS_DIR/proc
 	fi
 
-	if [ -d $ROOTFS_DIR/dev/pts ]
+	if [ -d $ROOTFS_DIR/sys ]
 	then
-		umount -f $ROOTFS_DIR/dev/pts
+		umount -f $ROOTFS_DIR/sys
 	fi
 
-	if [ -e $ROOTFS_DIR/dev/random ]
+	if [ -e $ROOTFS_DIR/dev ]
 	then
-		umount -f $ROOTFS_DIR/dev/random
-	fi
-
-	if [ -e $ROOTFS_DIR/dev/urandom ]
-	then
-		umount -f $ROOTFS_DIR/dev/urandom
+		umount -f $ROOTFS_DIR/dev
 	fi
 
 	set -e
@@ -80,7 +75,7 @@ function cleanup {
 	hostname -F /etc/hostname
 }
 
-trap "cleanup" SIGHUP SIGINT SIGTERM SIGQUIT
+trap "cleanup" SIGHUP SIGINT SIGTERM SIGQUIT EXIT
 
 # Checking if kernel and U-Boot were compiled for current configuration
 if [ ! -e $BUILD_DIR/u-boot-$CONFIG_NAME.built ]
@@ -130,16 +125,14 @@ else
 	mkdir -p $ROOTFS_DIR
 fi
 
-# Mounting stuff in root-fs directory
-report_info "Mounting stuff in root-fs directory"
+# Mounting critical filesystems on root-fs
+report_info "Mounting critical filesystems on root-fs"
 mkdir -p $ROOTFS_DIR/proc
 mount -t proc none $ROOTFS_DIR/proc
-mkdir -p $ROOTFS_DIR/dev/pts
-mount --bind /dev/pts $ROOTFS_DIR/dev/pts
-touch $ROOTFS_DIR/dev/random
-mount --bind /dev/random $ROOTFS_DIR/dev/random
-touch $ROOTFS_DIR/dev/urandom
-mount --bind /dev/urandom $ROOTFS_DIR/dev/urandom
+mkdir -p $ROOTFS_DIR/sys
+mount -o bind /sys $ROOTFS_DIR/sys
+mkdir -p $ROOTFS_DIR/dev
+mount -o bind /dev $ROOTFS_DIR/dev
 
 # Starting multistrap
 aptcacher=`netstat -lnt | awk '$6 == "LISTEN" && $4 ~ ".3150"'`
