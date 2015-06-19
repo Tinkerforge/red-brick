@@ -629,6 +629,7 @@ apt-get update
 apt-get remove octave octave-* -y
 apt-get purge octave octave-* -y
 aptitude install octave=3.6.2-5+deb7u1 octave-common=3.6.2-5+deb7u1 octave-java=1.2.8-6 -y
+apt-mark hold octave octave-common octave-java
 apt-get clean
 apt-get -f install -y
 EOF
