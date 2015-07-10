@@ -2,31 +2,25 @@ HUAWEI E1750 - Old Orange Stick
 ===============================
 
 * Qualcomm MSM6280, Qualcomm RTR6280 (mostly not relevant)
-
 * ID 12d1:1001 Huawei Technologies Co., Ltd. E169/E620/E800 HSDPA Modem
-
 * Works in Windows with provided software
-
 * Works in Linux on RED Brick with any combination if SIM PIN is disabled but frequently keeps disconnecting
-
 * Doesn't work in desktop Linux machine in any configuration
 
 4G SYSTEMS XSStick P14 - White Stick
 ====================================
 
 * Qualcomm MSM6290, Qualcomm RTR6285 (mostly not relevant)
-
+* ID 1c9e:f000 OMEGA TECHNOLOGY
 * Works in Windows with provided software
-
 * Works in Linux if connected to a powered hub (with or without power) but not if directly connected to system USB port
 
 QUALCOMM INCORPORATED E1750 - New Orange Stick
 ==============================================
 
 * Qualcomm MSM7600, Qualcomm PM7500 (mostly not relevant), Qualcomm RTR6285 (mostly not relevant)
-
+* ID 12d1:1001 Huawei Technologies Co., Ltd. E169/E620/E800 HSDPA Modem
 * Works in Windows with provided software
-
 * Doesn't work in Linux on any machine in any combination (fails at the stage when the tool asks for SIM PIN status)
 
 POTENTIAL STICKS
