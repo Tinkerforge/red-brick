@@ -23,7 +23,7 @@ QUALCOMM INCORPORATED E1750 - New Orange Stick
 * Works in Windows with provided software
 * Doesn't work in Linux on any machine in any combination (fails at the stage when the tool asks for SIM PIN status)
 
-POTENTIAL STICKS
+POTENTIAL MODEMS
 ================
 
 * A list of Raspberry Pi verified sticks (http://elinux.org/RPi_VerifiedPeripherals#USB_3G_Dongles)
