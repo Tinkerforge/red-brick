@@ -57,6 +57,11 @@ function unmount {
 		umount -f $ROOTFS_DIR/sys
 	fi
 
+	if [ -e $ROOTFS_DIR/dev/pts ]
+	then
+		umount -f $ROOTFS_DIR/dev/pts
+	fi
+
 	if [ -e $ROOTFS_DIR/dev ]
 	then
 		umount -f $ROOTFS_DIR/dev
@@ -128,11 +133,13 @@ fi
 # Mounting critical filesystems on root-fs
 report_info "Mounting critical filesystems on root-fs"
 mkdir -p $ROOTFS_DIR/proc
-mount -t proc none $ROOTFS_DIR/proc
+mount -t proc proc $ROOTFS_DIR/proc
 mkdir -p $ROOTFS_DIR/sys
-mount -t sysfs none $ROOTFS_DIR/sys
+mount -t sysfs sysfs $ROOTFS_DIR/sys
 mkdir -p $ROOTFS_DIR/dev
 mount -o bind /dev $ROOTFS_DIR/dev
+mkdir -p $ROOTFS_DIR/dev/pts
+mount -o bind /dev/pts $ROOTFS_DIR/dev/pts
 
 # Starting multistrap
 aptcacher=`netstat -lnt | awk '$6 == "LISTEN" && $4 ~ ".3150"'`
