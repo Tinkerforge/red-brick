@@ -34,7 +34,7 @@ bootstrap=Debian Debian_Security Debian_Updates
 # aptsources is a list of sections to be listed
 # in the /etc/apt/sources.list.d/multistrap.sources.list
 # of the target.
-aptsources=Debian Debian_Security Debian_Updates
+aptsources=Debian Debian_Security Debian_Updates Mono
 
 [Debian]
 # GROUP-START:system
@@ -168,4 +168,12 @@ source=http://%apt-cacher-2-prefix%ftp.debian.org/debian
 keyring=debian-archive-keyring
 suite=jessie-updates
 components=main contrib non-free
+omitdebsrc=false
+
+[Mono]
+packages=
+source=http://download.mono-project.com/repo/debian
+keyring=
+suite=beta
+components=main
 omitdebsrc=false
