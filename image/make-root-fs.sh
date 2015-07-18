@@ -828,6 +828,13 @@ systemctl disable openhab
 chown openhab:openhab /usr/share/openhab/webapps/static
 EOF
 
+# Installing signing key of official Mono repository
+report_info "Installing signing key of official Mono repository"
+$CHROOT <<EOF
+apt-key adv --keyserver hkp://keyserver.ubuntu.com:80 --recv-keys 3FA7E0328081BFF6A14DA29AA6A19B38D3D831EF
+apt-get update
+EOF
+
 # Preparing kernel source
 report_info "Preparing kernel source"
 if [ ! -d $KERNEL_SRC_COPY_DIR ]
