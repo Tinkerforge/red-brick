@@ -820,6 +820,7 @@ EOF
 # Installing openHAB
 report_info "Installing openHAB"
 $CHROOT <<EOF
+wget -qO - 'https://bintray.com/user/downloadSubjectPublicKey?username=openhab' | apt-key add -
 echo 'deb http://dl.bintray.com/openhab/apt-repo stable main' > /etc/apt/sources.list.d/openhab.list
 apt-get update
 apt-get install -y --force-yes openhab-runtime openhab-addon-binding-tinkerforge openhab-addon-action-tinkerforge
