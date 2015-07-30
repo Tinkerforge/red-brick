@@ -80,7 +80,7 @@ function cleanup {
 	hostname -F /etc/hostname
 }
 
-trap "cleanup" SIGHUP SIGINT SIGTERM SIGQUIT EXIT
+trap "cleanup" SIGHUP SIGINT SIGTERM SIGQUIT
 
 # Checking if kernel and U-Boot were compiled for current configuration
 if [ ! -e $BUILD_DIR/u-boot-$CONFIG_NAME.built ]
