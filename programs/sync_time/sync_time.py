@@ -36,6 +36,9 @@ if has_watchdog:
             time.sleep(1)
             set_time()
 
+    if not os.path.exists('/tmp/sync-time'):
+        os.mkdir('/tmp/sync-time', 0777)
+
     observer = Observer()
     observer.schedule(EventHandler(), path='/tmp/sync-time')
     observer.start()
