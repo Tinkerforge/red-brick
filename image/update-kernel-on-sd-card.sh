@@ -99,9 +99,9 @@ rsync -ac --no-o --no-g $KERNEL_HEADER_USR_DIR $MOUNT_DIR
 
 # Copying kernel modules to the SD card
 report_info "Copying kernel modules to the SD card"
+rm -rf $MOUNT_DIR/lib/modules
 rsync -ac --no-o --no-g $KERNEL_SRC_DIR/$KERNEL_MOD_DIR_NAME/lib/modules $MOUNT_DIR/lib/
 rsync -ac --no-o --no-g $KERNEL_SRC_DIR/$KERNEL_MOD_DIR_NAME/lib/firmware $MOUNT_DIR/lib/
-umount $MOUNT_DIR
 
 cleanup
 report_process_finish
