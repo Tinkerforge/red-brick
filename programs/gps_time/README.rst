@@ -15,7 +15,7 @@ With the following program settings the system time will be corrected every
 
 * 2 of 8:
 
-  * Add ``gps_time.py``
+  * Add the complete directory containing the ``gps_time.py`` script.
 
 * 3 of 8:
 

@@ -16,7 +16,7 @@ synchronization:
 
 * 2 of 8:
 
-  * Add ``sync_time.py``, ``index.py`` and ``jquery.js``
+  * Add the complete directory containing the ``sync_time.py`` script.
 
 * 3 of 8:
 

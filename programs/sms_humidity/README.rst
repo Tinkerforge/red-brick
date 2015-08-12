@@ -18,7 +18,7 @@ with the following program settings:
 
 * 2 of 8:
 
-  * Add directory that contains the script ``sms_humidity.py`` and the directory ``humod``
+  * Add the complete directory containing the ``sms_humidity.py`` script.
 
 * 3 of 8:
 
@@ -26,7 +26,9 @@ with the following program settings:
   * Start Mode: Script File
   * Script File: ``sms_humidity.py``
 
-* 4 of 8: Add argument ``/dev/ttyUSB0``. Usually this is the case but depending on your modem it can be someother device file as well. If you see in log the message ``ERROR: Failed to initialze modem`` try changing this argument.
+* 4 of 8: Add argument ``/dev/ttyUSB0``. Usually this is the case but depending
+  on your modem it can be some other device file as well. If you see in log the
+  message ``ERROR: Failed to initialize modem`` try changing this argument.
 * 5 of 8: Default
 * 6 of 8: Default
 * 7 of 8: Nothing
