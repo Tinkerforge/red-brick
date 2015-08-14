@@ -1,7 +1,7 @@
 Get humidity callback reading via SMS
 -------------------------------------
 
-This example demonstrates how bricklet callback values can be reported
+This example demonstrates how Bricklet callback values can be reported
 via SMS if you have a GSM modem connected to the RED Brick. In the source
 file ``sms_humidity.py`` change the constants ``PHONE_NR`` and ``PIN_SIM``
 according to your setup. If you have SIM card PIN disabled then you should
