@@ -912,6 +912,7 @@ fi
 # Built file that indicates rootfs was made
 touch $BUILD_DIR/root-fs-$CONFIG_NAME.built
 
+trap - SIGHUP SIGINT SIGTERM SIGQUIT EXIT
 cleanup
 report_process_finish
 

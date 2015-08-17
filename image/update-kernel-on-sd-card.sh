@@ -55,7 +55,7 @@ function cleanup {
 	set -e
 }
 
-trap "cleanup" SIGHUP SIGINT SIGTERM SIGQUIT
+trap "cleanup" SIGHUP SIGINT SIGTERM SIGQUIT EXIT
 
 # Checking image file
 if [ ! -e $KERNEL_IMAGE_FILE ]
@@ -103,6 +103,7 @@ rm -rf $MOUNT_DIR/lib/modules
 rsync -ac --no-o --no-g $KERNEL_SRC_DIR/$KERNEL_MOD_DIR_NAME/lib/modules $MOUNT_DIR/lib/
 rsync -ac --no-o --no-g $KERNEL_SRC_DIR/$KERNEL_MOD_DIR_NAME/lib/firmware $MOUNT_DIR/lib/
 
+trap - SIGHUP SIGINT SIGTERM SIGQUIT EXIT
 cleanup
 report_process_finish
 

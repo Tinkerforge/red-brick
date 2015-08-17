@@ -59,7 +59,7 @@ function cleanup {
 	set -e
 }
 
-trap "cleanup" SIGHUP SIGINT SIGTERM SIGQUIT
+trap "cleanup" SIGHUP SIGINT SIGTERM SIGQUIT EXIT
 
 # Checking if root-fs was generated for the provided image configuration
 if [ ! -e $BUILD_DIR/root-fs-$CONFIG_NAME.built ]
@@ -169,6 +169,7 @@ mount $loop_dev_p1 $MOUNT_DIR
 $ADVCP_BIN -garp $ROOTFS_DIR/* $MOUNT_DIR/
 umount $loop_dev_p1
 
+trap - SIGHUP SIGINT SIGTERM SIGQUIT EXIT
 cleanup
 report_process_finish
 
