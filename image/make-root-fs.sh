@@ -514,11 +514,14 @@ then
 	$CHROOT <<EOF
 cd /tmp/mali-gpu
 dpkg -i libdri2-1_1.0-2_armhf.deb
-dpkg -i libsunxi-mali-x11_1.0-6_armhf.deb
+dpkg -i libsunxi-mali-x11_1.1-1_armhf.deb
 dpkg -i libvdpau-sunxi_1.0-1_armhf.deb
 dpkg -i sunxi-disp-test_1.0-1_armhf.deb
 dpkg -i libump_3.0-0sunxi1_armhf.deb
 dpkg -i xserver-xorg-video-sunximali_1.0-4_armhf.deb
+dpkg -i libegl1-mesa_2-1.1-1_armhf.deb
+dpkg -i libgles1-mesa_2-1.1-1_armhf.deb
+dpkg -i libgles2-mesa_2-1.1-1_armhf.deb
 dpkg --configure -a
 # add true here to avoid having a dpkg error abort the whole script here
 true
