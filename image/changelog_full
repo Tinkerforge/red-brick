@@ -1,22 +1,22 @@
-1.0:
+2014-12-11: 1.0 (2c1fbd8)
 - Initial version
 
-1.1:
+2014-12-23: 1.1 (3e9dfa9)
 - Update C# bindings to version 2.1.5
 - Update Brick Viewer to version 2.2.1
 - Fix pin mapping for second Master Extension
 - Add missing Delphi, Octave, Shell and Node.js version info for Brick Viewer
 
-1.2:
+2014-12-30: 1.2 (97c292f)
 - Update Delphi/Lazarus bindings to version 2.1.5
 - Fix intermittent missing loopback interface problem
 - Fix mixing setuid flag in /usr/bin/sudo
 - Add gphoto2 and libgphoto2
 
-1.3:
+2015-01-05: 1.3 (91d6a1d)
 - Fix problems with name resolution (DNS)
 
-1.4:
+2015-02-03: 1.4 (5bf3efc)
 - Upgrade from Debian+Raspbian wheezy to pure Debian jessie
 - Add wireless access point mode
 - Resize splash screen image
@@ -25,17 +25,17 @@
   storage)
 - Add touch screen input calibrator
 
-1.5:
+2015-02-04: 1.5 (d807d9e)
 - Fix bug with Ethernet Extension driver
 
-1.6:
+2015-03-12: 1.6 (1a53274)
 - Add Nagios for Starter Kit: Server Room Monitoring
 - Add openHAB with Tinkerforge bindings
 - Add missing DNS reverse lookup for wireless access point mode
 - Enable kernel drivers for several Bluetooth dongles
 - Set default HDMI fallback resolution to 800x480
 
-1.7:
+2015-07-30: 1.7 (ea8c167)
 - Add kernel drivers and tools for mobile Internet connection
 - Enable many more kernel drivers for USB devices (serial adapters, cameras,
   Wi-Fi adapters, etc.)
