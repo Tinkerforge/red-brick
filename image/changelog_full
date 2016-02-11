@@ -44,6 +44,21 @@
 - Update openHAB to version 1.7
 - Add official Mono 4 APT repository
 - Update Brick Viewer to version 2.2.6
-- Update all bindings: C/C++ 2.1.7, C# 2.1.6, Delphi/Lazarus 2.1.6, Java 2.1.5,
-  JavaScript 2.0.5, LabVIEW 2.1.5, Mathematica 2.1.5, MATLAB/Octave 2.0.5,
-  Perl 2.1.5, PHP 2.1.5, Python 2.1.5, Ruby 2.1.5, Shell 2.1.5, VB.NET 2.1.5
+- Update all API bindings: C/C++ 2.1.7, C# 2.1.6, Delphi/Lazarus 2.1.6,
+  Java 2.1.5, JavaScript 2.0.5, LabVIEW 2.1.5, Mathematica 2.1.5,
+  MATLAB/Octave 2.0.5, Perl 2.1.5, PHP 2.1.5, Python 2.1.5, Ruby 2.1.5,
+  Shell 2.1.5, VB.NET 2.1.5
+
+2016-02-11: 1.8 (<unknown>)
+- Disable unnecessary OTG detection on Mini-USB port
+- Increase image size from 5GB to 7GB
+- Enable more HID kernel drivers
+- Enable more Bluetooth kernel drivers
+- Install sunxi Mail GPU driver into the correct directory
+- Manually install snmp-mibs-downloader to workaround Debian packaging problem
+- Update Brick Daemon to version 2.2.2
+- Update Brick Viewer to version 2.3.3
+- Update all API bindings: C/C++ 2.1.10, C# 2.1.9, Delphi/Lazarus 2.1.10,
+  Java 2.1.8, JavaScript 2.0.8, LabVIEW 2.1.8, Mathematica 2.1.8,
+  MATLAB/Octave 2.0.8, Perl 2.1.8, PHP 2.1.8, Python 2.1.8, Ruby 2.1.8,
+  Shell 2.1.8, Visual Basic .NET 2.1.8
