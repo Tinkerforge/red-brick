@@ -10,7 +10,7 @@
 2014-12-30: 1.2 (97c292f)
 - Update Delphi/Lazarus bindings to version 2.1.5
 - Fix intermittent missing loopback interface problem
-- Fix mixing setuid flag in /usr/bin/sudo
+- Fix missing setuid flag in /usr/bin/sudo
 - Add gphoto2 and libgphoto2
 
 2015-01-05: 1.3 (91d6a1d)
@@ -49,7 +49,7 @@
   MATLAB/Octave 2.0.5, Perl 2.1.5, PHP 2.1.5, Python 2.1.5, Ruby 2.1.5,
   Shell 2.1.5, VB.NET 2.1.5
 
-2016-02-11: 1.8 (<unknown>)
+2016-02-15: 1.8 (e28cb28)
 - Disable unnecessary OTG detection on Mini-USB port
 - Increase image size from 5GB to 7GB
 - Enable more HID kernel drivers
