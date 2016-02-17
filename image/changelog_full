@@ -54,7 +54,7 @@
 - Increase image size from 5GB to 7GB
 - Enable more HID kernel drivers
 - Enable more Bluetooth kernel drivers
-- Install sunxi Mail GPU driver into the correct directory
+- Install sunxi Mali GPU driver into the correct directory
 - Manually install snmp-mibs-downloader to workaround Debian packaging problem
 - Update Brick Daemon to version 2.2.2
 - Update Brick Viewer to version 2.3.3
