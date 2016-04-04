@@ -97,9 +97,8 @@ class RTCTimeToLinuxTime:
 
         try:
             # Set date as root
-            timestamp = (self.rtc_time - datetime.datetime(1970, 1, 1)) / datetime.timedelta(seconds=1)
-            command = ['/usr/bin/sudo', '-S']
-            command.extend('/bin/date +%s -u -s @{0}'.format(timestamp).split(' '))
+            command = ['/usr/bin/sudo', '-S', '/bin/date', self.rtc_time.strftime('%m%d%H%M%Y.%S')]
+            print(command)
             Popen(command, stdout=PIPE, stdin=PIPE).communicate(SUDO_PASSWORD)
         except:
             return False
