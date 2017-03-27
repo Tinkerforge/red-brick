@@ -88,11 +88,11 @@ then
 	report_error "U-Boot was not built for the current image configuration"
 	exit 1
 fi
-if [ ! -e $SCRIPT_BIN_FILE ]
-then
-	report_error "Boot script was not built for the current image configuration"
-	exit 1
-fi
+#if [ ! -e $SCRIPT_BIN_FILE ]
+#then
+#	report_error "Boot script was not built for the current image configuration"
+#	exit 1
+#fi
 if [ ! -e $BUILD_DIR/kernel-$CONFIG_NAME.built ]
 then
 	report_error "Kernel was not built for the current image configuration"
@@ -872,6 +872,15 @@ $CHROOT <<EOF
 cd /lib/modules/$KERNEL_RELEASE/build
 make -B scripts
 EOF
+
+# Preparing the boot directory
+report_info "Preparing the boot directory"
+mkdir -p $ROOTFS_DIR/boot/kernel
+cp $KERNEL_IMAGE_FILE $ROOTFS_DIR/boot/kernel
+mkdir -p $ROOTFS_DIR/boot/kernel/dtb
+cp $KERNEL_DTB_FILE $ROOTFS_DIR/boot/kernel/dtb
+cp $UBOOT_BOOT_CMD_FILE $ROOTFS_DIR/boot
+$UBOOT_SRC_DIR/tools/mkimage -C none -A arm -T script -d $ROOTFS_DIR/boot/boot.cmd $ROOTFS_DIR/boot/boot.scr
 
 # Cleaning /tmp directory
 report_info "Cleaning /tmp directory"

@@ -39,7 +39,7 @@ CONFIG_NAME=$1
 
 cp $KERNEL_CONFIG_FILE $KERNEL_SRC_DIR/.config
 pushd $KERNEL_SRC_DIR > /dev/null
-make ARCH=arm xconfig
+make ARCH=arm menuconfig
 popd > /dev/null
 cp $KERNEL_SRC_DIR/.config $KERNEL_CONFIG_FILE
 

@@ -73,15 +73,15 @@ fi
 
 # Copying u-boot image to the SD card
 report_info "Copying u-boot image to the SD card"
-dd bs=512 seek=$UBOOT_DD_SEEK if=$UBOOT_IMAGE_FILE of=$DEVICE
+dd bs=1024 seek=$UBOOT_DD_SEEK if=$UBOOT_IMAGE_FILE of=$DEVICE
 
 # Copying script bin to the SD card
-report_info "Copying script bin to the SD card"
-dd bs=512 seek=$SCRIPT_DD_SEEK if=$SCRIPT_BIN_FILE of=$DEVICE
+#report_info "Copying script bin to the SD card"
+#dd bs=512 seek=$SCRIPT_DD_SEEK if=$SCRIPT_BIN_FILE of=$DEVICE
 
-# Copying kernel image to the SD card
-report_info "Copying kernel image to the SD card"
-dd bs=512 seek=$KERNEL_DD_SEEK if=$KERNEL_IMAGE_FILE of=$DEVICE
+# Copying kernel image and the DTB to the SD card
+report_info "Copying kernel image and the DTB to the SD card"
+#dd bs=512 seek=$KERNEL_DD_SEEK if=$KERNEL_IMAGE_FILE of=$DEVICE
 
 if [ -d $MOUNT_DIR ]
 then
@@ -91,6 +91,10 @@ else
 	mkdir -p $MOUNT_DIR
 fi
 mount -t ext3 -o offset=$((512*$ROOT_PART_START_SECTOR)) $DEVICE $MOUNT_DIR
+cp $KERNEL_IMAGE_FILE $MOUNT_DIR/boot/kernel
+cp $KERNEL_DTB_FILE $MOUNT_DIR/boot/kernel/dtb
+cp $UBOOT_BOOT_CMD_FILE $MOUNT_DIR/boot
+$UBOOT_SRC_DIR/tools/mkimage -C none -A arm -T script -d $MOUNT_DIR/boot/boot.cmd $MOUNT_DIR/boot/boot.scr
 
 # Copying kernel headers to the SD card
 report_info "Copying kernel headers to the SD card"

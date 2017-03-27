@@ -64,7 +64,7 @@ fi
 
 if [ ! -d ./$TC_DIR_NAME ]
 then
-	tar jxf ./$TC_FILE_NAME
+	tar xf ./$TC_FILE_NAME
 fi
 
 popd > /dev/null

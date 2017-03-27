@@ -82,11 +82,11 @@ then
 	exit 1
 fi
 
-if [ ! -e $SCRIPT_BIN_FILE ]
-then
-	report_error "No boot script found"
-	exit 1
-fi
+#if [ ! -e $SCRIPT_BIN_FILE ]
+#then
+#	report_error "No boot script found"
+#	exit 1
+#fi
 
 # Checking kernel modules
 if [ ! -d $KERNEL_SRC_DIR/$KERNEL_MOD_DIR_NAME ]
@@ -147,16 +147,16 @@ losetup -o $((512*$ROOT_PART_START_SECTOR)) $loop_dev_p1 $IMAGE_FILE
 report_info "Formatting image partition"
 mkfs.ext3 $loop_dev_p1 -L $PARTITION_LABEL
 
-# Installing U-Boot, boot script and the kernel to the image
+# Installing U-Boot to the image
 report_info "Installing U-Boot to the image"
-dd bs=512 seek=$UBOOT_DD_SEEK if=$UBOOT_IMAGE_FILE of=$loop_dev
-report_info "Installing boot script to the image"
-dd bs=512 seek=$SCRIPT_DD_SEEK if=$SCRIPT_BIN_FILE of=$loop_dev
-report_info "Installing the kernel to the image"
-dd bs=512 seek=$KERNEL_DD_SEEK if=$KERNEL_IMAGE_FILE of=$loop_dev
+dd bs=1024 seek=$UBOOT_DD_SEEK if=$UBOOT_IMAGE_FILE of=$loop_dev
+#report_info "Installing boot script to the image"
+#dd bs=512 seek=$SCRIPT_DD_SEEK if=$SCRIPT_BIN_FILE of=$loop_dev
+#report_info "Installing the kernel to the image"
+#dd bs=512 seek=$KERNEL_DD_SEEK if=$KERNEL_IMAGE_FILE of=$loop_dev
 
-# Copying root-fs and kernel modules to the image
-report_info "Copying root-fs and kernel modules to the image"
+# Copying root-fs to the image
+report_info "Copying root-fs to the image"
 if [ ! -d $MOUNT_DIR ]
 then
 	mkdir -p $MOUNT_DIR
