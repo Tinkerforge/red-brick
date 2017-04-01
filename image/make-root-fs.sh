@@ -856,7 +856,7 @@ pushd $KERNEL_SRC_COPY_DIR > /dev/null
 make ARCH=arm CROSS_COMPILE=$TC_PREFIX clean
 make ARCH=arm CROSS_COMPILE=$TC_PREFIX $KERNEL_CONFIG_NAME
 KERNEL_RELEASE=`make -s ARCH=arm CROSS_COMPILE=$TC_PREFIX kernelrelease`
-KERNEL_RELEASE=`python -c 'import sys; print sys.argv[1].rstrip("+") + "+"' $KERNEL_RELEASE`
+#KERNEL_RELEASE=`python -c 'import sys; print sys.argv[1].rstrip("+") + "+"' $KERNEL_RELEASE`
 filter_kernel_source
 popd
 
@@ -869,9 +869,14 @@ rsync -ac --no-o --no-g $KERNEL_SRC_DIR/$KERNEL_MOD_DIR_NAME/lib/firmware $ROOTF
 rm $ROOTFS_DIR/lib/modules/$KERNEL_RELEASE/build
 rm $ROOTFS_DIR/lib/modules/$KERNEL_RELEASE/source
 
-$ADVCP_BIN -garp $KERNEL_SRC_COPY_DIR/. $ROOTFS_DIR/lib/modules/$KERNEL_RELEASE/build
+#$ADVCP_BIN -garp $KERNEL_SRC_COPY_DIR/. $ROOTFS_DIR/lib/modules/$KERNEL_RELEASE/build
+mkdir -p $ROOTFS_DIR/usr/src/$KERNEL_RELEASE/
+$ADVCP_BIN -garp $KERNEL_SRC_COPY_DIR/. $ROOTFS_DIR/usr/src/$KERNEL_RELEASE/
 
-$CHROOT <<EOF
+env -i PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin LANG=$LOCALE LANGUAGE=$LANGUAGE LC_ALL=$LOCALE DEBIAN_FRONTEND=noninteractive DEBCONF_NONINTERACTIVE_SEEN=true KERNEL_RELEASE=$KERNEL_RELEASE chroot $ROOTFS_DIR <<EOF
+cd /lib/modules/$KERNEL_RELEASE/
+ln -s /usr/src/$KERNEL_RELEASE build
+ln -s /usr/src/$KERNEL_RELEASE source
 cd /lib/modules/$KERNEL_RELEASE/build
 make -B scripts
 EOF
