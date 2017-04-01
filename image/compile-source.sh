@@ -101,6 +101,7 @@ if [ $CLEAN_BEFORE_COMPILE == "yes" ]
 then
 	make ARCH=arm CROSS_COMPILE=$TC_PREFIX clean
 fi
+rm -f output > /dev/null
 make ARCH=arm CROSS_COMPILE=$TC_PREFIX -j16 INSTALL_MOD_PATH=$KERNEL_MOD_DIR_NAME $KERNEL_IMAGE_NAME dtbs modules
 make ARCH=arm CROSS_COMPILE=$TC_PREFIX INSTALL_MOD_PATH=$KERNEL_MOD_DIR_NAME modules_install
 make ARCH=arm CROSS_COMPILE=$TC_PREFIX headers_install
