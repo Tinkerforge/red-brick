@@ -1,5 +1,5 @@
 # /etc/modules
 
-mali
-red_brick_uid
+#mali
+#red_brick_uid
 g_red_brick
