@@ -853,9 +853,9 @@ else
 fi
 $ADVCP_BIN -garp $KERNEL_SRC_DIR/. $KERNEL_SRC_COPY_DIR
 pushd $KERNEL_SRC_COPY_DIR > /dev/null
-make ARCH=arm CROSS_COMPILE=$TC_PREFIX clean
-make ARCH=arm CROSS_COMPILE=$TC_PREFIX $KERNEL_CONFIG_NAME
-KERNEL_RELEASE=`make -s ARCH=arm CROSS_COMPILE=$TC_PREFIX kernelrelease`
+make ARCH=arm CROSS_COMPILE=$TC_PREFIX LOCALVERSION="" clean
+make ARCH=arm CROSS_COMPILE=$TC_PREFIX LOCALVERSION="" $KERNEL_CONFIG_NAME
+KERNEL_RELEASE=`make -s ARCH=arm CROSS_COMPILE=$TC_PREFIX LOCALVERSION="" kernelrelease`
 #KERNEL_RELEASE=`python -c 'import sys; print sys.argv[1].rstrip("+") + "+"' $KERNEL_RELEASE`
 filter_kernel_source
 popd

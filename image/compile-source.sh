@@ -99,12 +99,12 @@ cp $KERNEL_DTS_FILE ./arch/arm/boot/dts
 make ARCH=arm CROSS_COMPILE=$TC_PREFIX LOCALVERSION="" $KERNEL_CONFIG_NAME
 if [ $CLEAN_BEFORE_COMPILE == "yes" ]
 then
-	make ARCH=arm CROSS_COMPILE=$TC_PREFIX clean
+	make ARCH=arm CROSS_COMPILE=$TC_PREFIX LOCALVERSION="" clean
 fi
 rm -f output > /dev/null
 make ARCH=arm CROSS_COMPILE=$TC_PREFIX -j16 INSTALL_MOD_PATH=$KERNEL_MOD_DIR_NAME LOCALVERSION="" $KERNEL_IMAGE_NAME dtbs modules
 make ARCH=arm CROSS_COMPILE=$TC_PREFIX INSTALL_MOD_PATH=$KERNEL_MOD_DIR_NAME LOCALVERSION="" modules_install
-make ARCH=arm CROSS_COMPILE=$TC_PREFIX headers_install
+make ARCH=arm CROSS_COMPILE=$TC_PREFIX LOCALVERSION="" headers_install
 popd > /dev/null
 touch $BUILD_DIR/kernel-$CONFIG_NAME.built
 touch $BUILD_DIR/kernel-headers-$CONFIG_NAME.built
