@@ -43,8 +43,6 @@ CONFIG_NAME=$1
 export PATH=$TOOLS_DIR/$TC_DIR_NAME/bin:$PATH
 
 # Some helper variables and functions
-CHROOT="env -i PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin LANG=$LOCALE LANGUAGE=$LANGUAGE LC_ALL=$LOCALE DEBIAN_FRONTEND=noninteractive DEBCONF_NONINTERACTIVE_SEEN=true chroot $ROOTFS_DIR"
-
 function unmount {
 	report_info "Unmounting /proc, /sys and /dev from the root-fs directory"
 
@@ -85,7 +83,7 @@ function cleanup {
 
 trap "cleanup" SIGHUP SIGINT SIGTERM SIGQUIT EXIT
 
-# Checking if kernel and U-Boot were compiled for current configuration
+# Checking if the kernel and U-Boot were compiled for current configuration
 if [ ! -e $BUILD_DIR/u-boot-$CONFIG_NAME.built ]
 then
 	report_error "U-Boot was not built for the current image configuration"
@@ -101,18 +99,25 @@ then
 	report_error "Kernel was not built for the current image configuration"
 	exit 1
 fi
-if [ ! -e $BUILD_DIR/kernel-headers-$CONFIG_NAME.built ]
-then
-	report_error "Kernel headers were not installed for the current image configuration"
-	exit 1
-fi
+#if [ ! -e $BUILD_DIR/kernel-headers-$CONFIG_NAME.built ]
+#then
+#	report_error "Kernel headers were not installed for the current image configuration"
+#	exit 1
+#fi
 
 # Checking kernel modules
-if [ ! -d $KERNEL_SRC_DIR/$KERNEL_MOD_DIR_NAME ]
-then
-	report_error "Build kernel modules first"
-	exit 1
-fi
+#if [ ! -d $KERNEL_SRC_DIR/$KERNEL_MOD_DIR_NAME ]
+#then
+#	report_error "Build kernel modules first"
+#	exit 1
+#fi
+
+# Get kernel release
+pushd $KERNEL_SRC_DIR > /dev/null
+KERNEL_RELEASE=`make -s ARCH=arm CROSS_COMPILE=$TC_PREFIX LOCALVERSION="" kernelrelease`
+
+# Change root command
+CHROOT="env -i PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin LANG=$LOCALE LANGUAGE=$LANGUAGE LC_ALL=$LOCALE DEBIAN_FRONTEND=noninteractive DEBCONF_NONINTERACTIVE_SEEN=true KERNEL_RELEASE=$KERNEL_RELEASE chroot $ROOTFS_DIR"
 
 # Checking multistrap config
 if [ ! -e $MULTISTRAP_TEMPLATE_FILE ]
@@ -215,6 +220,35 @@ dpkg --configure -a
 dpkg --configure -a
 # add true here to avoid having a dpkg error abort the whole script here
 true
+EOF
+
+# Installing the kernel and preparing the boot directory
+report_info "Installing the kernel and preparing the boot directory"
+pushd $SOURCE_DIR > /dev/null
+mv *.debian.tar.gz linux-$KERNEL_RELEASE.debian.tar.gz
+mv *.orig.tar.gz linux-$KERNEL_RELEASE.orig.tar.gz
+mv linux-firmware-image* linux-firmware-image-$KERNEL_RELEASE.deb
+mv linux-headers* linux-headers-$KERNEL_RELEASE.deb
+mv linux-image* linux-image-$KERNEL_RELEASE.deb
+mv linux-libc-dev* linux-libc-dev-$KERNEL_RELEASE.deb
+mv *.changes linux-$KERNEL_RELEASE.changes
+mv *.dsc linux-$KERNEL_RELEASE.dsc
+cp *.tar.gz $ROOTFS_DIR/boot
+cp *.deb $ROOTFS_DIR/boot
+cp *.changes $ROOTFS_DIR/boot
+cp *.dsc $ROOTFS_DIR/boot
+mkdir -p $ROOTFS_DIR/boot/dt
+cp $KERNEL_DTS_FILE $ROOTFS_DIR/boot/dt
+cp $KERNEL_DTB_FILE $ROOTFS_DIR/boot/dt
+cp $UBOOT_BOOT_CMD_FILE $ROOTFS_DIR/boot
+$UBOOT_SRC_DIR/tools/mkimage -C none -A arm -T script -d $ROOTFS_DIR/boot/boot.cmd $ROOTFS_DIR/boot/boot.scr
+$CHROOT <<EOF
+cd /boot
+dpkg -i linux-firmware-image-$KERNEL_RELEASE.deb
+dpkg -i linux-headers-$KERNEL_RELEASE.deb
+dpkg -i linux-image-$KERNEL_RELEASE.deb
+dpkg -i linux-libc-dev-$KERNEL_RELEASE.deb
+ln -s ./vmlinuz-$KERNEL_RELEASE ./vmlinuz
 EOF
 
 # Enabling ttyGS0 systemd service
@@ -715,16 +749,16 @@ true
 EOF
 
 # Installing kernel headers
-report_info "Installing kernel headers"
-rsync -ac --no-o --no-g $KERNEL_HEADER_INCLUDE_DIR $ROOTFS_DIR/usr/
-rsync -ac --no-o --no-g $KERNEL_HEADER_USR_DIR $ROOTFS_DIR
+#report_info "Installing kernel headers"
+#rsync -ac --no-o --no-g $KERNEL_HEADER_INCLUDE_DIR $ROOTFS_DIR/usr/
+#rsync -ac --no-o --no-g $KERNEL_HEADER_USR_DIR $ROOTFS_DIR
 
 # Cleaning /etc/resolv.conf and creating symbolic link for resolvconf
-report_info "Cleaning /etc/resolv.conf and creating symbolic link for resolvconf"
-$CHROOT <<EOF
-rm -rf /etc/resolv.conf
-ln -s /etc/resolvconf/run/resolv.conf /etc/resolv.conf
-EOF
+#report_info "Cleaning /etc/resolv.conf and creating symbolic link for resolvconf"
+#$CHROOT <<EOF
+#rm -rf /etc/resolv.conf
+#ln -s /etc/resolvconf/run/resolv.conf /etc/resolv.conf
+#EOF
 
 # Disabling the root user
 report_info "Disabling the root user"
@@ -843,52 +877,52 @@ apt-get update
 EOF
 
 # Preparing kernel source
-report_info "Preparing kernel source"
-if [ ! -d $KERNEL_SRC_COPY_DIR ]
-then
-	mkdir -p $KERNEL_SRC_COPY_DIR
-else
-	rm -rf $KERNEL_SRC_COPY_DIR
-	mkdir -p $KERNEL_SRC_COPY_DIR
-fi
-$ADVCP_BIN -garp $KERNEL_SRC_DIR/. $KERNEL_SRC_COPY_DIR
-pushd $KERNEL_SRC_COPY_DIR > /dev/null
-make ARCH=arm CROSS_COMPILE=$TC_PREFIX LOCALVERSION="" clean
-make ARCH=arm CROSS_COMPILE=$TC_PREFIX LOCALVERSION="" $KERNEL_CONFIG_NAME
-KERNEL_RELEASE=`make -s ARCH=arm CROSS_COMPILE=$TC_PREFIX LOCALVERSION="" kernelrelease`
+#report_info "Preparing kernel source"
+#if [ ! -d $KERNEL_SRC_COPY_DIR ]
+#then
+#	mkdir -p $KERNEL_SRC_COPY_DIR
+#else
+#	rm -rf $KERNEL_SRC_COPY_DIR
+#	mkdir -p $KERNEL_SRC_COPY_DIR
+#fi
+#$ADVCP_BIN -garp $KERNEL_SRC_DIR/. $KERNEL_SRC_COPY_DIR
+#pushd $KERNEL_SRC_COPY_DIR > /dev/null
+#make ARCH=arm CROSS_COMPILE=$TC_PREFIX LOCALVERSION="" clean
+#make ARCH=arm CROSS_COMPILE=$TC_PREFIX LOCALVERSION="" $KERNEL_CONFIG_NAME
+#KERNEL_RELEASE=`make -s ARCH=arm CROSS_COMPILE=$TC_PREFIX LOCALVERSION="" kernelrelease`
 #KERNEL_RELEASE=`python -c 'import sys; print sys.argv[1].rstrip("+") + "+"' $KERNEL_RELEASE`
-filter_kernel_source
-popd
+#filter_kernel_source
+#popd
 
 # Copying kernel modules and source
-report_info "Copying kernel modules and source"
+#report_info "Copying kernel modules and source"
 
-rsync -ac --no-o --no-g $KERNEL_SRC_DIR/$KERNEL_MOD_DIR_NAME/lib/modules $ROOTFS_DIR/lib/
-rsync -ac --no-o --no-g $KERNEL_SRC_DIR/$KERNEL_MOD_DIR_NAME/lib/firmware $ROOTFS_DIR/lib/
+#rsync -ac --no-o --no-g $KERNEL_SRC_DIR/$KERNEL_MOD_DIR_NAME/lib/modules $ROOTFS_DIR/lib/
+#rsync -ac --no-o --no-g $KERNEL_SRC_DIR/$KERNEL_MOD_DIR_NAME/lib/firmware $ROOTFS_DIR/lib/
 
-rm $ROOTFS_DIR/lib/modules/$KERNEL_RELEASE/build
-rm $ROOTFS_DIR/lib/modules/$KERNEL_RELEASE/source
+#rm $ROOTFS_DIR/lib/modules/$KERNEL_RELEASE/build
+#rm $ROOTFS_DIR/lib/modules/$KERNEL_RELEASE/source
 
 #$ADVCP_BIN -garp $KERNEL_SRC_COPY_DIR/. $ROOTFS_DIR/lib/modules/$KERNEL_RELEASE/build
-mkdir -p $ROOTFS_DIR/usr/src/$KERNEL_RELEASE/
-$ADVCP_BIN -garp $KERNEL_SRC_COPY_DIR/. $ROOTFS_DIR/usr/src/$KERNEL_RELEASE/
+#mkdir -p $ROOTFS_DIR/usr/src/$KERNEL_RELEASE/
+#$ADVCP_BIN -garp $KERNEL_SRC_COPY_DIR/. $ROOTFS_DIR/usr/src/$KERNEL_RELEASE/
 
-env -i PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin LANG=$LOCALE LANGUAGE=$LANGUAGE LC_ALL=$LOCALE DEBIAN_FRONTEND=noninteractive DEBCONF_NONINTERACTIVE_SEEN=true KERNEL_RELEASE=$KERNEL_RELEASE chroot $ROOTFS_DIR <<EOF
-cd /lib/modules/$KERNEL_RELEASE/
-ln -s /usr/src/$KERNEL_RELEASE build
-ln -s /usr/src/$KERNEL_RELEASE source
-cd /lib/modules/$KERNEL_RELEASE/build
-make -B scripts
-EOF
+#$CHROOT <<EOF
+#cd /lib/modules/$KERNEL_RELEASE/
+#ln -s /usr/src/$KERNEL_RELEASE build
+#ln -s /usr/src/$KERNEL_RELEASE source
+#cd /lib/modules/$KERNEL_RELEASE/build
+#make -B scripts
+#EOF
 
 # Preparing the boot directory
-report_info "Preparing the boot directory"
-mkdir -p $ROOTFS_DIR/boot/kernel
-cp $KERNEL_IMAGE_FILE $ROOTFS_DIR/boot/kernel
-mkdir -p $ROOTFS_DIR/boot/kernel/dtb
-cp $KERNEL_DTB_FILE $ROOTFS_DIR/boot/kernel/dtb
-cp $UBOOT_BOOT_CMD_FILE $ROOTFS_DIR/boot
-$UBOOT_SRC_DIR/tools/mkimage -C none -A arm -T script -d $ROOTFS_DIR/boot/boot.cmd $ROOTFS_DIR/boot/boot.scr
+#report_info "Preparing the boot directory"
+#mkdir -p $ROOTFS_DIR/boot/kernel
+#cp $KERNEL_IMAGE_FILE $ROOTFS_DIR/boot/kernel
+#mkdir -p $ROOTFS_DIR/boot/kernel/dtb
+#cp $KERNEL_DTB_FILE $ROOTFS_DIR/boot/kernel/dtb
+#cp $UBOOT_BOOT_CMD_FILE $ROOTFS_DIR/boot
+#$UBOOT_SRC_DIR/tools/mkimage -C none -A arm -T script -d $ROOTFS_DIR/boot/boot.cmd $ROOTFS_DIR/boot/boot.scr
 
 # Cleaning /tmp directory
 report_info "Cleaning /tmp directory"

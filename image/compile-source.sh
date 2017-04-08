@@ -50,8 +50,8 @@ fi
 
 # Cleaning up .built files
 rm -f $BUILD_DIR/u-boot-*.built
-rm -f $BUILD_DIR/kernel-*.built
-rm -f $BUILD_DIR/kernel-headers-*.built
+#rm -f $BUILD_DIR/kernel-*.built
+#rm -f $BUILD_DIR/kernel-headers-*.built
 
 # Check U-Boot source directory
 if [ ! -d $UBOOT_SRC_DIR/arch ]
@@ -92,22 +92,24 @@ make ARCH=arm CROSS_COMPILE=$TC_PREFIX -j16
 popd > /dev/null
 touch $BUILD_DIR/u-boot-$CONFIG_NAME.built
 
-# Building the kernel and kernel modules
+# Building the kernel
 pushd $KERNEL_SRC_DIR > /dev/null
-cp $KERNEL_CONFIG_FILE ./arch/arm/configs
-cp $KERNEL_DTS_FILE ./arch/arm/boot/dts
+cp $KERNEL_CONFIG_FILE arch/arm/configs
+cp $KERNEL_DTS_FILE arch/arm/boot/dts
+#if [ $CLEAN_BEFORE_COMPILE == "yes" ]
+#then
+#	make ARCH=arm CROSS_COMPILE=$TC_PREFIX LOCALVERSION="" clean
+#fi
+rm -f ../*.tar.gz ../*.deb ../*.dsc ../*.changes
 make ARCH=arm CROSS_COMPILE=$TC_PREFIX LOCALVERSION="" $KERNEL_CONFIG_NAME
-if [ $CLEAN_BEFORE_COMPILE == "yes" ]
-then
-	make ARCH=arm CROSS_COMPILE=$TC_PREFIX LOCALVERSION="" clean
-fi
-rm -f output > /dev/null
-make ARCH=arm CROSS_COMPILE=$TC_PREFIX -j16 INSTALL_MOD_PATH=$KERNEL_MOD_DIR_NAME LOCALVERSION="" $KERNEL_IMAGE_NAME dtbs modules
-make ARCH=arm CROSS_COMPILE=$TC_PREFIX INSTALL_MOD_PATH=$KERNEL_MOD_DIR_NAME LOCALVERSION="" modules_install
-make ARCH=arm CROSS_COMPILE=$TC_PREFIX LOCALVERSION="" headers_install
+make ARCH=arm CROSS_COMPILE=$TC_PREFIX LOCALVERSION="" deb-pkg dtbs -j16
+#rm -f output > /dev/null
+#make ARCH=arm CROSS_COMPILE=$TC_PREFIX -j16 INSTALL_MOD_PATH=$KERNEL_MOD_DIR_NAME LOCALVERSION="" $KERNEL_IMAGE_NAME dtbs modules
+#make ARCH=arm CROSS_COMPILE=$TC_PREFIX INSTALL_MOD_PATH=$KERNEL_MOD_DIR_NAME LOCALVERSION="" modules_install
+#make ARCH=arm CROSS_COMPILE=$TC_PREFIX LOCALVERSION="" headers_install
 popd > /dev/null
 touch $BUILD_DIR/kernel-$CONFIG_NAME.built
-touch $BUILD_DIR/kernel-headers-$CONFIG_NAME.built
+#touch $BUILD_DIR/kernel-headers-$CONFIG_NAME.built
 
 # Building sunxi-tools
 #pushd $SUNXI_TOOLS_SRC_DIR > /dev/null

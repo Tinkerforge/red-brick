@@ -76,11 +76,11 @@ then
 fi
 
 # Checking kernel and boot script
-if [ ! -e $KERNEL_IMAGE_FILE ]
-then
-	report_error "Please build the kernel first"
-	exit 1
-fi
+#if [ ! -e $KERNEL_IMAGE_FILE ]
+#then
+#	report_error "Please build the kernel first"
+#	exit 1
+#fi
 
 #if [ ! -e $SCRIPT_BIN_FILE ]
 #then
@@ -89,11 +89,11 @@ fi
 #fi
 
 # Checking kernel modules
-if [ ! -d $KERNEL_SRC_DIR/$KERNEL_MOD_DIR_NAME ]
-then
-	report_error "Build kernel modules first"
-	exit 1
-fi
+#if [ ! -d $KERNEL_SRC_DIR/$KERNEL_MOD_DIR_NAME ]
+#then
+#	report_error "Build kernel modules first"
+#	exit 1
+#fi
 
 # Checking stray /proc mount on root-fs directory
 set +e

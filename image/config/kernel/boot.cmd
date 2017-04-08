@@ -1,7 +1,7 @@
-load mmc 0:1 0x46000000 boot/kernel/zImage
-load mmc 0:1 0x49000000 boot/kernel/dtb/red-brick.dtb
+load mmc 0:1 0x46000000 boot/vmlinuz
+load mmc 0:1 0x49000000 boot/dt/red-brick.dtb
 
-setenv bootargs_main console=ttyS2,115200n81 earlyprintk=serial,ttyS0,115200n81 root=/dev/mmcblk0p1 rw init=/sbin/init quiet splash loglevel=7 panic=5 consoleblank=0 
+setenv bootargs_main console=ttyS2,115200n81 earlyprintk=serial,ttyS0,115200n81 root=/dev/mmcblk0p1 rw init=/sbin/init quiet splash loglevel=7 panic=5 consoleblank=0
 setenv bootargs_extra hdmi.audio=EDID:0 disp.screen0_output_mode=EDID:800x480p60
 setenv bootargs "${bootargs_main} ${bootargs_extra}"
 
