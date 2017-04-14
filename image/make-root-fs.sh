@@ -226,13 +226,34 @@ EOF
 report_info "Installing the kernel and preparing the boot directory"
 pushd $SOURCE_DIR > /dev/null
 #mv *.debian.tar.gz linux-$KERNEL_RELEASE.debian.tar.gz
-mv *.orig.tar.gz linux-$KERNEL_RELEASE.tar.gz
-mv linux-firmware-image* linux-firmware-image-$KERNEL_RELEASE.deb
-mv linux-headers* linux-headers-$KERNEL_RELEASE.deb
-mv linux-image* linux-image-$KERNEL_RELEASE.deb
-mv linux-libc-dev* linux-libc-dev-$KERNEL_RELEASE.deb
-mv *.changes linux-$KERNEL_RELEASE.changes
-mv *.dsc linux-$KERNEL_RELEASE.dsc
+if [ ! -f linux-$KERNEL_RELEASE.tar.gz ]; then
+	mv *.orig.tar.gz linux-$KERNEL_RELEASE.tar.gz
+fi
+
+if [ ! -f linux-firmware-image-$KERNEL_RELEASE.deb ]; then
+	mv linux-firmware-image* linux-firmware-image-$KERNEL_RELEASE.deb
+fi
+
+if [ ! -f linux-headers-$KERNEL_RELEASE.deb ]; then
+	mv linux-headers* linux-headers-$KERNEL_RELEASE.deb
+fi
+
+if [ ! -f linux-image-$KERNEL_RELEASE.deb ]; then
+	mv linux-image* linux-image-$KERNEL_RELEASE.deb
+fi
+
+if [ ! -f linux-libc-dev-$KERNEL_RELEASE.deb ]; then
+	mv linux-libc-dev* linux-libc-dev-$KERNEL_RELEASE.deb
+fi
+
+if [ ! -f linux-$KERNEL_RELEASE.changes ]; then
+	mv *.changes linux-$KERNEL_RELEASE.changes
+fi
+
+if [ ! -f linux-$KERNEL_RELEASE.dsc ]; then
+	mv *.dsc linux-$KERNEL_RELEASE.dsc
+fi
+
 cp linux-$KERNEL_RELEASE.tar.gz $ROOTFS_DIR/usr/src
 cp *.deb $ROOTFS_DIR/boot
 cp *.changes $ROOTFS_DIR/boot
