@@ -114,7 +114,7 @@ fi
 
 # Get kernel release
 pushd $KERNEL_SRC_DIR > /dev/null
-KERNEL_RELEASE=`make -s ARCH=arm CROSS_COMPILE=$TC_PREFIX LOCALVERSION="" kernelrelease`
+KERNEL_RELEASE=`make -s ARCH=arm CROSS_COMPILE=$TC_PREFIX LOCALVERSION="-$KERNEL_LOCAL_VERSION" kernelrelease`
 
 # Change root command
 CHROOT="env -i PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin LANG=$LOCALE LANGUAGE=$LANGUAGE LC_ALL=$LOCALE DEBIAN_FRONTEND=noninteractive DEBCONF_NONINTERACTIVE_SEEN=true KERNEL_RELEASE=$KERNEL_RELEASE chroot $ROOTFS_DIR"
@@ -225,15 +225,15 @@ EOF
 # Installing the kernel and preparing the boot directory
 report_info "Installing the kernel and preparing the boot directory"
 pushd $SOURCE_DIR > /dev/null
-mv *.debian.tar.gz linux-$KERNEL_RELEASE.debian.tar.gz
-mv *.orig.tar.gz linux-$KERNEL_RELEASE.orig.tar.gz
+#mv *.debian.tar.gz linux-$KERNEL_RELEASE.debian.tar.gz
+mv *.orig.tar.gz linux-$KERNEL_RELEASE.tar.gz
 mv linux-firmware-image* linux-firmware-image-$KERNEL_RELEASE.deb
 mv linux-headers* linux-headers-$KERNEL_RELEASE.deb
 mv linux-image* linux-image-$KERNEL_RELEASE.deb
 mv linux-libc-dev* linux-libc-dev-$KERNEL_RELEASE.deb
 mv *.changes linux-$KERNEL_RELEASE.changes
 mv *.dsc linux-$KERNEL_RELEASE.dsc
-cp *.tar.gz $ROOTFS_DIR/boot
+cp linux-$KERNEL_RELEASE.tar.gz $ROOTFS_DIR/usr/src
 cp *.deb $ROOTFS_DIR/boot
 cp *.changes $ROOTFS_DIR/boot
 cp *.dsc $ROOTFS_DIR/boot
