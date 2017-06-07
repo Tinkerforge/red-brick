@@ -1,0 +1,13 @@
+libgles2-mesa (2:1.1-1) unstable; urgency=low
+
+  * This is actually libsunxi-mali-x11 disguised as libgles2-mesa. This is a
+    hack to resolve a conflict with libgles2-mesa that also contains
+    /usr/lib/arm-linux-gnueabihf/libGLESv2.so.
+
+ -- Matthias Bolte <matthias@tinkerforge.com>  Tue, 29 Oct 2015 13:45:18 +0200
+
+libgles2-mesa (2:1.1-2) unstable; urgency=low
+
+  * Add a version-less libGLESv2.so symlink.
+
+ -- Matthias Bolte <matthias@tinkerforge.com>  Tue, 20 Sep 2016 10:07:57 +0200

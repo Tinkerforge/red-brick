@@ -1,0 +1,7 @@
+Package: libegl1-mesa-dev
+Version: 2:10.3.2-1
+Architecture: armhf
+Maintainer: unknown <unknown@unknown.org>
+Depends: libegl1-mesa (= 2:10.3.2-1)
+Priority: optional
+Description: libegl1-mesa-dev adapted for libsunxi-mali-x11

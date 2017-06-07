@@ -1,0 +1,13 @@
+libegl1-mesa (2:1.1-1) unstable; urgency=low
+
+  * This is actually libsunxi-mali-x11 disguised as libegl1-mesa. This is a
+    hack to resolve a conflict with libegl1-mesa that also contains
+    /usr/lib/arm-linux-gnueabihf/libEGL.so.
+
+ -- Matthias Bolte <matthias@tinkerforge.com>  Tue, 29 Oct 2015 13:45:18 +0200
+
+libegl1-mesa (2:1.1-2) unstable; urgency=low
+
+  * Add a version-less libEGL.so symlink.
+
+ -- Matthias Bolte <matthias@tinkerforge.com>  Tue, 20 Sep 2016 10:07:57 +0200

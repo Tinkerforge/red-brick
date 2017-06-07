@@ -1,0 +1,9 @@
+Package: libgles1-mesa
+Version: 2:10.3.2-1
+Architecture: armhf
+Maintainer: unknown <unknown@unknown.org>
+Conflicts: libgles1
+Replaces: libgles1
+Provides: libgles1
+Priority: optional
+Description: libsunxi-mali-x11 disguised as libgles1-mesa

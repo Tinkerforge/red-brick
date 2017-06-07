@@ -1,0 +1,9 @@
+Package: libegl1-mesa
+Version: 2:10.3.2-1
+Architecture: armhf
+Maintainer: unknown <unknown@unknown.org>
+Conflicts: libegl1-x11
+Replaces: libegl1-x11
+Provides: libegl1-x11
+Priority: optional
+Description: libsunxi-mali-x11 disguised as libegl1-mesa

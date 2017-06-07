@@ -1,0 +1,7 @@
+Package: libgles2-mesa-dev
+Version: 2:10.3.2-1
+Architecture: armhf
+Maintainer: unknown <unknown@unknown.org>
+Depends: libgles2-mesa (= 2:10.3.2-1), libegl1-mesa-dev
+Priority: optional
+Description: libgles2-mesa-dev adapted for libsunxi-mali-x11
