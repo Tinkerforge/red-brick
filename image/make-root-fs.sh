@@ -273,7 +273,6 @@ apt-mark hold linux-firmware-image-$KERNEL_RELEASE
 apt-mark hold linux-headers-$KERNEL_RELEASE
 apt-mark hold linux-image-$KERNEL_RELEASE
 apt-mark hold linux-libc-dev
-ln -s ./vmlinuz-$KERNEL_RELEASE ./vmlinuz
 EOF
 
 # Enabling ttyGS0 systemd service
