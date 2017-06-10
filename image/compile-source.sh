@@ -98,7 +98,7 @@ cp $KERNEL_CONFIG_FILE arch/arm/configs
 cp $KERNEL_DTS_FILE arch/arm/boot/dts
 if [ $CLEAN_BEFORE_COMPILE == "yes" ]
 then
-	make ARCH=arm CROSS_COMPILE=$TC_PREFIX LOCALVERSION="" clean
+	make ARCH=arm CROSS_COMPILE=$TC_PREFIX LOCALVERSION="-1" clean
 fi
 rm -f ../*.tar.gz ../*.deb ../*.dsc ../*.changes
 make \
