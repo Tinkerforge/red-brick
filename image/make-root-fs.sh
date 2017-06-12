@@ -499,7 +499,7 @@ then
 	$CHROOT <<EOF
 # GROUP-START:ruby
 gem install --no-ri --no-rdoc mysql2 sqlite3
-gem install --no-ri --no-rdoc rubyvis statsample distribution minimization integration
+gem install --no-ri --no-rdoc rubyvis plotrb statsample distribution minimization integration
 gem install --no-ri --no-rdoc ruby-pcap curb
 gem install --no-ri --no-rdoc msgpack-rpc
 gem install --no-ri --no-rdoc prawn god
@@ -543,7 +543,8 @@ pear install --onlyreqdeps File_Archive File_CSV File_PDF HTTP Image_Barcode Ima
 pear install --onlyreqdeps Image_QRCode Inline_C Math_BinaryUtils Math_Derivative
 pear install --onlyreqdeps Math_Polynomial Math_Quaternion Math_Complex Math_Matrix
 pear install --onlyreqdeps Math_Vector MDB2 Net_URL2 Services_JSON System_Command System_Daemon
-pear install --onlyreqdeps XML_Parser
+pear install --onlyreqdeps HTTP_Request2-2.2.1
+pear install --onlyreqdeps XML_Parser XML_RPC2
 # GROUP-END:php
 EOF
 
