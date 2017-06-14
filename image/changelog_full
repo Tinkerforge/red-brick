@@ -59,15 +59,13 @@
 - Update Brick Daemon to version 2.2.2
 - Update Brick Viewer to version 2.3.3
 - Update all API bindings: C/C++ 2.1.10, C# 2.1.9, Delphi/Lazarus 2.1.10,
-  Java 2.1.8, JavaScript 2.0.8, LabVIEW 2.1.8, Mathematica 2.1.8,
-  MATLAB/Octave 2.0.8, Perl 2.1.8, PHP 2.1.8, Python 2.1.8, Ruby 2.1.8,
-  Shell 2.1.8, Visual Basic .NET 2.1.8
+  Java 2.1.8, JavaScript 2.0.8, Octave 2.0.8, Perl 2.1.8, PHP 2.1.8,
+  Python 2.1.8, Ruby 2.1.8, Shell 2.1.8, Visual Basic .NET 2.1.8
 
-<unknown>: 1.9 (<unknown>)
+2017-06-14: 1.9 (<unknown>)
 - Update OpenGL related packages to allow installing Qt5 and running Java FX
 - Update Brick Daemon to version 2.3.0 to fix enumeration with GPS Bricklet 2.0
 - Update Brick Viewer to version 2.3.9
 - Update all API bindings: C/C++ 2.1.15, C# 2.1.14, Delphi/Lazarus 2.1.15,
-  Java 2.1.13, JavaScript 2.0.14, LabVIEW 2.1.13, Mathematica 2.1.13,
-  MATLAB/Octave 2.0.13, Perl 2.1.13, PHP 2.1.13, Python 2.1.13, Ruby 2.1.13,
-  Shell 2.1.13, Visual Basic .NET 2.1.13
+  Java 2.1.13, JavaScript 2.0.14, Octave 2.0.13, Perl 2.1.13, PHP 2.1.13,
+  Python 2.1.13, Ruby 2.1.13, Shell 2.1.13, Visual Basic .NET 2.1.13
