@@ -471,10 +471,17 @@ cpanm install -n RPC::Simple
 EOF
 
 # Installing PHP features
+# FIXME: XML_RPC2 requires HTTP_Request2 and Cache_Lite, but latest
+#        HTTP_Request2 version 2.3.0 requires Net_URL2 version 2.2.0, which is
+#        not released yet. also latest Cache_Lite version 1.8.0 requires PEAR
+#        1.10.1 which is not availablein Debian Jessie. to avoid this manually
+#        install HTTP_Request2 version 2.2.1 and Cache_Liteversion 1.7.16
 report_info "Installing PHP features"
 $CHROOT <<EOF
 pear config-set preferred_state alpha
 # GROUP-START:php
+pear install --onlyreqdeps HTTP_Request2-2.2.1
+pear install --onlyreqdeps Cache_Lite-1.7.16
 pear install --onlyreqdeps FSM Archive_Tar Archive_Zip
 pear install --onlyreqdeps Crypt_Blowfish Crypt_CHAP Crypt_DiffieHellman Crypt_GPG
 pear install --onlyreqdeps Crypt_HMAC2 Crypt_RC42 Crypt_RSA
