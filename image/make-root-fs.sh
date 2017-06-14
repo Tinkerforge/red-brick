@@ -808,17 +808,21 @@ EOF
 report_info "Compiling and installing hostapd and wpa_supplicant for access point mode support"
 $CHROOT <<EOF
 cd /tmp
-mkdir ./wpa_supplicant_hostapd
-tar jxf wpa_supplicant_hostapd_v4.0.2_9000.20130911.tar.bz2 -C ./wpa_supplicant_hostapd
+#mkdir ./wpa_supplicant_hostapd
+#tar jxf wpa_supplicant_hostapd_v4.0.2_9000.20130911.tar.bz2 -C ./wpa_supplicant_hostapd
+tar jxf hostap.14062017.tar.bz2
 mkdir -p /etc/hostapd
-cd ./wpa_supplicant_hostapd
-cd ./wpa_supplicant_hostapd/hostapd
+#cd ./wpa_supplicant_hostapd
+#cd ./wpa_supplicant_hostapd/hostapd
+cd ./hostap/hostapd
 make clean
-make
+#make
+make all
 make install
 cd ../wpa_supplicant
 make clean
-make
+#make
+make all
 make install
 chmod 755 /etc/init.d/hostapd
 EOF
