@@ -50,7 +50,7 @@ packages=console-setup debconf-utils macchanger syslog-ng iw
 packages=bash-completion sshfs firmware-atheros atmel-firmware firmware-linux-free
 packages=firmware-linux-nonfree prism2-usb-firmware-installer chkconfig
 packages=firmware-realtek firmware-ralink firmware-libertas zd1211-firmware
-packages=socat logrotate dnsmasq ifupdown resolvconf
+packages=socat logrotate dnsmasq ifupdown resolvconf hostapd hostap-utils wpasupplicant
 packages=mono-complete udevil minicom xinput-calibrator zenity
 packages=parted nagios3 sendemail ppp aptitude snmp-mibs-downloader
 # GROUP-END:system
@@ -150,7 +150,7 @@ packages=nodejs npm
 
 source=http://%apt-cacher-0-prefix%ftp.debian.org/debian
 keyring=debian-archive-keyring
-suite=jessie
+suite=stretch
 components=main contrib non-free
 omitdebsrc=false
 
@@ -158,7 +158,7 @@ omitdebsrc=false
 packages=
 source=http://%apt-cacher-1-prefix%security.debian.org
 keyring=debian-archive-keyring
-suite=jessie/updates
+suite=stretch/updates
 components=main contrib non-free
 omitdebsrc=false
 
@@ -166,7 +166,7 @@ omitdebsrc=false
 packages=
 source=http://%apt-cacher-2-prefix%ftp.debian.org/debian
 keyring=debian-archive-keyring
-suite=jessie-updates
+suite=stretch-updates
 components=main contrib non-free
 omitdebsrc=false
 
