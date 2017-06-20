@@ -804,6 +804,16 @@ $CHROOT <<EOF
 ln -s /usr/tinkerforge/bindings/javascript/browser/source/Tinkerforge.js /home/tf
 EOF
 
+# Installing RTL8188EU driver from Git
+report_info "Installing RTL8188EU driver from Git"
+$CHROOT <<EOF
+cd /usr/src
+git clone https://github.com/lwfinger/rtl8188eu.git
+dkms add ./rtl8188eu
+dkms build 8188eu/1.0
+dkms install 8188eu/1.0
+EOF
+
 # Compiling and installing hostapd and wpa_supplicant for access point mode support
 #report_info "Compiling and installing hostapd and wpa_supplicant for access point mode support"
 #$CHROOT <<EOF
