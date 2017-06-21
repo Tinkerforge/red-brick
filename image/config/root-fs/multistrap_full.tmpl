@@ -45,14 +45,14 @@ packages=apt apt-utils vim nano iputils-ping less wget preload ethtool
 packages=locales man-db console-data fbi lxde task-desktop openssh-server
 packages=tasksel xorg fakeroot ca-certificates lxlauncher lxtask openssh-client
 packages=lxsession policykit-1 menu-xdg curl checkinstall synaptic locate git
-packages=module-init-tools epiphany-browser fake-hwclock cron ntp zip unzip i2c-tools
+packages=kmod epiphany-browser fake-hwclock cron ntp zip unzip i2c-tools
 packages=console-setup debconf-utils macchanger syslog-ng iw
 packages=bash-completion sshfs firmware-atheros atmel-firmware firmware-linux-free
-packages=firmware-linux-nonfree prism2-usb-firmware-installer chkconfig
+packages=firmware-linux-nonfree
 packages=firmware-realtek firmware-ralink firmware-libertas zd1211-firmware
 packages=socat logrotate dnsmasq ifupdown resolvconf hostapd hostap-utils wpasupplicant
 packages=mono-complete udevil minicom xinput-calibrator zenity
-packages=parted nagios3 sendemail ppp aptitude snmp-mibs-downloader
+packages=parted nsca sendemail ppp aptitude snmp-mibs-downloader
 # GROUP-END:system
 
 # GROUP-START:shell
@@ -64,34 +64,34 @@ packages=stress memtester hdparm sysbench
 # GROUP-END:test_tools
 
 # GROUP-START:kernel_development
-packages=kernel-package u-boot-tools
+packages=kmod u-boot-tools
 # GROUP-END:kernel_development
 
 # GROUP-START:qt
-packages=libqt4-qt3support libqt4-core libqt4-dbus libqt4-xml
-packages=libqt4-gui libqt4-opengl libqt4-network
+packages=libqt4-qt3support libqt5core5a libqt4-dbus libqt4-xml
+packages=libqt5gui5 libqt4-opengl libqt4-network libqt53dcore5
 packages=libqt4-declarative libqt4-dev libqt4-dev-bin libqt4-help
 packages=libqt4-opengl-dev libqt4-scripttools libqt4-xmlpatterns
 packages=libqtassistantclient4 libqtwebkit-dev libqtwebkit4 libqwt-dev
-packages=libqwt5-qt4 libqwt6 qt4-linguist-tools qt4-qmake qt4-dev-tools
+packages=libqwt5-qt4 libqwt6abi1 qt4-linguist-tools qt4-qmake qt4-dev-tools
 # GROUP-END:qt
 
 # GROUP-START:c
 packages=gcc g++ gdb libc6-dev cmake autoconf automake libtool flex bison sqlite libblas3
-packages=sqlite sqlite3 libmysqlclient-dev libgtk2.0-dev libgtk-3-dev libatlas-base-dev
-packages=libboost-all-dev libopencv-dev libgsl0-dev libgcrypt11-dev freeglut3 libvpx1
+packages=sqlite sqlite3 default-libmysqlclient-dev libgtk2.0-dev libgtk-3-dev libatlas-base-dev
+packages=libboost-all-dev libopencv-dev libgsl0-dev libgcrypt11-dev freeglut3 libvpx4
 packages=libssl-dev libcrypto++-dev libpcap-dev libmsgpack-dev libxml2-dev libgd2-xpm-dev
 packages=libexpat1-dev libcurl4-openssl-dev libgtkmm-2.4-dev libgtkmm-3.0-dev libapache2-mod-wsgi
 packages=libgfortran3 libsqlite0-dev libsqlite3-dev gnuplot mathgl libncurses5-dev
 packages=libgirepository1.0-dev gnuplot-x11 libusb-1.0-0 libusb-1.0-0-dev iptables
-packages=gphoto2 libgphoto2-dev libgphoto2-l10n libgphoto2-port10 libnl-3-dev libnl-3-200
+packages=gphoto2 libgphoto2-dev libgphoto2-l10n libgphoto2-port12 libnl-3-dev libnl-3-200
 packages=libgmp-dev libmpfr-dev libudev-dev libyaml-dev libacl1-dev libnl-genl-3-200 libnl-genl-3-dev
 # GROUP-END:c
 
 # GROUP-START:mono
-packages=mono-runtime libmono-2.0-1 mono-mcs mono-dmcs mono-gmcs mono-vbnc gtk-sharp2
+packages=mono-runtime libmono-2.0-1 mono-dmcs mono-xbuild mono-mcs mono-vbnc gtk-sharp2
 packages=mono-runtime-sgen libmono-profiler mono-utils mono-jay mono-devel mono-csharp-shell
-packages=mono-2.0-gac mono-4.0-gac mono-2.0-service mono-4.0-service libmono-cil-dev
+packages=mono-4.0-gac mono-4.0-service libmono-cil-dev
 # GROUP-END:mono
 
 # GROUP-START:ruby
@@ -100,11 +100,11 @@ packages=ruby-full
 
 # GROUP-START:python
 packages=python python-pip python-setuptools python-mysql.connector python-mysqldb
-packages=python-software-properties libpython2.7 python-pcapy python-psutil python-reconfigure
+packages=python3-software-properties libpython2.7 python-pcapy python-psutil python-reconfigure
 packages=python-numpy python-opengl python-qt4 python-qt4-gl python-gtk2 python-gtk2-dev
 packages=python-qwt5-qt4 python-serial python-sip python-sqlite python-sqlitecachec python-netifaces
-packages=python-scientific python-scipy python-sciscipy python-scitools python-pycurl
-packages=python-opencv python-matplotlib python-matplotlib-data python-msgpack python-pypdf
+packages=python-scipy python-sciscipy python-pycurl
+packages=python-opencv python-matplotlib python-matplotlib-data python-msgpack python-pypdf2
 packages=python-pywapi
 packages=python3 python3-pip python3-setuptools
 packages=libpython3.4
@@ -127,9 +127,9 @@ packages=fpc fp-utils lcl
 # GROUP-END:java
 
 # GROUP-START:php
-packages=php5 php5-common php5-cli php-pear php-mdb2 php5-xmlrpc php5-snmp
-packages=php5-mysql php5-sqlite php5-mcrypt php5-gd php5-curl php-net-smtp
-packages=php-net-socket php-xml-parser php-db php-http php-mail php-log php-fpdf
+packages=php php-common php-cli php-pear php-mdb2 php-xmlrpc php-snmp
+packages=php-mysql php-mcrypt php-gd php-curl php-net-smtp
+packages=php-net-socket php-db php-http php-mail php-log php-fpdf
 # GROUP-END:php
 
 # GROUP-START:perl
@@ -145,7 +145,7 @@ packages=libgd-graph-perl libxml-simple-perl libpdf-create-perl libsys-statistic
 # GROUP-END:perl
 
 # GROUP-START:node
-packages=nodejs npm
+packages=nodejs
 # GROUP-END:node
 
 source=http://%apt-cacher-0-prefix%ftp.debian.org/debian

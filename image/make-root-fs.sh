@@ -447,7 +447,7 @@ unzip -q ./SharpPcap-4.2.0.bin.zip
 unzip -q ./itextsharp-all-5.5.1.zip -d ./itextsharp
 unzip -q ./xml-rpc.net.2.5.0.zip -d ./xml-rpc.net
 cd /tmp/features/mono_features/MathNet.Numerics/Net35
-cp ./*.dll /usr/lib/mono/2.0/
+cp ./*.dll /usr/lib/mono/4.0/
 cd /tmp/features/mono_features/MathNet.Numerics/Net40
 cp ./*.dll /usr/lib/mono/4.0/
 cd /tmp/features/mono_features/mysql-connector-net/v2.0/
@@ -455,7 +455,7 @@ mv ./mysql.data.cf.dll ./MySql.Data.CF.dll
 mv ./mysql.data.dll ./MySql.Data.dll
 mv ./mysql.data.entity.dll ./MySql.Data.Entity.dll
 mv ./mysql.web.dll ./MySql.Web.dll
-cp ./MySql.* /usr/lib/mono/2.0/
+cp ./MySql.* /usr/lib/mono/4.0/
 cd /tmp/features/mono_features/mysql-connector-net/v4.0/
 mv ./mysql.data.dll ./MySql.Data.dll
 mv ./mysql.data.entity.dll ./MySql.Data.Entity.dll
@@ -469,19 +469,19 @@ mv ./mysql.data.entity.EF6.dll ./MySql.Data.Entity.EF6.dll
 mv ./mysql.web.dll ./MySql.Web.dll
 cp ./MySql.* /usr/lib/mono/4.5/
 cd /tmp/features/mono_features/SharpPcap-4.2.0/Release/
-cp ./*.dll /usr/lib/mono/2.0/
-cp ./*.config /usr/lib/mono/2.0/
+cp ./*.dll /usr/lib/mono/4.0/
+cp ./*.config /usr/lib/mono/4.0/
 cd /tmp/features/mono_features/itextsharp/
-cp ./*.dll /usr/lib/mono/2.0/
+cp ./*.dll /usr/lib/mono/4.0/
 cd /tmp/features/mono_features/xml-rpc.net/
-cp ./*.dll /usr/lib/mono/2.0/
+cp ./*.dll /usr/lib/mono/4.0/
 if  [ "$CONFIG_NAME" = "full" ]
 then
 	cd /tmp/features/mono_features/
 	unzip -q opentk-2014-06-20.zip -d ./OpenTK
 	cd ./OpenTK/Binaries/OpenTK/Release/
-	cp ./*.dll /usr/lib/mono/2.0/
-	cp ./*.config /usr/lib/mono/2.0/
+	cp ./*.dll /usr/lib/mono/4.0/
+	cp ./*.config /usr/lib/mono/4.0/
 fi
 EOF
 
@@ -654,15 +654,8 @@ EOF
 report_info "Adding new user"
 $CHROOT <<EOF
 rm -rf /home/
-adduser tf
-tf
-tf
-RED Brick User
-
-
-
-
-Y
+mkdir /home/
+useradd -m -c "RED Brick User" -p "tf" tf
 EOF
 
 # User group setup
@@ -802,16 +795,6 @@ EOF
 report_info "Generating Tinkerforge.js symlink"
 $CHROOT <<EOF
 ln -s /usr/tinkerforge/bindings/javascript/browser/source/Tinkerforge.js /home/tf
-EOF
-
-# Installing RTL8188EU driver from Git
-report_info "Installing RTL8188EU driver from Git"
-$CHROOT <<EOF
-cd /usr/src
-git clone https://github.com/lwfinger/rtl8188eu.git
-dkms add ./rtl8188eu
-dkms build 8188eu/1.0
-dkms install 8188eu/1.0
 EOF
 
 # Compiling and installing hostapd and wpa_supplicant for access point mode support
