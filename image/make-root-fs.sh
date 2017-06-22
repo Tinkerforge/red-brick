@@ -810,27 +810,27 @@ ln -s /usr/tinkerforge/bindings/javascript/browser/source/Tinkerforge.js /home/t
 EOF
 
 # Compiling and installing hostapd and wpa_supplicant for access point mode support
-#report_info "Compiling and installing hostapd and wpa_supplicant for access point mode support"
-#$CHROOT <<EOF
-#cd /tmp
+report_info "Compiling and installing hostapd and wpa_supplicant for access point mode support"
+$CHROOT <<EOF
+cd /tmp
 #mkdir ./wpa_supplicant_hostapd
 #tar jxf wpa_supplicant_hostapd_v4.0.2_9000.20130911.tar.bz2 -C ./wpa_supplicant_hostapd
-#tar jxf hostap.tar.bz2
-#mkdir -p /etc/hostapd
+tar jxf hostap.tar.bz2
+mkdir -p /etc/hostapd
 #cd ./wpa_supplicant_hostapd
 #cd ./wpa_supplicant_hostapd/hostapd
-#cd ./hostap/hostapd
-#make clean
+cd ./hostap/hostapd
+make clean
 #make
-#make all
-#make install
-#cd ../wpa_supplicant
-#make clean
+make all
+make install
+cd ../wpa_supplicant
+make clean
 #make
-#make all
-#make install
-#chmod 755 /etc/init.d/hostapd
-#EOF
+make all
+make install
+chmod 755 /etc/init.d/hostapd
+EOF
 
 # Installing usb_modeswitch for mobile internet.
 # Not using the version from repo in this case
