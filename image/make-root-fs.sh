@@ -117,7 +117,7 @@ pushd $KERNEL_SRC_DIR > /dev/null
 KERNEL_RELEASE=`make -s \
 ARCH=arm \
 CROSS_COMPILE=$TC_PREFIX \
-LOCALVERSION="-$KERNEL_LOCAL_VERSION" \
+LOCALVERSION="" \
 kernelrelease`
 
 # Change root command
