@@ -114,10 +114,22 @@ fi
 
 # Get kernel release
 pushd $KERNEL_SRC_DIR > /dev/null
-KERNEL_RELEASE=`make -s ARCH=arm CROSS_COMPILE=$TC_PREFIX LOCALVERSION="-$KERNEL_LOCAL_VERSION" kernelrelease`
+KERNEL_RELEASE=`make -s \
+ARCH=arm \
+CROSS_COMPILE=$TC_PREFIX \
+LOCALVERSION="" \
+kernelrelease`
 
 # Change root command
-CHROOT="env -i PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin LANG=$LOCALE LANGUAGE=$LANGUAGE LC_ALL=$LOCALE DEBIAN_FRONTEND=noninteractive DEBCONF_NONINTERACTIVE_SEEN=true KERNEL_RELEASE=$KERNEL_RELEASE chroot $ROOTFS_DIR"
+CHROOT="taskset 0x01 env -i \
+PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin \
+LANG=$LOCALE \
+LANGUAGE=$LANGUAGE \
+LC_ALL=$LOCALE \
+DEBIAN_FRONTEND=noninteractive \
+DEBCONF_NONINTERACTIVE_SEEN=true \
+KERNEL_RELEASE=$KERNEL_RELEASE \
+chroot $ROOTFS_DIR"
 
 # Checking multistrap config
 if [ ! -e $MULTISTRAP_TEMPLATE_FILE ]
@@ -687,18 +699,18 @@ EOF
 # Downgrading GNU Octave so the Tinkerforge bindings can be used with callbacks (version 3.6)
 # Keeping the not working GNU Octave version in multistrap configuration for the purpose of
 # proper version listing
-report_info "Downgrading GNU Octave"
-$CHROOT <<EOF
-echo -e "deb [arch=armhf] http://ftp.debian.org/debian wheezy main contrib non-free\n\
-deb-src http://ftp.debian.org/debian wheezy main contrib non-free\n" > /etc/apt/sources.list.d/wheezy.list
-apt-get update
-apt-get remove octave octave-* -y
-apt-get purge octave octave-* -y
-aptitude install octave=3.6.2-5+deb7u1 octave-common=3.6.2-5+deb7u1 octave-java=1.2.8-6 -y
-apt-mark hold octave octave-common octave-java
-apt-get clean
-apt-get -f install -y
-EOF
+#report_info "Downgrading GNU Octave"
+#$CHROOT <<EOF
+#echo -e "deb [arch=armhf] http://ftp.debian.org/debian wheezy main contrib non-free\n\
+#deb-src http://ftp.debian.org/debian wheezy main contrib non-free\n" > /etc/apt/sources.list.d/wheezy.list
+#apt-get update
+#apt-get remove octave octave-* -y
+#apt-get purge octave octave-* -y
+#aptitude install octave=3.6.2-5+deb7u1 octave-common=3.6.2-5+deb7u1 octave-java=1.2.8-6 -y
+#apt-mark hold octave octave-common octave-java
+#apt-get clean
+#apt-get -f install -y
+#EOF
 
 if [ "$DRAFT_MODE" = "no" ]
 then
@@ -803,8 +815,8 @@ EOF
 #cd /tmp
 #mkdir ./wpa_supplicant_hostapd
 #tar jxf wpa_supplicant_hostapd_v4.0.2_9000.20130911.tar.bz2 -C ./wpa_supplicant_hostapd
-#tar jxf hostap.14062017.tar.bz2
-#mkdir -p /etc/hostapd
+tar jxf hostap.tar.bz2
+mkdir -p /etc/hostapd
 #cd ./wpa_supplicant_hostapd
 #cd ./wpa_supplicant_hostapd/hostapd
 #cd ./hostap/hostapd

@@ -31,7 +31,8 @@ CONFIG_DIR="$BASE_DIR/config"
 . $CONFIG_DIR/common.conf
 
 # Getting the image configuration variables
-if [ "$#" -ne 1 ]; then
+if [ "$#" -ne 1 ]
+then
 	report_error "Too many or too few parameters (provide image configuration name)"
 	exit 1
 fi
@@ -98,13 +99,13 @@ cp $KERNEL_CONFIG_FILE arch/arm/configs
 cp $KERNEL_DTS_FILE arch/arm/boot/dts
 if [ $CLEAN_BEFORE_COMPILE == "yes" ]
 then
-	make ARCH=arm CROSS_COMPILE=$TC_PREFIX LOCALVERSION="-1" clean
+	make ARCH=arm CROSS_COMPILE=$TC_PREFIX LOCALVERSION="" clean
 fi
 rm -f ../*.tar.gz ../*.deb ../*.dsc ../*.changes
 make \
 ARCH=arm \
 CROSS_COMPILE=$TC_PREFIX \
-LOCALVERSION="-$KERNEL_LOCAL_VERSION" \
+LOCALVERSION="" \
 $KERNEL_CONFIG_NAME \
 DEBFULLNAME="Ishraq Ibne Ashraf" \
 DEBEMAIL="ishraq@tinkerforge.com" \
