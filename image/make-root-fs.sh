@@ -815,8 +815,8 @@ EOF
 #cd /tmp
 #mkdir ./wpa_supplicant_hostapd
 #tar jxf wpa_supplicant_hostapd_v4.0.2_9000.20130911.tar.bz2 -C ./wpa_supplicant_hostapd
-tar jxf hostap.tar.bz2
-mkdir -p /etc/hostapd
+#tar jxf hostap.tar.bz2
+#mkdir -p /etc/hostapd
 #cd ./wpa_supplicant_hostapd
 #cd ./wpa_supplicant_hostapd/hostapd
 #cd ./hostap/hostapd
