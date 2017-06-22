@@ -121,7 +121,7 @@ LOCALVERSION="-$KERNEL_LOCAL_VERSION" \
 kernelrelease`
 
 # Change root command
-CHROOT="env -i \
+CHROOT="taskset 0x01 env -i \
 PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin \
 LANG=$LOCALE \
 LANGUAGE=$LANGUAGE \
