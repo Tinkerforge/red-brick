@@ -38,8 +38,8 @@ aptsources=Debian Debian_Security Debian_Updates Mono
 
 [Debian]
 # GROUP-START:system
-packages=acpid console-setup-linux pm-utils gdebi udev usbutils
-packages=readline-common dbus dbus-x11 dialog sudo parcellite build-essential dkms
+packages=acpid console-setup-linux pm-utils gdebi udev usbutils cpufrequtils
+packages=readline-common dbus dbus-x11 dialog sudo parcellite sysfsutils
 packages=wicd wicd-cli wicd-curses wicd-gtk netbase net-tools isc-dhcp-client
 packages=apt apt-utils vim nano iputils-ping less wget preload ethtool
 packages=locales man-db console-data fbi lxde task-desktop openssh-server
@@ -51,7 +51,7 @@ packages=bash-completion sshfs firmware-atheros atmel-firmware firmware-linux-fr
 packages=firmware-linux-nonfree
 packages=firmware-realtek firmware-ralink firmware-libertas zd1211-firmware
 packages=socat logrotate dnsmasq ifupdown resolvconf
-packages=mono-complete udevil minicom xinput-calibrator zenity
+packages=udevil minicom xinput-calibrator zenity
 packages=parted nsca sendemail ppp aptitude snmp-mibs-downloader
 # GROUP-END:system
 
@@ -64,7 +64,7 @@ packages=stress memtester hdparm sysbench
 # GROUP-END:test_tools
 
 # GROUP-START:kernel_development
-packages=kmod u-boot-tools
+packages=kmod u-boot-tools build-essential dkms
 # GROUP-END:kernel_development
 
 # GROUP-START:qt
@@ -91,7 +91,7 @@ packages=libgmp-dev libmpfr-dev libudev-dev libyaml-dev libacl1-dev libnl-genl-3
 # GROUP-START:mono
 packages=mono-runtime libmono-2.0-1 mono-dmcs mono-xbuild mono-mcs mono-vbnc gtk-sharp2
 packages=mono-runtime-sgen libmono-profiler mono-utils mono-jay mono-devel mono-csharp-shell
-packages=mono-4.0-gac mono-4.0-service libmono-cil-dev
+packages=mono-4.0-gac mono-4.0-service libmono-cil-dev mono-complete
 # GROUP-END:mono
 
 # GROUP-START:ruby
