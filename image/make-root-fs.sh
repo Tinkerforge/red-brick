@@ -510,6 +510,7 @@ then
 	report_info "Installing Ruby features"
 	$CHROOT <<EOF
 # GROUP-START:ruby
+gem install --no-ri --no-rdoc bundler rake rubocop
 gem install --no-ri --no-rdoc mysql2 sqlite3
 gem install --no-ri --no-rdoc rubyvis plotrb statsample distribution minimization integration
 gem install --no-ri --no-rdoc ruby-pcap curb
