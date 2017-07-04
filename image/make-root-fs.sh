@@ -565,8 +565,9 @@ EOF
 # Configuring boot splash image
 report_info "Configuring boot splash image"
 $CHROOT <<EOF
-chmod 755 /etc/init.d/asplashscreen
-systemctl enable asplashscreen
+#chmod 755 /etc/init.d/asplashscreen
+#systemctl enable asplashscreen
+systemctl enable splashscreen.service
 EOF
 
 # Removing plymouth
@@ -668,24 +669,8 @@ report_info "Adding new user"
 $CHROOT <<EOF
 rm -rf /home/
 mkdir /home/
-useradd -m -c "RED Brick User" -p "tf" tf
-EOF
-
-# User group setup
-report_info "User group setup"
-$CHROOT <<EOF
-usermod -a -G adm tf
-usermod -a -G dialout tf
-usermod -a -G cdrom tf
-usermod -a -G sudo tf
-usermod -a -G audio tf
-usermod -a -G video tf
-usermod -a -G plugdev tf
-usermod -a -G games tf
-usermod -a -G users tf
-usermod -a -G ntp tf
-usermod -a -G crontab tf
-usermod -a -G netdev tf
+useradd -m -c "RED Brick User" -G adm,dialout,cdrom,sudo,audio,video,plugdev,games,users,ntp,crontab,netdev tf
+echo tf:tf | chpasswd
 EOF
 
 # Copy RED Brick index website
