@@ -212,8 +212,8 @@ update-locale LANG=$LOCALE LANGUAGE=$LANGUAGE LC_ALL=$LOCALE
 echo "dash dash/sh boolean false" | debconf-set-selections
 echo "tzdata tzdata/Areas select $TZDATA_AREA" | debconf-set-selections
 echo "tzdata tzdata/Zones/Europe select $TZDATA_ZONE" | debconf-set-selections
-echo "nagios3-cgi nagios3/adminpassword string tf" | debconf-set-selections
-echo "nagios3-cgi nagios3/adminpassword-repeat string tf" | debconf-set-selections
+#echo "nagios3-cgi nagios3/adminpassword string tf" | debconf-set-selections
+#echo "nagios3-cgi nagios3/adminpassword-repeat string tf" | debconf-set-selections
 echo '# KEYBOARD CONFIGURATION FILE
 
 # Consult the keyboard(5) manual page.
@@ -229,9 +229,38 @@ setupcon
 dpkg --configure -a
 # run dpkg a second time to install the nagios packages that might not have been
 # installed the first time due to a missing dependency to dnsmasq
-dpkg --configure -a
+#dpkg --configure -a
 # add true here to avoid having a dpkg error abort the whole script here
 true
+EOF
+
+# To save image build time the archive is created from nagios
+# source which is already built and ready to execute install commands
+
+# Installing Nagios
+report_info "Installing Nagios"
+$CHROOT <<EOF
+useradd nagios
+groupadd nagcmd
+usermod -a -G nagcmd nagios
+usermod -a -G nagcmd www-dat
+cd /tmp
+tar jxvf nagios-4.3.2-armhf-built.tar.bz2
+cd nagios-4.3.2
+make install
+make install-init
+make install-config
+make install-commandmode
+a2enmod rewrite
+a2enmod cgi
+cp sample-config/httpd.conf /etc/apache2/sites-available/nagios4.conf
+chmod 644 /etc/apache2/sites-available/nagios4.conf
+a2ensite nagios4.conf
+sudo htpasswd -b -c /usr/local/nagios/etc/htpasswd.users nagiosadmin tf
+cp resource.cfg /usr/local/nagios/etc
+cp nagios.service /etc/systemd/system
+service apache2 restart
+service nagios start
 EOF
 
 # Installing the kernel and preparing the boot directory
@@ -347,9 +376,18 @@ true
 EOF
 
 # Provide node command using nodejs (for backward compatibility)
-report_info "Provide node command using nodejs (for backward compatibility)"
+#report_info "Provide node command using nodejs (for backward compatibility)"
+#$CHROOT <<EOF
+#update-alternatives --install /usr/local/bin/node node /usr/bin/nodejs 900
+#EOF
+
+# Installing Node.js and NPM
+report_info "Installing Node.js and NPM"
 $CHROOT <<EOF
-update-alternatives --install /usr/local/bin/node node /usr/bin/nodejs 900
+# GROUP-START:node
+curl -sL https://deb.nodesource.com/setup_8.x | sudo -E bash -
+sudo apt-get install -y nodejs
+# GROUP-END:node
 EOF
 
 # Updating Perl modules
