@@ -243,10 +243,10 @@ $CHROOT <<EOF
 useradd nagios
 groupadd nagcmd
 usermod -a -G nagcmd nagios
-usermod -a -G nagcmd www-dat
+usermod -a -G nagcmd www-data
 cd /tmp
 tar jxvf nagios-4.3.2-armhf-built.tar.bz2
-cd nagios-4.3.2
+cd nagios-4.3.2-armhf-built
 make install
 make install-init
 make install-config
@@ -259,8 +259,6 @@ a2ensite nagios4.conf
 sudo htpasswd -b -c /usr/local/nagios/etc/htpasswd.users nagiosadmin tf
 cp resource.cfg /usr/local/nagios/etc
 cp nagios.service /etc/systemd/system
-service apache2 restart
-service nagios start
 EOF
 
 # Installing the kernel and preparing the boot directory
