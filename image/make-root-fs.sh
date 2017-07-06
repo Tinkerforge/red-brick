@@ -234,33 +234,6 @@ dpkg --configure -a
 true
 EOF
 
-# To save image build time the archive is created from nagios
-# source which is already built and ready to execute install commands
-
-# Installing Nagios
-report_info "Installing Nagios"
-$CHROOT <<EOF
-useradd nagios
-groupadd nagcmd
-usermod -a -G nagcmd nagios
-usermod -a -G nagcmd www-data
-cd /tmp
-tar jxvf nagios-4.3.2-armhf-built.tar.bz2
-cd nagios-4.3.2-armhf-built
-make install
-make install-init
-make install-config
-make install-commandmode
-a2enmod rewrite
-a2enmod cgi
-cp sample-config/httpd.conf /etc/apache2/sites-available/nagios4.conf
-chmod 644 /etc/apache2/sites-available/nagios4.conf
-a2ensite nagios4.conf
-sudo htpasswd -b -c /usr/local/nagios/etc/htpasswd.users nagiosadmin tf
-cp resource.cfg /usr/local/nagios/etc
-cp nagios.service /etc/systemd/system
-EOF
-
 # Installing the kernel and preparing the boot directory
 report_info "Installing the kernel and preparing the boot directory"
 pushd $SOURCE_DIR > /dev/null
@@ -924,6 +897,34 @@ apt-get install -y --force-yes openhab-runtime openhab-addon-binding-tinkerforge
 systemctl daemon-reload
 systemctl disable openhab
 chown openhab:openhab /usr/share/openhab/webapps/static
+EOF
+
+# To save image build time the archive is created from nagios
+# source which is already built and ready to execute install commands
+
+# Installing Nagios
+report_info "Installing Nagios"
+$CHROOT <<EOF
+useradd nagios
+groupadd nagcmd
+usermod -a -G nagcmd nagios
+usermod -a -G nagcmd www-data
+cd /tmp
+tar jxvf nagios-4.3.2-armhf-built.tar.bz2
+cd nagios-4.3.2-armhf-built
+make install
+make install-init
+make install-config
+make install-commandmode
+a2enmod rewrite
+a2enmod cgi
+cp sample-config/httpd.conf /etc/apache2/sites-available/nagios4.conf
+chmod 644 /etc/apache2/sites-available/nagios4.conf
+a2ensite nagios4.conf
+sudo htpasswd -b -c /usr/local/nagios/etc/htpasswd.users nagiosadmin tf
+cp nagios.cfg /usr/local/nagios/etc
+cp resource.cfg /usr/local/nagios/etc
+cp nagios.service /etc/systemd/system
 EOF
 
 # Installing signing key of official Mono repository
