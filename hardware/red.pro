@@ -1,4 +1,4 @@
-update=Di 02 Feb 2016 17:45:33 CET
+update=Fr 07 Jul 2017 11:00:09 CEST
 version=1
 last_client=kicad
 [cvpcb]
@@ -53,7 +53,7 @@ LibName21=WEEE_7mm
 LibName22=weee
 [eeschema]
 version=1
-LibDir=kicad-libraries.pretty
+LibDir=kicad-libraries
 [eeschema/libraries]
 LibName1=tinkerforge
 LibName2=power
