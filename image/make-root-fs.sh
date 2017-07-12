@@ -599,18 +599,23 @@ then
 	report_info "Configuring Mali GPU"
 	$CHROOT <<EOF
 cd /tmp/mali-gpu
-dpkg -i libdri2-1_1.0-2_armhf.deb
-dpkg -i libsunxi-mali-x11_1.1-1_armhf.deb
-dpkg -i libvdpau-sunxi_1.0-1_armhf.deb
-dpkg -i sunxi-disp-test_1.0-1_armhf.deb
-dpkg -i libump_3.0-0sunxi1_armhf.deb
-dpkg -i xserver-xorg-video-sunximali_1.0-4_armhf.deb
-dpkg -i libegl1-mesa_2-1.1-2_armhf.deb
-dpkg -i libgles1-mesa_2-1.1-2_armhf.deb
-dpkg -i libgles2-mesa_2-1.1-2_armhf.deb
-dpkg --configure -a
+#dpkg -i libdri2-1_1.0-2_armhf.deb
+#dpkg -i libsunxi-mali-x11_1.1-1_armhf.deb
+#dpkg -i libvdpau-sunxi_1.0-1_armhf.deb
+#dpkg -i sunxi-disp-test_1.0-1_armhf.deb
+#dpkg -i libump_3.0-0sunxi1_armhf.deb
+#dpkg -i xserver-xorg-video-sunximali_1.0-4_armhf.deb
+#dpkg -i libegl1-mesa_2-1.1-2_armhf.deb
+#dpkg -i libgles1-mesa_2-1.1-2_armhf.deb
+#dpkg -i libgles2-mesa_2-1.1-2_armhf.deb
+#dpkg --configure -a
 # add true here to avoid having a dpkg error abort the whole script here
-true
+#true
+tar jxf xf86-video-fbturbo-armhf-built.tar.bz2
+cd xf86-video-fbturbo-armhf-built
+make install
+cp xorg.conf /usr/share/X11/xorg.conf.d/99-sunxifb.conf
+cp xorg.conf /etc/X11/xorg.conf
 EOF
 
 	# Setting up XDM logo and desktop wallpaper
@@ -932,6 +937,13 @@ report_info "Installing signing key of official Mono repository"
 $CHROOT <<EOF
 apt-key adv --keyserver hkp://keyserver.ubuntu.com:80 --recv-keys 3FA7E0328081BFF6A14DA29AA6A19B38D3D831EF
 apt-get update
+EOF
+
+# Disabling apt-daily
+report_info "Disabling apt-daily"
+$CHROOT <<EOF
+systemctl disable apt-daily.service
+systemctl disable apt-daily.timer
 EOF
 
 # Preparing kernel source
