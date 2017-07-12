@@ -873,6 +873,12 @@ $CHROOT <<EOF
 touch /etc/tf_x11_enabled
 EOF
 
+# Enabling GPU 2D Only
+report_info "Enabling GPU 2D Only"
+$CHROOT <<EOF
+touch /etc/tf_gpu_2d_only
+EOF
+
 # Remove apache init script dependency of DNS server
 report_info "Remove apache init script dependency of DNS server"
 $CHROOT <<EOF
