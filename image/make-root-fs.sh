@@ -611,6 +611,8 @@ cd /tmp/mali-gpu
 #dpkg --configure -a
 # add true here to avoid having a dpkg error abort the whole script here
 #true
+# Remove lightdm display manager
+apt-get purge lightdm lightdm-* -y
 tar jxf xf86-video-fbturbo-armhf-built.tar.bz2
 cd xf86-video-fbturbo-armhf-built
 make install
