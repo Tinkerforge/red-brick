@@ -34,7 +34,6 @@ bootstrap=Debian Debian_Security Debian_Updates
 # aptsources is a list of sections to be listed
 # in the /etc/apt/sources.list.d/multistrap.sources.list
 # of the target.
-#aptsources=Debian Debian_Security Debian_Updates Mono
 aptsources=Debian Debian_Security Debian_Updates
 
 [Debian]
@@ -123,10 +122,6 @@ packages=octave octave-common
 packages=fpc fp-utils lcl
 # GROUP-END:delphi
 
-# We get java8 and libs externaly
-# GROUP-START:java
-# GROUP-END:java
-
 # GROUP-START:php
 packages=php php-common php-cli php-pear php-mdb2 php-xmlrpc php-snmp
 packages=php-mysql php-mcrypt php-gd php-curl php-net-smtp
@@ -144,10 +139,6 @@ packages=libcrypt-openssl-random-perl libcrypt-util-perl libcrypt-gpg-perl pmtoo
 packages=libcrypt-generatepassword-perl librpc-xml-perl librpc-xml-perl libgd-graph3d-perl
 packages=libgd-graph-perl libxml-simple-perl libpdf-create-perl libsys-statistics-linux-perl
 # GROUP-END:perl
-
-# GROUP-START:node
-#packages=nodejs
-# GROUP-END:node
 
 source=http://%apt-cacher-0-prefix%ftp.debian.org/debian
 keyring=debian-archive-keyring
@@ -170,11 +161,3 @@ keyring=debian-archive-keyring
 suite=stretch-updates
 components=main contrib non-free
 omitdebsrc=false
-
-#[Mono]
-#packages=
-#source=http://download.mono-project.com/repo/debian
-#keyring=
-#suite=beta
-#components=main
-#omitdebsrc=false
