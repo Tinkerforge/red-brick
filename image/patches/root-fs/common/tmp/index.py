@@ -98,18 +98,18 @@ PAGE = """
     <div id="programs" class="container">
         <div class="title">
             <h2>Programs</h2>
-            <span class="byline">Currently there are <strong>{0}</strong> programs available on the RED Brick</span> 
+            <span class="byline">Currently there are <strong>{0}</strong> programs available on the RED Brick</span>
         </div>
         <p>
             For each program you can view the config, the logs and the binaries. If you uploaded an
-            <strong>index.py</strong>, <strong>index.php</strong> or <strong>index.html</strong> 
+            <strong>index.py</strong>, <strong>index.php</strong> or <strong>index.html</strong>
             the respective file will be used as directory index for the binary folder.
         </p>
         <p>
             <strong>Example:</strong> If you want to write a PHP website that controls Bricks/Bricklets you can
             upload your program <strong>EXAMPLE</strong> with identifier <strong>EXAMPLE-ID</strong> that
             includes an index.php as starting point. If you now go to this website and click on
-            the "Bin" button for the newly created program, you will get a link to 
+            the "Bin" button for the newly created program, you will get a link to
             <strong>/programs/EXAMPLE-ID/bin</strong>, which will directly execute the index.php
             if opened.
         </p>
@@ -120,7 +120,7 @@ PAGE = """
     <div id="openhab" class="container">
         <div class="title">
             <h2>openHAB</h2>
-            <span class="byline">Currently there are <strong>{2}</strong> openHAB configurations available on the RED Brick</span> 
+            <span class="byline">Currently there are <strong>{2}</strong> openHAB configurations available on the RED Brick</span>
         </div>
         <p>
             For each configuration you can view the sitemap. New configurations can be added and existing ones can be edited and deleted
@@ -133,7 +133,7 @@ PAGE = """
     <div id="servermonitoring" class="container">
         <div class="title">
             <h2>Server Monitoring</h2>
-            <span class="byline">Currently this service is <strong>{4}</strong> on the RED Brick</span> 
+            <span class="byline">Currently this service is <strong>{4}</strong> on the RED Brick</span>
         </div>
         <p>
             Monitoring rules for different Bricklets can be configured using the server monitoring settings tab of Brick Viewer.
@@ -141,7 +141,7 @@ PAGE = """
             The default username is <strong>nagiosadmin</strong> and the default password is <strong>tf</strong>.
         </p>
         <ul class="actions">
-            <li><a href="/nagios3" class="smallbutton">Nagios Status and Configuration</a></li>
+            <li><a href="/nagios" class="smallbutton">Nagios Status and Configuration</a></li>
         </ul>
     </div>
 </div>
