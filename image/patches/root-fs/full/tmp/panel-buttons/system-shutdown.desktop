@@ -1,0 +1,7 @@
+[Desktop Entry]
+Type=Application
+Name=Shutdown
+Comment=Shutdown
+Icon=system-shutdown
+Exec=/sbin/dialog-shutdown
+NoDisplay=true

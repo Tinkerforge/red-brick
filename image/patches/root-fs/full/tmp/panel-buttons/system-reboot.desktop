@@ -1,0 +1,7 @@
+[Desktop Entry]
+Type=Application
+Name=Reboot
+Comment=Reboot
+Icon=reload
+Exec=/sbin/dialog-reboot
+NoDisplay=true

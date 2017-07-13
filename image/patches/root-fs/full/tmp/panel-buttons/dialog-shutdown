@@ -1,0 +1,12 @@
+#!/usr/bin/env bash
+
+zenity \
+--question \
+--title="System Shutdown" \
+--text "Are you sure you want to shutdown the system ?" \
+--ok-label="Yes" \
+--cancel-label="No"
+
+if [ $? = 0 ]; then
+	/sbin/poweroff
+fi
