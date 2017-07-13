@@ -234,6 +234,15 @@ dpkg --configure -a
 true
 EOF
 
+# Adding new user
+report_info "Adding new user"
+$CHROOT <<EOF
+rm -rf /home/
+mkdir /home/
+useradd -m -c "RED Brick User" -G adm,dialout,cdrom,sudo,audio,video,plugdev,games,users,ntp,crontab,netdev tf
+echo tf:tf | chpasswd
+EOF
+
 # Installing the kernel and preparing the boot directory
 report_info "Installing the kernel and preparing the boot directory"
 pushd $SOURCE_DIR > /dev/null
@@ -595,29 +604,35 @@ if [ "$CONFIG_NAME" = "full" ]
 then
 	report_info "Image specific tasks"
 
-	# Configuring Mali GPU
-	report_info "Configuring Mali GPU"
+	# Removing lightdm display manager
+	report_info "Removing lightdm display manager"
 	$CHROOT <<EOF
-cd /tmp/mali-gpu
-#dpkg -i libdri2-1_1.0-2_armhf.deb
-#dpkg -i libsunxi-mali-x11_1.1-1_armhf.deb
-#dpkg -i libvdpau-sunxi_1.0-1_armhf.deb
-#dpkg -i sunxi-disp-test_1.0-1_armhf.deb
-#dpkg -i libump_3.0-0sunxi1_armhf.deb
-#dpkg -i xserver-xorg-video-sunximali_1.0-4_armhf.deb
-#dpkg -i libegl1-mesa_2-1.1-2_armhf.deb
-#dpkg -i libgles1-mesa_2-1.1-2_armhf.deb
-#dpkg -i libgles2-mesa_2-1.1-2_armhf.deb
-#dpkg --configure -a
-# add true here to avoid having a dpkg error abort the whole script here
-#true
-# Remove lightdm display manager
 apt-get purge lightdm lightdm-* -y
+EOF
+
+	# Installing Mali GPU 2D driver
+	report_info "Installing Mali GPU 2D driver"
+	$CHROOT <<EOF
+cd /tmp
 tar jxf xf86-video-fbturbo-armhf-built.tar.bz2
 cd xf86-video-fbturbo-armhf-built
 make install
 cp xorg.conf /usr/share/X11/xorg.conf.d/99-sunxifb.conf
 cp xorg.conf /etc/X11/xorg.conf
+EOF
+
+	# Adding reboot and shutdown buttons to the panel
+	report_info "Adding reboot and shutdown buttons to the panel"
+	$CHROOT <<EOF
+cd /tmp/panel-buttons
+cp dialog-reboot /sbin/
+cp dialog-shutdown /sbin/
+chown tf.tf /sbin/dialog-reboot
+chown tf.tf /sbin/dialog-shutdown
+cp tinkerforge-system-reboot.png /usr/share/icons/
+cp tinkerforge-system-shutdown.png /usr/share/icons/
+cp system-reboot.desktop /usr/share/applications/
+cp system-shutdown.desktop /usr/share/applications/
 EOF
 
 	# Setting up XDM logo and desktop wallpaper
@@ -678,15 +693,6 @@ rm -rf /etc/cron.hourly/fake-hwclock
 chmod 0644 /etc/cron.d/fake-hwclock
 systemctl disable hwclock.sh
 fake-hwclock
-EOF
-
-# Adding new user
-report_info "Adding new user"
-$CHROOT <<EOF
-rm -rf /home/
-mkdir /home/
-useradd -m -c "RED Brick User" -G adm,dialout,cdrom,sudo,audio,video,plugdev,games,users,ntp,crontab,netdev tf
-echo tf:tf | chpasswd
 EOF
 
 # Copy RED Brick index website
