@@ -2,6 +2,6 @@
 Type=Application
 Name=Reboot
 Comment=Reboot
-Icon=reload
+Icon=tinkerforge-system-reboot
 Exec=/sbin/dialog-reboot
 NoDisplay=true
