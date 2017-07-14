@@ -956,8 +956,10 @@ EOF
 # Disabling apt-daily
 report_info "Disabling apt-daily"
 $CHROOT <<EOF
-systemctl disable apt-daily.service
 systemctl disable apt-daily.timer
+systemctl disable apt-daily.service
+systemctl disable apt-daily-upgrade.timer
+systemctl disable apt-daily-upgrade.service
 EOF
 
 # Preparing kernel source
