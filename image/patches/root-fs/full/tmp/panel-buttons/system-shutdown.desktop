@@ -2,6 +2,6 @@
 Type=Application
 Name=Shutdown
 Comment=Shutdown
-Icon=system-shutdown
+Icon=tinkerforge-system-shutdown
 Exec=/sbin/dialog-shutdown
 NoDisplay=true
