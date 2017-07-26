@@ -2,14 +2,26 @@
 # -*- coding: UTF-8 -*-
 
 from flask import Flask, request # Use Flask framework
+from distutils.version import StrictVersion
+
 application = Flask(__name__)    # Function "application" is used by Apache/WSGI
 app = application                # Use shortcut for routing
 
 import os
 import cgi
 
+IMAGE_VERSION = None
+MIN_VERSION_WITH_OPENHAB2 = StrictVersion('1.10')
+
+with open('/etc/tf_image_version', 'r') as f:
+    IMAGE_VERSION = StrictVersion(f.read().split(' ')[0].strip())
+
 PATH_PROGRAMS = os.path.join('/', 'home', 'tf', 'programs')
-PATH_OPENHAB = os.path.join('/', 'etc', 'openhab', 'configurations', 'sitemaps')
+
+if IMAGE_VERSION and IMAGE_VERSION >= MIN_VERSION_WITH_OPENHAB2:
+    PATH_OPENHAB = os.path.join('/', 'etc', 'openhab2', 'sitemaps')
+else:
+    PATH_OPENHAB = os.path.join('/', 'etc', 'openhab', 'configurations', 'sitemaps')
 
 def get_program_ids():
     try:
@@ -45,7 +57,11 @@ def index():
     for s in get_openhab_sitemaps():
         openhab_infos[s] = {}
         openhab_infos[s]['name'] = s[:-len('.sitemap')]
-        openhab_infos[s]['url_sitemap'] = 'http://{0}:8080/openhab.app?sitemap={1}'.format(request.host, s[:-len('.sitemap')])
+
+        if IMAGE_VERSION and IMAGE_VERSION >= MIN_VERSION_WITH_OPENHAB2:
+            openhab_infos[s]['url_sitemap'] = 'http://{0}:8080/classicui/app?sitemap={1}'.format(request.host, s[:-len('.sitemap')])
+        else:
+            openhab_infos[s]['url_sitemap'] = 'http://{0}:8080/openhab.app?sitemap={1}'.format(request.host, s[:-len('.sitemap')])
 
     box_num = ['A', 'B', 'C']
     program_boxes = ''
