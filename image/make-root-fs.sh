@@ -698,8 +698,8 @@ EOF
 # Copy RED Brick index website
 report_info "Copy RED Brick index website"
 $CHROOT <<EOF
-cp /tmp/index.py /home/tf
-chown tf:tf /home/tf/index.py
+cp /tmp/index.wsgi /home/tf
+chown tf:tf /home/tf/index.wsgi
 cp /tmp/red.css /home/tf
 chown tf:tf /home/tf/red.css
 EOF
@@ -844,28 +844,28 @@ EOF
 # Not using the version from repo in this case
 # because the repo version is not updated enough
 # and doesn't include some devices for auto mode switching
-report_info "Installing usb_modeswitch for mobile internet"
-$CHROOT <<EOF
-cd /tmp
-tar jxf usb-modeswitch-2.2.1.tar.bz2
-cd ./usb-modeswitch-2.2.1
-make all
-make install
-cd /tmp
-tar jxf usb-modeswitch-data-20150115.tar.bz2
-cd ./usb-modeswitch-data-20150115
-make all
-make files-install
-make db-install
-EOF
+#report_info "Installing usb_modeswitch for mobile internet"
+#$CHROOT <<EOF
+#cd /tmp
+#tar jxf usb-modeswitch-2.2.1.tar.bz2
+#cd ./usb-modeswitch-2.2.1
+#make all
+#make install
+#cd /tmp
+#tar jxf usb-modeswitch-data-20150115.tar.bz2
+#cd ./usb-modeswitch-data-20150115
+#make all
+#make files-install
+#make db-install
+#EOF
 
 # Installing umtskeeper for mobile internet
-report_info "Installing umtskeeper for mobile internet"
-$CHROOT <<EOF
-cd /tmp
-tar jxf umtskeeper.tar.bz2 -C /usr
-chmod 755 /usr/umtskeeper/sakis3g
-EOF
+#report_info "Installing umtskeeper for mobile internet"
+#$CHROOT <<EOF
+#cd /tmp
+#tar jxf umtskeeper.tar.bz2 -C /usr
+#chmod 755 /usr/umtskeeper/sakis3g
+#EOF
 
 # Do not run DNS/DHCP server at boot by default
 report_info "Do not run DNS/DHCP server at boot by default"
@@ -906,16 +906,19 @@ $CHROOT <<EOF
 chmod u+s /bin/ping
 EOF
 
-# Installing openHAB
-report_info "Installing openHAB"
+# Installing openHAB2
+report_info "Installing openHAB2"
 $CHROOT <<EOF
 wget -qO - 'https://bintray.com/user/downloadSubjectPublicKey?username=openhab' | apt-key add -
-echo 'deb http://dl.bintray.com/openhab/apt-repo stable main' > /etc/apt/sources.list.d/openhab.list
+#echo 'deb https://dl.bintray.com/openhab/apt-repo2 stable main' | tee /etc/apt/sources.list.d/openhab2.list
+echo 'deb https://dl.bintray.com/openhab/apt-repo2 testing main' | tee /etc/apt/sources.list.d/openhab2.list
+#echo 'deb https://openhab.jfrog.io/openhab/openhab-linuxpkg unstable main' | tee /etc/apt/sources.list.d/openhab2.list
 apt-get update
-apt-get install -y --force-yes openhab-runtime openhab-addon-binding-tinkerforge openhab-addon-action-tinkerforge
+apt-get install -y --force-yes openhab2 openhab2-addons openhab2-addons-legacy
 systemctl daemon-reload
-systemctl disable openhab
-chown openhab:openhab /usr/share/openhab/webapps/static
+systemctl disable openhab2
+cp /tmp/openhab2/addons.cfg /etc/openhab2/services/addons.cfg
+cp /tmp/openhab2/tinkerforge.cfg /etc/openhab2/services/tinkerforge.cfg
 EOF
 
 # To save image build time the archive is created from nagios
