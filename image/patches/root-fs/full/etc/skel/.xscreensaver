@@ -1,5 +1,5 @@
 # XScreenSaver Preferences File
-# Written by xscreensaver-demo 5.36 for tf on Thu Jul 13 18:07:36 2017.
+# Written by xscreensaver-demo 5.36 for tf on Fri Jul 21 11:17:27 2017.
 # https://www.jwz.org/xscreensaver/
 
 timeout:	0:10:00
@@ -35,7 +35,7 @@ chooseRandomImages: True
 imageDirectory:	/usr/share/images/tf-screensaver
 
 mode:		one
-selected:	194
+selected:	81
 
 textMode:	date
 textLiteral:	XScreenSaver
@@ -125,7 +125,8 @@ programs:								      \
 				petri -root				    \n\
 				phosphor -root				    \n\
 - GL: 				pulsar -root				    \n\
-				ripples -root				    \n\
+				ripples -root -delay 44248 -duration 600      \
+				  -rate 1				    \n\
 				shadebobs -root				    \n\
 - GL: 				sierpinski3d -root			    \n\
 				spotlight -root				    \n\
@@ -184,10 +185,13 @@ programs:								      \
 - GL: 				flipflop -root				    \n\
 - GL: 				flyingtoasters -root			    \n\
 				fontglide -root				    \n\
-- GL: 				gleidescope -root			    \n\
+- Default: 			gleidescope -root -delay 100000 -size 5	      \
+				  -duration 300				    \n\
 - GL: 				glknots -root				    \n\
 - GL: 				glmatrix -root				    \n\
-- GL: 				glslideshow -root			    \n\
+- Default: 			glslideshow -root -delay 100000 -duration     \
+				  300 -zoom 50 -pan 30 -fade 0		      \
+				  -no-letterbox				    \n\
 - GL: 				hypertorus -root			    \n\
 - GL: 				jigglypuff -root			    \n\
 				metaballs -root				    \n\
@@ -216,7 +220,7 @@ programs:								      \
 - GL: 				antmaze -root				    \n\
 - GL: 				boing -root				    \n\
 				boxfit -root				    \n\
-- Default: 			carousel -root -delay 48673 -speed 6.3221     \
+- Default: 			carousel -root -delay 100000 -speed 8	      \
 				  -duration 60 -count 4 -tilt 0 -no-zoom      \
 				  -no-titles				    \n\
 				celtic -root				    \n\
