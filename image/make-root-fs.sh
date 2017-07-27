@@ -910,9 +910,7 @@ EOF
 report_info "Installing openHAB2"
 $CHROOT <<EOF
 wget -qO - 'https://bintray.com/user/downloadSubjectPublicKey?username=openhab' | apt-key add -
-#echo 'deb https://dl.bintray.com/openhab/apt-repo2 stable main' | tee /etc/apt/sources.list.d/openhab2.list
-echo 'deb https://dl.bintray.com/openhab/apt-repo2 testing main' | tee /etc/apt/sources.list.d/openhab2.list
-#echo 'deb https://openhab.jfrog.io/openhab/openhab-linuxpkg unstable main' | tee /etc/apt/sources.list.d/openhab2.list
+echo 'deb https://dl.bintray.com/openhab/apt-repo2 stable main' | tee /etc/apt/sources.list.d/openhab2.list
 apt-get update
 apt-get install -y --force-yes openhab2 openhab2-addons openhab2-addons-legacy
 systemctl daemon-reload
