@@ -817,26 +817,28 @@ $CHROOT <<EOF
 ln -s /usr/tinkerforge/bindings/javascript/browser/source/Tinkerforge.js /home/tf
 EOF
 
-# Compiling and installing hostapd and wpa_supplicant for access point mode support
-report_info "Compiling and installing hostapd and wpa_supplicant for access point mode support"
+# Compiling and installing hostapd
+report_info "Compiling and installing hostapd"
 $CHROOT <<EOF
 cd /tmp
 #mkdir ./wpa_supplicant_hostapd
 #tar jxf wpa_supplicant_hostapd_v4.0.2_9000.20130911.tar.bz2 -C ./wpa_supplicant_hostapd
-tar jxf hostap.tar.bz2
+#tar jxf hostap.tar.bz2
+tar jxf hostap-hostap_2_6.tar.bz2
 mkdir -p /etc/hostapd
 #cd ./wpa_supplicant_hostapd
 #cd ./wpa_supplicant_hostapd/hostapd
-cd ./hostap/hostapd
+#cd ./hostap/hostapd
+cd ./hostap-hostap_2_6/hostapd
 make clean
 #make
 make all
 make install
-cd ../wpa_supplicant
-make clean
+#cd ../wpa_supplicant
+#make clean
 #make
-make all
-make install
+#make all
+#make install
 chmod 755 /etc/init.d/hostapd
 EOF
 
@@ -866,6 +868,30 @@ EOF
 #tar jxf umtskeeper.tar.bz2 -C /usr
 #chmod 755 /usr/umtskeeper/sakis3g
 #EOF
+
+# Installing NetworkManager
+
+# NetworkManager is installed this way instead of by multistrap because
+# if installed with multustrap it will ignore the recommended packages
+# which are required for proper operation of NetworkManager.
+report_info "Installing NetworkManager"
+$CHROOT <<EOF
+apt-get install -y --force-yes network-manager \
+network-manager-gnome \
+network-manager-pptp \
+network-manager-pptp-gnome
+cd /tmp
+cp NetworkManager.conf /etc/NetworkManager
+EOF
+
+# Installing ModemManager
+report_info "Installing ModemManager"
+$CHROOT <<EOF
+cd /tmp
+apt-get purge -y --force-yes modemmanager
+apt install ./modemmanager_1.6.4-1_armhf.deb
+apt-mark hold modemmanager
+EOF
 
 # Do not run DNS/DHCP server at boot by default
 report_info "Do not run DNS/DHCP server at boot by default"
