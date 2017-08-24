@@ -2,7 +2,7 @@
 
 # RED Brick Image Generator
 # Copyright (C) 2014-2015 Matthias Bolte <matthias@tinkerforge.com>
-# Copyright (C) 2014 Ishraq Ibne Ashraf <ishraq@tinkerforge.com>
+# Copyright (C) 2014-2017 Ishraq Ibne Ashraf <ishraq@tinkerforge.com>
 #
 # make-image.sh: Combines root-fs, kernel and related stuff into the final image file
 #
@@ -75,26 +75,6 @@ then
 	exit 1
 fi
 
-# Checking kernel and boot script
-#if [ ! -e $KERNEL_IMAGE_FILE ]
-#then
-#	report_error "Please build the kernel first"
-#	exit 1
-#fi
-
-#if [ ! -e $SCRIPT_BIN_FILE ]
-#then
-#	report_error "No boot script found"
-#	exit 1
-#fi
-
-# Checking kernel modules
-#if [ ! -d $KERNEL_SRC_DIR/$KERNEL_MOD_DIR_NAME ]
-#then
-#	report_error "Build kernel modules first"
-#	exit 1
-#fi
-
 # Checking stray /proc mount on root-fs directory
 set +e
 report_info "Checking stray /proc mount on root-fs directory"
@@ -150,10 +130,6 @@ mkfs.ext3 $loop_dev_p1 -L $PARTITION_LABEL
 # Installing U-Boot to the image
 report_info "Installing U-Boot to the image"
 dd bs=1024 seek=$UBOOT_DD_SEEK if=$UBOOT_IMAGE_FILE of=$loop_dev
-#report_info "Installing boot script to the image"
-#dd bs=512 seek=$SCRIPT_DD_SEEK if=$SCRIPT_BIN_FILE of=$loop_dev
-#report_info "Installing the kernel to the image"
-#dd bs=512 seek=$KERNEL_DD_SEEK if=$KERNEL_IMAGE_FILE of=$loop_dev
 
 # Copying root-fs to the image
 report_info "Copying root-fs to the image"

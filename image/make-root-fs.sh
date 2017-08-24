@@ -2,7 +2,7 @@
 
 # RED Brick Image Generator
 # Copyright (C) 2014-2015 Matthias Bolte <matthias@tinkerforge.com>
-# Copyright (C) 2014-2015 Ishraq Ibne Ashraf <ishraq@tinkerforge.com>
+# Copyright (C) 2014-2017 Ishraq Ibne Ashraf <ishraq@tinkerforge.com>
 # Copyright (C) 2014-2015 Olaf Lüke <olaf@tinkerforge.com>
 #
 # make-root-fs.sh: Makes the root-fs for the images
@@ -89,28 +89,12 @@ then
 	report_error "U-Boot was not built for the current image configuration"
 	exit 1
 fi
-#if [ ! -e $SCRIPT_BIN_FILE ]
-#then
-#	report_error "Boot script was not built for the current image configuration"
-#	exit 1
-#fi
+
 if [ ! -e $BUILD_DIR/kernel-$CONFIG_NAME.built ]
 then
 	report_error "Kernel was not built for the current image configuration"
 	exit 1
 fi
-#if [ ! -e $BUILD_DIR/kernel-headers-$CONFIG_NAME.built ]
-#then
-#	report_error "Kernel headers were not installed for the current image configuration"
-#	exit 1
-#fi
-
-# Checking kernel modules
-#if [ ! -d $KERNEL_SRC_DIR/$KERNEL_MOD_DIR_NAME ]
-#then
-#	report_error "Build kernel modules first"
-#	exit 1
-#fi
 
 # Get kernel release
 pushd $KERNEL_SRC_DIR > /dev/null
@@ -246,7 +230,7 @@ EOF
 # Installing the kernel and preparing the boot directory
 report_info "Installing the kernel and preparing the boot directory"
 pushd $SOURCE_DIR > /dev/null
-#mv *.debian.tar.gz linux-$KERNEL_RELEASE.debian.tar.gz
+
 if [ ! -f linux-$KERNEL_RELEASE.tar.gz ]; then
 	mv *.orig.tar.gz linux-$KERNEL_RELEASE.tar.gz
 fi
@@ -354,12 +338,6 @@ dpkg --configure -a
 # add true here to avoid having a dpkg error abort the whole script here
 true
 EOF
-
-# Provide node command using nodejs (for backward compatibility)
-#report_info "Provide node command using nodejs (for backward compatibility)"
-#$CHROOT <<EOF
-#update-alternatives --install /usr/local/bin/node node /usr/bin/nodejs 900
-#EOF
 
 # Installing Node.js and NPM
 report_info "Installing Node.js and NPM"
@@ -704,22 +682,6 @@ cp /tmp/red.css /home/tf
 chown tf:tf /home/tf/red.css
 EOF
 
-# Downgrading GNU Octave so the Tinkerforge bindings can be used with callbacks (version 3.6)
-# Keeping the not working GNU Octave version in multistrap configuration for the purpose of
-# proper version listing
-#report_info "Downgrading GNU Octave"
-#$CHROOT <<EOF
-#echo -e "deb [arch=armhf] http://ftp.debian.org/debian wheezy main contrib non-free\n\
-#deb-src http://ftp.debian.org/debian wheezy main contrib non-free\n" > /etc/apt/sources.list.d/wheezy.list
-#apt-get update
-#apt-get remove octave octave-* -y
-#apt-get purge octave octave-* -y
-#aptitude install octave=3.6.2-5+deb7u1 octave-common=3.6.2-5+deb7u1 octave-java=1.2.8-6 -y
-#apt-mark hold octave octave-common octave-java
-#apt-get clean
-#apt-get -f install -y
-#EOF
-
 if [ "$DRAFT_MODE" = "no" ]
 then
 	# Generating dpkg listing
@@ -787,18 +749,6 @@ dpkg --configure -a
 true
 EOF
 
-# Installing kernel headers
-#report_info "Installing kernel headers"
-#rsync -ac --no-o --no-g $KERNEL_HEADER_INCLUDE_DIR $ROOTFS_DIR/usr/
-#rsync -ac --no-o --no-g $KERNEL_HEADER_USR_DIR $ROOTFS_DIR
-
-# Cleaning /etc/resolv.conf and creating symbolic link for resolvconf
-#report_info "Cleaning /etc/resolv.conf and creating symbolic link for resolvconf"
-#$CHROOT <<EOF
-#rm -rf /etc/resolv.conf
-#ln -s /etc/resolvconf/run/resolv.conf /etc/resolv.conf
-#EOF
-
 # Disabling the root user
 report_info "Disabling the root user"
 $CHROOT <<EOF
@@ -841,33 +791,6 @@ make install
 #make install
 chmod 755 /etc/init.d/hostapd
 EOF
-
-# Installing usb_modeswitch for mobile internet.
-# Not using the version from repo in this case
-# because the repo version is not updated enough
-# and doesn't include some devices for auto mode switching
-#report_info "Installing usb_modeswitch for mobile internet"
-#$CHROOT <<EOF
-#cd /tmp
-#tar jxf usb-modeswitch-2.2.1.tar.bz2
-#cd ./usb-modeswitch-2.2.1
-#make all
-#make install
-#cd /tmp
-#tar jxf usb-modeswitch-data-20150115.tar.bz2
-#cd ./usb-modeswitch-data-20150115
-#make all
-#make files-install
-#make db-install
-#EOF
-
-# Installing umtskeeper for mobile internet
-#report_info "Installing umtskeeper for mobile internet"
-#$CHROOT <<EOF
-#cd /tmp
-#tar jxf umtskeeper.tar.bz2 -C /usr
-#chmod 755 /usr/umtskeeper/sakis3g
-#EOF
 
 # Installing NetworkManager
 
@@ -988,54 +911,6 @@ systemctl disable apt-daily.service
 systemctl disable apt-daily-upgrade.timer
 systemctl disable apt-daily-upgrade.service
 EOF
-
-# Preparing kernel source
-#report_info "Preparing kernel source"
-#if [ ! -d $KERNEL_SRC_COPY_DIR ]
-#then
-#	mkdir -p $KERNEL_SRC_COPY_DIR
-#else
-#	rm -rf $KERNEL_SRC_COPY_DIR
-#	mkdir -p $KERNEL_SRC_COPY_DIR
-#fi
-#$ADVCP_BIN -garp $KERNEL_SRC_DIR/. $KERNEL_SRC_COPY_DIR
-#pushd $KERNEL_SRC_COPY_DIR > /dev/null
-#make ARCH=arm CROSS_COMPILE=$TC_PREFIX LOCALVERSION="" clean
-#make ARCH=arm CROSS_COMPILE=$TC_PREFIX LOCALVERSION="" $KERNEL_CONFIG_NAME
-#KERNEL_RELEASE=`make -s ARCH=arm CROSS_COMPILE=$TC_PREFIX LOCALVERSION="" kernelrelease`
-#KERNEL_RELEASE=`python -c 'import sys; print sys.argv[1].rstrip("+") + "+"' $KERNEL_RELEASE`
-#filter_kernel_source
-#popd
-
-# Copying kernel modules and source
-#report_info "Copying kernel modules and source"
-
-#rsync -ac --no-o --no-g $KERNEL_SRC_DIR/$KERNEL_MOD_DIR_NAME/lib/modules $ROOTFS_DIR/lib/
-#rsync -ac --no-o --no-g $KERNEL_SRC_DIR/$KERNEL_MOD_DIR_NAME/lib/firmware $ROOTFS_DIR/lib/
-
-#rm $ROOTFS_DIR/lib/modules/$KERNEL_RELEASE/build
-#rm $ROOTFS_DIR/lib/modules/$KERNEL_RELEASE/source
-
-#$ADVCP_BIN -garp $KERNEL_SRC_COPY_DIR/. $ROOTFS_DIR/lib/modules/$KERNEL_RELEASE/build
-#mkdir -p $ROOTFS_DIR/usr/src/$KERNEL_RELEASE/
-#$ADVCP_BIN -garp $KERNEL_SRC_COPY_DIR/. $ROOTFS_DIR/usr/src/$KERNEL_RELEASE/
-
-#$CHROOT <<EOF
-#cd /lib/modules/$KERNEL_RELEASE/
-#ln -s /usr/src/$KERNEL_RELEASE build
-#ln -s /usr/src/$KERNEL_RELEASE source
-#cd /lib/modules/$KERNEL_RELEASE/build
-#make -B scripts
-#EOF
-
-# Preparing the boot directory
-#report_info "Preparing the boot directory"
-#mkdir -p $ROOTFS_DIR/boot/kernel
-#cp $KERNEL_IMAGE_FILE $ROOTFS_DIR/boot/kernel
-#mkdir -p $ROOTFS_DIR/boot/kernel/dtb
-#cp $KERNEL_DTB_FILE $ROOTFS_DIR/boot/kernel/dtb
-#cp $UBOOT_BOOT_CMD_FILE $ROOTFS_DIR/boot
-#$UBOOT_SRC_DIR/tools/mkimage -C none -A arm -T script -d $ROOTFS_DIR/boot/boot.cmd $ROOTFS_DIR/boot/boot.scr
 
 # Cleaning /tmp directory
 report_info "Cleaning /tmp directory"

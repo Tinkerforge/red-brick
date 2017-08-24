@@ -2,7 +2,7 @@
 
 # RED Brick Image Generator
 # Copyright (C) 2014-2015 Matthias Bolte <matthias@tinkerforge.com>
-# Copyright (C) 2014 Ishraq Ibne Ashraf <ishraq@tinkerforge.com>
+# Copyright (C) 2014-2017 Ishraq Ibne Ashraf <ishraq@tinkerforge.com>
 # Copyright (C) 2014 Olaf Lüke <olaf@tinkerforge.com>
 #
 # update-kernel-on-sd-card.sh: Writes new kernel and related stuff to an SD card
@@ -75,14 +75,8 @@ fi
 report_info "Copying u-boot image to the SD card"
 dd bs=1024 seek=$UBOOT_DD_SEEK if=$UBOOT_IMAGE_FILE of=$DEVICE
 
-# Copying script bin to the SD card
-#report_info "Copying script bin to the SD card"
-#dd bs=512 seek=$SCRIPT_DD_SEEK if=$SCRIPT_BIN_FILE of=$DEVICE
-
 # Copying kernel image and the DTB to the SD card
 report_info "Copying kernel image and the DTB to the SD card"
-#dd bs=512 seek=$KERNEL_DD_SEEK if=$KERNEL_IMAGE_FILE of=$DEVICE
-
 if [ -d $MOUNT_DIR ]
 then
 	rm -rf $MOUNT_DIR
