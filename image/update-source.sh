@@ -2,6 +2,7 @@
 
 # RED Brick Image Generator
 # Copyright (C) 2014-2015 Matthias Bolte <matthias@tinkerforge.com>
+# Copyright (C) 2017 Ishraq Ibne Ashraf <ishraq@tinkerforge.com>
 #
 # update-source.sh: Updates/Clones kernel and related git repositories
 #
@@ -51,9 +52,6 @@ update "U-Boot" $UBOOT_SRC_DIR $UBOOT_GIT_URL $UBOOT_GIT_BRANCH
 
 # Clone/Pull kernel source
 update "kernel" $KERNEL_SRC_DIR $KERNEL_GIT_URL $KERNEL_GIT_BRANCH
-
-# Clone/Pull sunxi-tools source
-#update "sunxi-tools" $SUNXI_TOOLS_SRC_DIR $SUNXI_TOOLS_GIT_URL $SUNXI_TOOLS_GIT_BRANCH
 
 report_process_finish
 
