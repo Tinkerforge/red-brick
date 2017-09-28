@@ -345,6 +345,10 @@ $CHROOT <<EOF
 # GROUP-START:node
 curl -sL https://deb.nodesource.com/setup_8.x | sudo -E bash -
 sudo apt-get install -y nodejs
+cd /usr/local/bin
+ln -s /usr/bin/node node
+cd /usr/lib
+ln -s node_modules node
 # GROUP-END:node
 EOF
 
@@ -442,7 +446,7 @@ EOF
 rm -rf $BUILD_DIR/nodejs_tmp
 mkdir -p $BUILD_DIR/nodejs_tmp
 npm install $ROOTFS_DIR/usr/tinkerforge/bindings/javascript/nodejs/tinkerforge.tgz -g --prefix $BUILD_DIR/nodejs_tmp
-rsync -ac --no-o --no-g $BUILD_DIR/nodejs_tmp/lib/node_modules/tinkerforge $ROOTFS_DIR/usr/lib/nodejs
+rsync -ac --no-o --no-g $BUILD_DIR/nodejs_tmp/lib/node_modules/tinkerforge $ROOTFS_DIR/usr/lib/node_modules
 rm -rf $BUILD_DIR/nodejs_tmp
 
 # Installing Mono features
