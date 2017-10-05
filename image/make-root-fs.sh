@@ -344,7 +344,7 @@ report_info "Installing Node.js and NPM"
 $CHROOT <<EOF
 # GROUP-START:node
 curl -sL https://deb.nodesource.com/setup_8.x | sudo -E bash -
-sudo apt-get install -y nodejs
+sudo apt install nodejs -y
 cd /usr/local/bin
 ln -s /usr/bin/node node
 cd /usr/lib
@@ -573,7 +573,7 @@ EOF
 # Removing plymouth
 report_info "Removing plymouth"
 $CHROOT <<EOF
-apt-get purge plymouth -y
+apt purge plymouth -y
 dpkg --configure -a
 # add true here to avoid having a dpkg error abort the whole script here
 true
@@ -589,7 +589,7 @@ then
 	# Removing lightdm display manager
 	report_info "Removing lightdm display manager"
 	$CHROOT <<EOF
-apt-get purge lightdm lightdm-* -y
+apt purge lightdm lightdm-* -y
 EOF
 
 	# Installing Mali GPU 2D driver
@@ -663,9 +663,9 @@ else
     cat /tmp/sources.list.tmp > /etc/apt/sources.list
 fi
 /etc/init.d/hostname.sh
-apt-get clean
-apt-get update
-apt-get -f install -y
+apt clean
+apt update
+apt -f install -y
 EOF
 
 # Setting up fake-hwclock
@@ -803,7 +803,7 @@ EOF
 # which are required for proper operation of NetworkManager.
 report_info "Installing NetworkManager"
 $CHROOT <<EOF
-apt-get install -y --force-yes network-manager \
+apt install network-manager -y \
 network-manager-gnome \
 network-manager-pptp \
 network-manager-pptp-gnome
@@ -815,7 +815,7 @@ EOF
 report_info "Installing ModemManager"
 $CHROOT <<EOF
 cd /tmp
-apt-get purge -y --force-yes modemmanager
+apt purge modemmanager -y
 apt install ./modemmanager_1.6.4-1_armhf.deb
 apt-mark hold modemmanager
 EOF
@@ -864,8 +864,8 @@ report_info "Installing openHAB2"
 $CHROOT <<EOF
 wget -qO - 'https://bintray.com/user/downloadSubjectPublicKey?username=openhab' | apt-key add -
 echo 'deb https://dl.bintray.com/openhab/apt-repo2 stable main' | tee /etc/apt/sources.list.d/openhab2.list
-apt-get update
-apt-get install -y --force-yes openhab2 openhab2-addons openhab2-addons-legacy
+apt update
+apt install openhab2 openhab2-addons openhab2-addons-legacy -y
 systemctl daemon-reload
 systemctl disable openhab2
 cp /tmp/openhab2/addons.cfg /etc/openhab2/services/addons.cfg
@@ -904,7 +904,7 @@ EOF
 report_info "Installing signing key of official Mono repository"
 $CHROOT <<EOF
 apt-key adv --keyserver hkp://keyserver.ubuntu.com:80 --recv-keys 3FA7E0328081BFF6A14DA29AA6A19B38D3D831EF
-apt-get update
+apt update
 EOF
 
 # Disabling apt-daily
