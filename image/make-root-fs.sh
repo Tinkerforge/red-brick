@@ -2,7 +2,7 @@
 
 # RED Brick Image Generator
 # Copyright (C) 2014-2015 Matthias Bolte <matthias@tinkerforge.com>
-# Copyright (C) 2014-2015 Ishraq Ibne Ashraf <ishraq@tinkerforge.com>
+# Copyright (C) 2014-2017 Ishraq Ibne Ashraf <ishraq@tinkerforge.com>
 # Copyright (C) 2014-2015 Olaf Lüke <olaf@tinkerforge.com>
 #
 # make-root-fs.sh: Makes the root-fs for the images
@@ -89,28 +89,12 @@ then
 	report_error "U-Boot was not built for the current image configuration"
 	exit 1
 fi
-#if [ ! -e $SCRIPT_BIN_FILE ]
-#then
-#	report_error "Boot script was not built for the current image configuration"
-#	exit 1
-#fi
+
 if [ ! -e $BUILD_DIR/kernel-$CONFIG_NAME.built ]
 then
 	report_error "Kernel was not built for the current image configuration"
 	exit 1
 fi
-#if [ ! -e $BUILD_DIR/kernel-headers-$CONFIG_NAME.built ]
-#then
-#	report_error "Kernel headers were not installed for the current image configuration"
-#	exit 1
-#fi
-
-# Checking kernel modules
-#if [ ! -d $KERNEL_SRC_DIR/$KERNEL_MOD_DIR_NAME ]
-#then
-#	report_error "Build kernel modules first"
-#	exit 1
-#fi
 
 # Get kernel release
 pushd $KERNEL_SRC_DIR > /dev/null
@@ -212,8 +196,8 @@ update-locale LANG=$LOCALE LANGUAGE=$LANGUAGE LC_ALL=$LOCALE
 echo "dash dash/sh boolean false" | debconf-set-selections
 echo "tzdata tzdata/Areas select $TZDATA_AREA" | debconf-set-selections
 echo "tzdata tzdata/Zones/Europe select $TZDATA_ZONE" | debconf-set-selections
-echo "nagios3-cgi nagios3/adminpassword string tf" | debconf-set-selections
-echo "nagios3-cgi nagios3/adminpassword-repeat string tf" | debconf-set-selections
+#echo "nagios3-cgi nagios3/adminpassword string tf" | debconf-set-selections
+#echo "nagios3-cgi nagios3/adminpassword-repeat string tf" | debconf-set-selections
 echo '# KEYBOARD CONFIGURATION FILE
 
 # Consult the keyboard(5) manual page.
@@ -229,15 +213,24 @@ setupcon
 dpkg --configure -a
 # run dpkg a second time to install the nagios packages that might not have been
 # installed the first time due to a missing dependency to dnsmasq
-dpkg --configure -a
+#dpkg --configure -a
 # add true here to avoid having a dpkg error abort the whole script here
 true
+EOF
+
+# Adding new user
+report_info "Adding new user"
+$CHROOT <<EOF
+rm -rf /home/
+mkdir /home/
+useradd -m -c "RED Brick User" -G adm,dialout,cdrom,sudo,audio,video,plugdev,games,users,ntp,crontab,netdev tf
+echo tf:tf | chpasswd
 EOF
 
 # Installing the kernel and preparing the boot directory
 report_info "Installing the kernel and preparing the boot directory"
 pushd $SOURCE_DIR > /dev/null
-#mv *.debian.tar.gz linux-$KERNEL_RELEASE.debian.tar.gz
+
 if [ ! -f linux-$KERNEL_RELEASE.tar.gz ]; then
 	mv *.orig.tar.gz linux-$KERNEL_RELEASE.tar.gz
 fi
@@ -346,10 +339,17 @@ dpkg --configure -a
 true
 EOF
 
-# Provide node command using nodejs (for backward compatibility)
-report_info "Provide node command using nodejs (for backward compatibility)"
+# Installing Node.js and NPM
+report_info "Installing Node.js and NPM"
 $CHROOT <<EOF
-update-alternatives --install /usr/local/bin/node node /usr/bin/nodejs 900
+# GROUP-START:node
+curl -sL https://deb.nodesource.com/setup_8.x | sudo -E bash -
+sudo apt install nodejs -y
+cd /usr/local/bin
+ln -s /usr/bin/node node
+cd /usr/lib
+ln -s node_modules node
+# GROUP-END:node
 EOF
 
 # Updating Perl modules
@@ -446,7 +446,7 @@ EOF
 rm -rf $BUILD_DIR/nodejs_tmp
 mkdir -p $BUILD_DIR/nodejs_tmp
 npm install $ROOTFS_DIR/usr/tinkerforge/bindings/javascript/nodejs/tinkerforge.tgz -g --prefix $BUILD_DIR/nodejs_tmp
-rsync -ac --no-o --no-g $BUILD_DIR/nodejs_tmp/lib/node_modules/tinkerforge $ROOTFS_DIR/usr/lib/nodejs
+rsync -ac --no-o --no-g $BUILD_DIR/nodejs_tmp/lib/node_modules/tinkerforge $ROOTFS_DIR/usr/lib/node_modules
 rm -rf $BUILD_DIR/nodejs_tmp
 
 # Installing Mono features
@@ -459,7 +459,7 @@ unzip -q ./SharpPcap-4.2.0.bin.zip
 unzip -q ./itextsharp-all-5.5.1.zip -d ./itextsharp
 unzip -q ./xml-rpc.net.2.5.0.zip -d ./xml-rpc.net
 cd /tmp/features/mono_features/MathNet.Numerics/Net35
-cp ./*.dll /usr/lib/mono/2.0/
+cp ./*.dll /usr/lib/mono/4.0/
 cd /tmp/features/mono_features/MathNet.Numerics/Net40
 cp ./*.dll /usr/lib/mono/4.0/
 cd /tmp/features/mono_features/mysql-connector-net/v2.0/
@@ -467,7 +467,7 @@ mv ./mysql.data.cf.dll ./MySql.Data.CF.dll
 mv ./mysql.data.dll ./MySql.Data.dll
 mv ./mysql.data.entity.dll ./MySql.Data.Entity.dll
 mv ./mysql.web.dll ./MySql.Web.dll
-cp ./MySql.* /usr/lib/mono/2.0/
+cp ./MySql.* /usr/lib/mono/4.0/
 cd /tmp/features/mono_features/mysql-connector-net/v4.0/
 mv ./mysql.data.dll ./MySql.Data.dll
 mv ./mysql.data.entity.dll ./MySql.Data.Entity.dll
@@ -481,19 +481,19 @@ mv ./mysql.data.entity.EF6.dll ./MySql.Data.Entity.EF6.dll
 mv ./mysql.web.dll ./MySql.Web.dll
 cp ./MySql.* /usr/lib/mono/4.5/
 cd /tmp/features/mono_features/SharpPcap-4.2.0/Release/
-cp ./*.dll /usr/lib/mono/2.0/
-cp ./*.config /usr/lib/mono/2.0/
+cp ./*.dll /usr/lib/mono/4.0/
+cp ./*.config /usr/lib/mono/4.0/
 cd /tmp/features/mono_features/itextsharp/
-cp ./*.dll /usr/lib/mono/2.0/
+cp ./*.dll /usr/lib/mono/4.0/
 cd /tmp/features/mono_features/xml-rpc.net/
-cp ./*.dll /usr/lib/mono/2.0/
+cp ./*.dll /usr/lib/mono/4.0/
 if  [ "$CONFIG_NAME" = "full" ]
 then
 	cd /tmp/features/mono_features/
 	unzip -q opentk-2014-06-20.zip -d ./OpenTK
 	cd ./OpenTK/Binaries/OpenTK/Release/
-	cp ./*.dll /usr/lib/mono/2.0/
-	cp ./*.config /usr/lib/mono/2.0/
+	cp ./*.dll /usr/lib/mono/4.0/
+	cp ./*.config /usr/lib/mono/4.0/
 fi
 EOF
 
@@ -510,6 +510,7 @@ then
 	report_info "Installing Ruby features"
 	$CHROOT <<EOF
 # GROUP-START:ruby
+gem install --no-ri --no-rdoc bundler rake rubocop
 gem install --no-ri --no-rdoc mysql2 sqlite3
 gem install --no-ri --no-rdoc rubyvis plotrb statsample distribution minimization integration
 gem install --no-ri --no-rdoc ruby-pcap curb
@@ -564,14 +565,15 @@ EOF
 # Configuring boot splash image
 report_info "Configuring boot splash image"
 $CHROOT <<EOF
-chmod 755 /etc/init.d/asplashscreen
-systemctl enable asplashscreen
+#chmod 755 /etc/init.d/asplashscreen
+#systemctl enable asplashscreen
+systemctl enable splashscreen.service
 EOF
 
 # Removing plymouth
 report_info "Removing plymouth"
 $CHROOT <<EOF
-apt-get purge plymouth -y
+apt purge plymouth -y
 dpkg --configure -a
 # add true here to avoid having a dpkg error abort the whole script here
 true
@@ -584,22 +586,35 @@ if [ "$CONFIG_NAME" = "full" ]
 then
 	report_info "Image specific tasks"
 
-	# Configuring Mali GPU
-	report_info "Configuring Mali GPU"
+	# Removing lightdm display manager
+	report_info "Removing lightdm display manager"
 	$CHROOT <<EOF
-cd /tmp/mali-gpu
-dpkg -i libdri2-1_1.0-2_armhf.deb
-dpkg -i libsunxi-mali-x11_1.1-1_armhf.deb
-dpkg -i libvdpau-sunxi_1.0-1_armhf.deb
-dpkg -i sunxi-disp-test_1.0-1_armhf.deb
-dpkg -i libump_3.0-0sunxi1_armhf.deb
-dpkg -i xserver-xorg-video-sunximali_1.0-4_armhf.deb
-dpkg -i libegl1-mesa_2-1.1-2_armhf.deb
-dpkg -i libgles1-mesa_2-1.1-2_armhf.deb
-dpkg -i libgles2-mesa_2-1.1-2_armhf.deb
-dpkg --configure -a
-# add true here to avoid having a dpkg error abort the whole script here
-true
+apt purge lightdm lightdm-* -y
+EOF
+
+	# Installing Mali GPU 2D driver
+	report_info "Installing Mali GPU 2D driver"
+	$CHROOT <<EOF
+cd /tmp
+tar jxf xf86-video-fbturbo-armhf-built.tar.bz2
+cd xf86-video-fbturbo-armhf-built
+make install
+cp xorg.conf /usr/share/X11/xorg.conf.d/99-sunxifb.conf
+cp xorg.conf /etc/X11/xorg.conf
+EOF
+
+	# Adding reboot and shutdown buttons to the panel
+	report_info "Adding reboot and shutdown buttons to the panel"
+	$CHROOT <<EOF
+cd /tmp/panel-buttons
+cp dialog-reboot /sbin/
+cp dialog-shutdown /sbin/
+chown tf.tf /sbin/dialog-reboot
+chown tf.tf /sbin/dialog-shutdown
+cp tinkerforge-system-reboot.png /usr/share/icons/
+cp tinkerforge-system-shutdown.png /usr/share/icons/
+cp system-reboot.desktop /usr/share/applications/
+cp system-shutdown.desktop /usr/share/applications/
 EOF
 
 	# Setting up XDM logo and desktop wallpaper
@@ -648,9 +663,9 @@ else
     cat /tmp/sources.list.tmp > /etc/apt/sources.list
 fi
 /etc/init.d/hostname.sh
-apt-get clean
-apt-get update
-apt-get -f install -y
+apt clean
+apt update
+apt -f install -y
 EOF
 
 # Setting up fake-hwclock
@@ -662,62 +677,14 @@ systemctl disable hwclock.sh
 fake-hwclock
 EOF
 
-# Adding new user
-report_info "Adding new user"
-$CHROOT <<EOF
-rm -rf /home/
-adduser tf
-tf
-tf
-RED Brick User
-
-
-
-
-Y
-EOF
-
-# User group setup
-report_info "User group setup"
-$CHROOT <<EOF
-usermod -a -G adm tf
-usermod -a -G dialout tf
-usermod -a -G cdrom tf
-usermod -a -G sudo tf
-usermod -a -G audio tf
-usermod -a -G video tf
-usermod -a -G plugdev tf
-usermod -a -G games tf
-usermod -a -G users tf
-usermod -a -G ntp tf
-usermod -a -G crontab tf
-usermod -a -G netdev tf
-EOF
-
 # Copy RED Brick index website
 report_info "Copy RED Brick index website"
 $CHROOT <<EOF
-cp /tmp/index.py /home/tf
-chown tf:tf /home/tf/index.py
+cp /tmp/index.wsgi /home/tf
+chown tf:tf /home/tf/index.wsgi
 cp /tmp/red.css /home/tf
 chown tf:tf /home/tf/red.css
 EOF
-
-# Downgrading GNU Octave so the Tinkerforge bindings can be used with callbacks (version 3.6)
-# Keeping the not working GNU Octave version in multistrap configuration for the purpose of
-# proper version listing
-#report_info "Downgrading GNU Octave"
-#$CHROOT <<EOF
-#echo -e "deb [arch=armhf] http://ftp.debian.org/debian wheezy main contrib non-free\n\
-#deb-src http://ftp.debian.org/debian wheezy main contrib non-free\n" > /etc/apt/sources.list.d/wheezy.list
-#apt-get update
-#apt-get remove octave octave-* -y
-#apt-get purge octave octave-* -y
-#aptitude install octave=3.6.2-5+deb7u1 octave-common=3.6.2-5+deb7u1 octave-java=1.2.8-6 -y
-#apt-mark hold octave octave-common octave-java
-#apt-get clean
-#apt-get -f install -y
-#EOF
 
 if [ "$DRAFT_MODE" = "no" ]
 then
@@ -786,18 +753,6 @@ dpkg --configure -a
 true
 EOF
 
-# Installing kernel headers
-#report_info "Installing kernel headers"
-#rsync -ac --no-o --no-g $KERNEL_HEADER_INCLUDE_DIR $ROOTFS_DIR/usr/
-#rsync -ac --no-o --no-g $KERNEL_HEADER_USR_DIR $ROOTFS_DIR
-
-# Cleaning /etc/resolv.conf and creating symbolic link for resolvconf
-#report_info "Cleaning /etc/resolv.conf and creating symbolic link for resolvconf"
-#$CHROOT <<EOF
-#rm -rf /etc/resolv.conf
-#ln -s /etc/resolvconf/run/resolv.conf /etc/resolv.conf
-#EOF
-
 # Disabling the root user
 report_info "Disabling the root user"
 $CHROOT <<EOF
@@ -816,54 +771,53 @@ $CHROOT <<EOF
 ln -s /usr/tinkerforge/bindings/javascript/browser/source/Tinkerforge.js /home/tf
 EOF
 
-# Compiling and installing hostapd and wpa_supplicant for access point mode support
-report_info "Compiling and installing hostapd and wpa_supplicant for access point mode support"
+# Compiling and installing hostapd
+report_info "Compiling and installing hostapd"
 $CHROOT <<EOF
 cd /tmp
 #mkdir ./wpa_supplicant_hostapd
 #tar jxf wpa_supplicant_hostapd_v4.0.2_9000.20130911.tar.bz2 -C ./wpa_supplicant_hostapd
-tar jxf hostap.tar.bz2
+#tar jxf hostap.tar.bz2
+tar jxf hostap-hostap_2_6.tar.bz2
 mkdir -p /etc/hostapd
 #cd ./wpa_supplicant_hostapd
 #cd ./wpa_supplicant_hostapd/hostapd
-cd ./hostap/hostapd
+#cd ./hostap/hostapd
+cd ./hostap-hostap_2_6/hostapd
 make clean
 #make
 make all
 make install
-cd ../wpa_supplicant
-make clean
+#cd ../wpa_supplicant
+#make clean
 #make
-make all
-make install
+#make all
+#make install
 chmod 755 /etc/init.d/hostapd
 EOF
 
-# Installing usb_modeswitch for mobile internet.
-# Not using the version from repo in this case
-# because the repo version is not updated enough
-# and doesn't include some devices for auto mode switching
-report_info "Installing usb_modeswitch for mobile internet"
+# Installing NetworkManager
+
+# NetworkManager is installed this way instead of by multistrap because
+# if installed with multustrap it will ignore the recommended packages
+# which are required for proper operation of NetworkManager.
+report_info "Installing NetworkManager"
 $CHROOT <<EOF
+apt install network-manager -y \
+network-manager-gnome \
+network-manager-pptp \
+network-manager-pptp-gnome
 cd /tmp
-tar jxf usb-modeswitch-2.2.1.tar.bz2
-cd ./usb-modeswitch-2.2.1
-make all
-make install
-cd /tmp
-tar jxf usb-modeswitch-data-20150115.tar.bz2
-cd ./usb-modeswitch-data-20150115
-make all
-make files-install
-make db-install
+cp NetworkManager.conf /etc/NetworkManager
 EOF
 
-# Installing umtskeeper for mobile internet
-report_info "Installing umtskeeper for mobile internet"
+# Installing ModemManager
+report_info "Installing ModemManager"
 $CHROOT <<EOF
 cd /tmp
-tar jxf umtskeeper.tar.bz2 -C /usr
-chmod 755 /usr/umtskeeper/sakis3g
+apt purge modemmanager -y
+apt install ./modemmanager_1.6.4-1_armhf.deb
+apt-mark hold modemmanager
 EOF
 
 # Do not run DNS/DHCP server at boot by default
@@ -876,6 +830,12 @@ EOF
 report_info "Enabling X server in RED Brick way"
 $CHROOT <<EOF
 touch /etc/tf_x11_enabled
+EOF
+
+# Enabling GPU 2D Only
+report_info "Enabling GPU 2D Only"
+$CHROOT <<EOF
+touch /etc/tf_gpu_2d_only
 EOF
 
 # Remove apache init script dependency of DNS server
@@ -899,72 +859,62 @@ $CHROOT <<EOF
 chmod u+s /bin/ping
 EOF
 
-# Installing openHAB
-report_info "Installing openHAB"
+# Installing openHAB2
+report_info "Installing openHAB2"
 $CHROOT <<EOF
 wget -qO - 'https://bintray.com/user/downloadSubjectPublicKey?username=openhab' | apt-key add -
-echo 'deb http://dl.bintray.com/openhab/apt-repo stable main' > /etc/apt/sources.list.d/openhab.list
-apt-get update
-apt-get install -y --force-yes openhab-runtime openhab-addon-binding-tinkerforge openhab-addon-action-tinkerforge
+echo 'deb https://dl.bintray.com/openhab/apt-repo2 stable main' | tee /etc/apt/sources.list.d/openhab2.list
+apt update
+apt install openhab2 openhab2-addons openhab2-addons-legacy -y
 systemctl daemon-reload
-systemctl disable openhab
-chown openhab:openhab /usr/share/openhab/webapps/static
+systemctl disable openhab2
+cp /tmp/openhab2/addons.cfg /etc/openhab2/services/addons.cfg
+cp /tmp/openhab2/tinkerforge.cfg /etc/openhab2/services/tinkerforge.cfg
+EOF
+
+# To save image build time the archive is created from nagios
+# source which is already built and ready to execute install commands
+
+# Installing Nagios
+report_info "Installing Nagios"
+$CHROOT <<EOF
+useradd nagios
+groupadd nagcmd
+usermod -a -G nagcmd nagios
+usermod -a -G nagcmd www-data
+cd /tmp
+tar jxvf nagios-4.3.2-armhf-built.tar.bz2
+cd nagios-4.3.2-armhf-built
+make install
+make install-init
+make install-config
+make install-commandmode
+a2enmod rewrite
+a2enmod cgi
+cp sample-config/httpd.conf /etc/apache2/sites-available/nagios4.conf
+chmod 644 /etc/apache2/sites-available/nagios4.conf
+a2ensite nagios4.conf
+sudo htpasswd -b -c /usr/local/nagios/etc/htpasswd.users nagiosadmin tf
+cp nagios.cfg /usr/local/nagios/etc
+cp resource.cfg /usr/local/nagios/etc
+cp nagios.service /etc/systemd/system
 EOF
 
 # Installing signing key of official Mono repository
 report_info "Installing signing key of official Mono repository"
 $CHROOT <<EOF
 apt-key adv --keyserver hkp://keyserver.ubuntu.com:80 --recv-keys 3FA7E0328081BFF6A14DA29AA6A19B38D3D831EF
-apt-get update
+apt update
 EOF
 
-# Preparing kernel source
-#report_info "Preparing kernel source"
-#if [ ! -d $KERNEL_SRC_COPY_DIR ]
-#then
-#	mkdir -p $KERNEL_SRC_COPY_DIR
-#else
-#	rm -rf $KERNEL_SRC_COPY_DIR
-#	mkdir -p $KERNEL_SRC_COPY_DIR
-#fi
-#$ADVCP_BIN -garp $KERNEL_SRC_DIR/. $KERNEL_SRC_COPY_DIR
-#pushd $KERNEL_SRC_COPY_DIR > /dev/null
-#make ARCH=arm CROSS_COMPILE=$TC_PREFIX LOCALVERSION="" clean
-#make ARCH=arm CROSS_COMPILE=$TC_PREFIX LOCALVERSION="" $KERNEL_CONFIG_NAME
-#KERNEL_RELEASE=`make -s ARCH=arm CROSS_COMPILE=$TC_PREFIX LOCALVERSION="" kernelrelease`
-#KERNEL_RELEASE=`python -c 'import sys; print sys.argv[1].rstrip("+") + "+"' $KERNEL_RELEASE`
-#filter_kernel_source
-#popd
-
-# Copying kernel modules and source
-#report_info "Copying kernel modules and source"
-
-#rsync -ac --no-o --no-g $KERNEL_SRC_DIR/$KERNEL_MOD_DIR_NAME/lib/modules $ROOTFS_DIR/lib/
-#rsync -ac --no-o --no-g $KERNEL_SRC_DIR/$KERNEL_MOD_DIR_NAME/lib/firmware $ROOTFS_DIR/lib/
-
-#rm $ROOTFS_DIR/lib/modules/$KERNEL_RELEASE/build
-#rm $ROOTFS_DIR/lib/modules/$KERNEL_RELEASE/source
-
-#$ADVCP_BIN -garp $KERNEL_SRC_COPY_DIR/. $ROOTFS_DIR/lib/modules/$KERNEL_RELEASE/build
-#mkdir -p $ROOTFS_DIR/usr/src/$KERNEL_RELEASE/
-#$ADVCP_BIN -garp $KERNEL_SRC_COPY_DIR/. $ROOTFS_DIR/usr/src/$KERNEL_RELEASE/
-
-#$CHROOT <<EOF
-#cd /lib/modules/$KERNEL_RELEASE/
-#ln -s /usr/src/$KERNEL_RELEASE build
-#ln -s /usr/src/$KERNEL_RELEASE source
-#cd /lib/modules/$KERNEL_RELEASE/build
-#make -B scripts
-#EOF
-
-# Preparing the boot directory
-#report_info "Preparing the boot directory"
-#mkdir -p $ROOTFS_DIR/boot/kernel
-#cp $KERNEL_IMAGE_FILE $ROOTFS_DIR/boot/kernel
-#mkdir -p $ROOTFS_DIR/boot/kernel/dtb
-#cp $KERNEL_DTB_FILE $ROOTFS_DIR/boot/kernel/dtb
-#cp $UBOOT_BOOT_CMD_FILE $ROOTFS_DIR/boot
-#$UBOOT_SRC_DIR/tools/mkimage -C none -A arm -T script -d $ROOTFS_DIR/boot/boot.cmd $ROOTFS_DIR/boot/boot.scr
+# Disabling apt-daily
+report_info "Disabling apt-daily"
+$CHROOT <<EOF
+systemctl disable apt-daily.timer
+systemctl disable apt-daily.service
+systemctl disable apt-daily-upgrade.timer
+systemctl disable apt-daily-upgrade.service
+EOF
 
 # Cleaning /tmp directory
 report_info "Cleaning /tmp directory"
