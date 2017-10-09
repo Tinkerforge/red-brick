@@ -5,4 +5,6 @@ setenv bootargs_main console=tty1 earlyprintk=serial,ttyS3,115200n8 root=/dev/mm
 setenv bootargs_extra hdmi.audio=EDID:0 disp.screen0_output_mode=EDID:800x480p60
 setenv bootargs "${bootargs_main} ${bootargs_extra}"
 
+saveenv
+
 bootz 0x46000000 - 0x49000000
