@@ -1,5 +1,5 @@
 # XScreenSaver Preferences File
-# Written by xscreensaver-demo 5.36 for tf on Fri Jul 21 11:17:27 2017.
+# Written by xscreensaver-demo 5.36 for tf on Tue Oct 10 10:44:17 2017.
 # https://www.jwz.org/xscreensaver/
 
 timeout:	0:10:00
@@ -34,7 +34,7 @@ grabVideoFrames:    False
 chooseRandomImages: True
 imageDirectory:	/usr/share/images/tf-screensaver
 
-mode:		one
+mode:		off
 selected:	81
 
 textMode:	date
