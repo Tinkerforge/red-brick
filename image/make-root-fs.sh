@@ -867,6 +867,7 @@ echo 'deb https://dl.bintray.com/openhab/apt-repo2 stable main' | tee /etc/apt/s
 apt update
 apt install openhab2 openhab2-addons openhab2-addons-legacy -y
 systemctl daemon-reload
+systemctl stop openhab2
 systemctl disable openhab2
 cp /tmp/openhab2/addons.cfg /etc/openhab2/services/addons.cfg
 cp /tmp/openhab2/tinkerforge.cfg /etc/openhab2/services/tinkerforge.cfg
