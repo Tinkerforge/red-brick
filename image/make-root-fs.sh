@@ -343,8 +343,8 @@ EOF
 report_info "Installing Node.js and NPM"
 $CHROOT <<EOF
 # GROUP-START:node
-curl -sL https://deb.nodesource.com/setup_8.x | sudo -E bash -
-sudo apt install nodejs -y
+curl -sL https://deb.nodesource.com/setup_8.x | -E bash -
+apt install nodejs -y
 cd /usr/local/bin
 ln -s /usr/bin/node node
 cd /usr/lib
@@ -895,7 +895,7 @@ a2enmod cgi
 cp sample-config/httpd.conf /etc/apache2/sites-available/nagios4.conf
 chmod 644 /etc/apache2/sites-available/nagios4.conf
 a2ensite nagios4.conf
-sudo htpasswd -b -c /usr/local/nagios/etc/htpasswd.users nagiosadmin tf
+htpasswd -b -c /usr/local/nagios/etc/htpasswd.users nagiosadmin tf
 cp nagios.cfg /usr/local/nagios/etc
 cp resource.cfg /usr/local/nagios/etc
 cp nagios.service /etc/systemd/system
@@ -952,7 +952,7 @@ then
 	# Generate feature table
 	report_info "Generating feature table"
 	pushd $BASE_DIR > /dev/null
-	./generate-feature-doc.py $CONFIG_NAME
+	./generate-feature-doc.py $CONFIG_NAME && cp $PATCHES_DIR/root-fs/common/etc/tf_installed_versions $ROOTFS_DIR/etc/
 	popd > /dev/null
 fi
 
