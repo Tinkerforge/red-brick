@@ -599,8 +599,8 @@ cd /tmp
 tar jxf xf86-video-fbturbo-armhf-built.tar.bz2
 cd xf86-video-fbturbo-armhf-built
 make install
-cp xorg.conf /usr/share/X11/xorg.conf.d/99-sunxifb.conf
-cp xorg.conf /etc/X11/xorg.conf
+cp /tmp/xorg.conf /usr/share/X11/xorg.conf.d/99-sunxifb.conf
+cp /tmp/xorg.conf /etc/X11/xorg.conf
 EOF
 
 	# Adding reboot and shutdown buttons to the panel
