@@ -113,7 +113,7 @@ LC_ALL=$LOCALE \
 DEBIAN_FRONTEND=noninteractive \
 DEBCONF_NONINTERACTIVE_SEEN=true \
 KERNEL_RELEASE=$KERNEL_RELEASE \
-chroot $ROOTFS_DIR"
+chroot $ROOTFS_DIR /bin/bash"
 
 # Checking multistrap config
 if [ ! -e $MULTISTRAP_TEMPLATE_FILE ]
@@ -175,7 +175,7 @@ chmod 1777 $ROOTFS_DIR/tmp
 # Disable starting daemons in the chroot
 report_info "Disable starting daemons in the chroot"
 cat > $ROOTFS_DIR/usr/sbin/policy-rc.d <<EOF
-#!/bin/sh
+#!/bin/bash
 exit 101
 EOF
 chmod a+x $ROOTFS_DIR/usr/sbin/policy-rc.d
@@ -196,8 +196,6 @@ update-locale LANG=$LOCALE LANGUAGE=$LANGUAGE LC_ALL=$LOCALE
 echo "dash dash/sh boolean false" | debconf-set-selections
 echo "tzdata tzdata/Areas select $TZDATA_AREA" | debconf-set-selections
 echo "tzdata tzdata/Zones/Europe select $TZDATA_ZONE" | debconf-set-selections
-#echo "nagios3-cgi nagios3/adminpassword string tf" | debconf-set-selections
-#echo "nagios3-cgi nagios3/adminpassword-repeat string tf" | debconf-set-selections
 echo '# KEYBOARD CONFIGURATION FILE
 
 # Consult the keyboard(5) manual page.
@@ -211,10 +209,7 @@ BACKSPACE="$KB_BACKSPACE"
 ' > /etc/default/keyboard
 setupcon
 dpkg --configure -a
-# run dpkg a second time to install the nagios packages that might not have been
-# installed the first time due to a missing dependency to dnsmasq
-#dpkg --configure -a
-# add true here to avoid having a dpkg error abort the whole script here
+# Add true here to avoid having a dpkg error abort the whole script here
 true
 EOF
 
@@ -300,8 +295,7 @@ wget download.tinkerforge.com/_stuff/jdk-8-linux-arm-vfp-hflt.tar.gz
 tar zxf jdk-8-linux-arm-vfp-hflt.tar.gz -C /usr/lib/jvm
 update-alternatives --install /usr/bin/javac javac /usr/lib/jvm/jdk1.8.0/bin/javac 1
 update-alternatives --install /usr/bin/java java /usr/lib/jvm/jdk1.8.0/bin/java 1
-# we only have the java8 javac
-#echo 3 | update-alternatives --config javac
+# We only have the Java8 javac
 echo 2 | update-alternatives --config java
 EOF
 
@@ -318,7 +312,7 @@ fi
 $CHROOT <<EOF
 dpkg -i /tmp/brickd_linux_latest+redbrick_armhf.deb
 dpkg --configure -a
-# add true here to avoid having a dpkg error abort the whole script here
+# Add true here to avoid having a dpkg error abort the whole script here
 true
 EOF
 
@@ -335,21 +329,19 @@ fi
 $CHROOT <<EOF
 dpkg -i /tmp/redapid_linux_latest_armhf.deb
 dpkg --configure -a
-# add true here to avoid having a dpkg error abort the whole script here
+# Add true here to avoid having a dpkg error abort the whole script here
 true
 EOF
 
 # Installing Node.js and NPM
 report_info "Installing Node.js and NPM"
 $CHROOT <<EOF
-# GROUP-START:node
-curl -sL https://deb.nodesource.com/setup_8.x | -E bash -
-apt install nodejs -y
+curl -sL https://deb.nodesource.com/setup_8.x | sudo -E bash -
+apt-get install nodejs -y
 cd /usr/local/bin
 ln -s /usr/bin/node node
 cd /usr/lib
 ln -s node_modules node
-# GROUP-END:node
 EOF
 
 # Updating Perl modules
@@ -565,17 +557,15 @@ EOF
 # Configuring boot splash image
 report_info "Configuring boot splash image"
 $CHROOT <<EOF
-#chmod 755 /etc/init.d/asplashscreen
-#systemctl enable asplashscreen
 systemctl enable splashscreen.service
 EOF
 
 # Removing plymouth
 report_info "Removing plymouth"
 $CHROOT <<EOF
-apt purge plymouth -y
+apt-get purge plymouth -y
 dpkg --configure -a
-# add true here to avoid having a dpkg error abort the whole script here
+# Add true here to avoid having a dpkg error abort the whole script here
 true
 EOF
 
@@ -589,7 +579,7 @@ then
 	# Removing lightdm display manager
 	report_info "Removing lightdm display manager"
 	$CHROOT <<EOF
-apt purge lightdm lightdm-* -y
+apt-get purge lightdm lightdm-* -y
 EOF
 
 	# Installing Mali GPU 2D driver
@@ -637,7 +627,7 @@ EOF
 	$CHROOT <<EOF
 dpkg -i /tmp/brickv_linux_latest.deb
 dpkg --configure -a
-# add true here to avoid having a dpkg error abort the whole script here
+# Add true here to avoid having a dpkg error abort the whole script here
 true
 EOF
 fi
@@ -663,9 +653,9 @@ else
     cat /tmp/sources.list.tmp > /etc/apt/sources.list
 fi
 /etc/init.d/hostname.sh
-apt clean
-apt update
-apt -f install -y
+apt-get clean
+apt-get update
+apt-get -f install -y
 EOF
 
 # Setting up fake-hwclock
@@ -684,6 +674,164 @@ cp /tmp/index.wsgi /home/tf
 chown tf:tf /home/tf/index.wsgi
 cp /tmp/red.css /home/tf
 chown tf:tf /home/tf/red.css
+EOF
+
+# Updating user PATH
+report_info "Updating user PATH"
+$CHROOT <<EOF
+echo "
+# Updating user PATH
+PATH=\$PATH:/sbin:/usr/sbin
+export PATH" >> /etc/profile
+EOF
+
+# Reconfiguring locale
+report_info "Reconfiguring locale"
+$CHROOT <<EOF
+echo $LOCALE_CHARSET > /etc/locale.gen
+locale-gen
+update-locale LANG=$LOCALE LANGUAGE=$LANGUAGE LC_ALL=$LOCALE
+setupcon
+dpkg --configure -a
+# Add true here to avoid having a dpkg error aborit the whole script here
+true
+EOF
+
+# Fix Apache server name problem
+report_info "Fix Apache server name problem"
+$CHROOT <<EOF
+cp -ar /tmp/apache2.conf /etc/apache2/
+EOF
+
+# Generate Tinkerforge.js symlink
+report_info "Generating Tinkerforge.js symlink"
+$CHROOT <<EOF
+ln -s /usr/tinkerforge/bindings/javascript/browser/source/Tinkerforge.js /home/tf
+EOF
+
+# Compiling and installing hostapd
+report_info "Compiling and installing hostapd"
+$CHROOT <<EOF
+cd /tmp
+tar jxf hostap-hostap_2_6.tar.bz2
+mkdir -p /etc/hostapd
+cd ./hostap-hostap_2_6/hostapd
+make clean
+make all
+make install
+chmod 755 /etc/init.d/hostapd
+EOF
+
+# Installing NetworkManager
+
+# NetworkManager is installed this way instead of by multistrap because
+# if installed with multustrap it will ignore the recommended packages
+# which are required for proper operation of NetworkManager.
+report_info "Installing NetworkManager"
+$CHROOT <<EOF
+apt-get install network-manager -y \
+network-manager-gnome \
+network-manager-pptp \
+network-manager-pptp-gnome
+cd /tmp
+cp NetworkManager.conf /etc/NetworkManager
+EOF
+
+# Installing ModemManager
+report_info "Installing ModemManager"
+$CHROOT <<EOF
+cd /tmp
+apt-get purge modemmanager -y
+apt-get install ./modemmanager_1.6.4-1_armhf.deb
+apt-mark hold modemmanager
+EOF
+
+# Do not run DNS/DHCP server at boot by default
+report_info "Do not run DNS/DHCP server at boot by default"
+$CHROOT <<EOF
+systemctl disable dnsmasq
+EOF
+
+# Enabling X11 server in RED Brick way
+report_info "Enabling X server in RED Brick way"
+$CHROOT <<EOF
+touch /etc/tf_x11_enabled
+EOF
+
+# Enabling GPU 2D Only
+report_info "Enabling GPU 2D Only"
+$CHROOT <<EOF
+touch /etc/tf_gpu_2d_only
+EOF
+
+# Remove Apache init script dependency of DNS server
+report_info "Remove Apache init script dependency of DNS server"
+$CHROOT <<EOF
+sed -i 's/\$named//g' /etc/init.d/apache2
+EOF
+
+# Installing tinkerforge touch calibrator
+report_info "Installing tinkerforge touch calibrator"
+$CHROOT <<EOF
+cp /tmp/tinkerforge_touch_calibrator/tinkerforge_touch_calibrator.png /usr/share/icons
+cp /tmp/tinkerforge_touch_calibrator/tinkerforge_touch_calibrator.py /usr/bin
+cp /tmp/tinkerforge_touch_calibrator/tinkerforge_touch_calibrator.desktop /home/tf/Desktop
+chmod 777 /usr/share/X11/xorg.conf.d
+EOF
+
+# Enabling setuid of /bin/ping
+report_info "Enabling setuid of /bin/ping"
+$CHROOT <<EOF
+chmod u+s /bin/ping
+EOF
+
+# Installing OpenHAB2
+report_info "Installing OpenHAB2"
+$CHROOT <<EOF
+wget -qO - 'https://bintray.com/user/downloadSubjectPublicKey?username=openhab' | apt-key add -
+echo 'deb https://dl.bintray.com/openhab/apt-repo2 stable main' | tee /etc/apt/sources.list.d/openhab2.list
+apt-get update
+apt-get install openhab2 openhab2-addons openhab2-addons-legacy -y
+systemctl daemon-reload
+systemctl stop openhab2
+systemctl disable openhab2
+cp /tmp/openhab2/addons.cfg /etc/openhab2/services/addons.cfg
+cp /tmp/openhab2/tinkerforge.cfg /etc/openhab2/services/tinkerforge.cfg
+EOF
+
+# To save image build time the archive is created from Nagios
+# source which is already built and ready to execute install commands
+
+# Installing Nagios
+report_info "Installing Nagios"
+$CHROOT <<EOF
+useradd nagios
+groupadd nagcmd
+usermod -a -G nagcmd nagios
+usermod -a -G nagcmd www-data
+cd /tmp
+tar jxvf nagios-4.3.2-armhf-built.tar.bz2
+cd nagios-4.3.2-armhf-built
+make install
+make install-init
+make install-config
+make install-commandmode
+a2enmod rewrite
+a2enmod cgi
+cp sample-config/httpd.conf /etc/apache2/sites-available/nagios4.conf
+chmod 644 /etc/apache2/sites-available/nagios4.conf
+a2ensite nagios4.conf
+htpasswd -b -c /usr/local/nagios/etc/htpasswd.users nagiosadmin tf
+cp nagios.cfg /usr/local/nagios/etc
+cp resource.cfg /usr/local/nagios/etc
+cp nagios.service /etc/systemd/system
+EOF
+
+# Installing signing key of official Mono repository
+report_info "Installing signing key of official Mono repository"
+$CHROOT <<EOF
+apt-key adv --keyserver hkp://keyserver.ubuntu.com:80 --recv-keys 3FA7E0328081BFF6A14DA29AA6A19B38D3D831EF
+apt-get update
 EOF
 
 if [ "$DRAFT_MODE" = "no" ]
@@ -732,182 +880,6 @@ EOF
 	mv $ROOTFS_DIR/root/ruby-$CONFIG_NAME.listing $BUILD_DIR
 fi
 
-# Updating user PATH
-report_info "Updating user PATH"
-$CHROOT <<EOF
-echo "
-# Updating user PATH
-PATH=\$PATH:/sbin:/usr/sbin
-export PATH" >> /etc/profile
-EOF
-
-# Reconfiguring locale
-report_info "Reconfiguring locale"
-$CHROOT <<EOF
-echo $LOCALE_CHARSET > /etc/locale.gen
-locale-gen
-update-locale LANG=$LOCALE LANGUAGE=$LANGUAGE LC_ALL=$LOCALE
-setupcon
-dpkg --configure -a
-# add true here to avoid having a dpkg error aborit the whole script here
-true
-EOF
-
-# Disabling the root user
-report_info "Disabling the root user"
-$CHROOT <<EOF
-passwd -l root
-EOF
-
-# Fix apache server name problem
-report_info "Fix apache server name problem"
-$CHROOT <<EOF
-cp -ar /tmp/apache2.conf /etc/apache2/
-EOF
-
-# Generate Tinkerforge.js symlink
-report_info "Generating Tinkerforge.js symlink"
-$CHROOT <<EOF
-ln -s /usr/tinkerforge/bindings/javascript/browser/source/Tinkerforge.js /home/tf
-EOF
-
-# Compiling and installing hostapd
-report_info "Compiling and installing hostapd"
-$CHROOT <<EOF
-cd /tmp
-#mkdir ./wpa_supplicant_hostapd
-#tar jxf wpa_supplicant_hostapd_v4.0.2_9000.20130911.tar.bz2 -C ./wpa_supplicant_hostapd
-#tar jxf hostap.tar.bz2
-tar jxf hostap-hostap_2_6.tar.bz2
-mkdir -p /etc/hostapd
-#cd ./wpa_supplicant_hostapd
-#cd ./wpa_supplicant_hostapd/hostapd
-#cd ./hostap/hostapd
-cd ./hostap-hostap_2_6/hostapd
-make clean
-#make
-make all
-make install
-#cd ../wpa_supplicant
-#make clean
-#make
-#make all
-#make install
-chmod 755 /etc/init.d/hostapd
-EOF
-
-# Installing NetworkManager
-
-# NetworkManager is installed this way instead of by multistrap because
-# if installed with multustrap it will ignore the recommended packages
-# which are required for proper operation of NetworkManager.
-report_info "Installing NetworkManager"
-$CHROOT <<EOF
-apt install network-manager -y \
-network-manager-gnome \
-network-manager-pptp \
-network-manager-pptp-gnome
-cd /tmp
-cp NetworkManager.conf /etc/NetworkManager
-EOF
-
-# Installing ModemManager
-report_info "Installing ModemManager"
-$CHROOT <<EOF
-cd /tmp
-apt purge modemmanager -y
-apt install ./modemmanager_1.6.4-1_armhf.deb
-apt-mark hold modemmanager
-EOF
-
-# Do not run DNS/DHCP server at boot by default
-report_info "Do not run DNS/DHCP server at boot by default"
-$CHROOT <<EOF
-systemctl disable dnsmasq
-EOF
-
-# Enabling X11 server in RED Brick way
-report_info "Enabling X server in RED Brick way"
-$CHROOT <<EOF
-touch /etc/tf_x11_enabled
-EOF
-
-# Enabling GPU 2D Only
-report_info "Enabling GPU 2D Only"
-$CHROOT <<EOF
-touch /etc/tf_gpu_2d_only
-EOF
-
-# Remove apache init script dependency of DNS server
-report_info "Remove apache init script dependency of DNS server"
-$CHROOT <<EOF
-sed -i 's/\$named//g' /etc/init.d/apache2
-EOF
-
-# Installing tinkerforge touch calibrator
-report_info "Installing tinkerforge touch calibrator"
-$CHROOT <<EOF
-cp /tmp/tinkerforge_touch_calibrator/tinkerforge_touch_calibrator.png /usr/share/icons
-cp /tmp/tinkerforge_touch_calibrator/tinkerforge_touch_calibrator.py /usr/bin
-cp /tmp/tinkerforge_touch_calibrator/tinkerforge_touch_calibrator.desktop /home/tf/Desktop
-chmod 777 /usr/share/X11/xorg.conf.d
-EOF
-
-# Enabling setuid of /bin/ping
-report_info "Enabling setuid of /bin/ping"
-$CHROOT <<EOF
-chmod u+s /bin/ping
-EOF
-
-# Installing openHAB2
-report_info "Installing openHAB2"
-$CHROOT <<EOF
-wget -qO - 'https://bintray.com/user/downloadSubjectPublicKey?username=openhab' | apt-key add -
-echo 'deb https://dl.bintray.com/openhab/apt-repo2 stable main' | tee /etc/apt/sources.list.d/openhab2.list
-apt update
-apt install openhab2 openhab2-addons openhab2-addons-legacy -y
-systemctl daemon-reload
-systemctl stop openhab2
-systemctl disable openhab2
-cp /tmp/openhab2/addons.cfg /etc/openhab2/services/addons.cfg
-cp /tmp/openhab2/tinkerforge.cfg /etc/openhab2/services/tinkerforge.cfg
-EOF
-
-# To save image build time the archive is created from nagios
-# source which is already built and ready to execute install commands
-
-# Installing Nagios
-report_info "Installing Nagios"
-$CHROOT <<EOF
-useradd nagios
-groupadd nagcmd
-usermod -a -G nagcmd nagios
-usermod -a -G nagcmd www-data
-cd /tmp
-tar jxvf nagios-4.3.2-armhf-built.tar.bz2
-cd nagios-4.3.2-armhf-built
-make install
-make install-init
-make install-config
-make install-commandmode
-a2enmod rewrite
-a2enmod cgi
-cp sample-config/httpd.conf /etc/apache2/sites-available/nagios4.conf
-chmod 644 /etc/apache2/sites-available/nagios4.conf
-a2ensite nagios4.conf
-htpasswd -b -c /usr/local/nagios/etc/htpasswd.users nagiosadmin tf
-cp nagios.cfg /usr/local/nagios/etc
-cp resource.cfg /usr/local/nagios/etc
-cp nagios.service /etc/systemd/system
-EOF
-
-# Installing signing key of official Mono repository
-report_info "Installing signing key of official Mono repository"
-$CHROOT <<EOF
-apt-key adv --keyserver hkp://keyserver.ubuntu.com:80 --recv-keys 3FA7E0328081BFF6A14DA29AA6A19B38D3D831EF
-apt update
-EOF
-
 # Disabling apt-daily
 report_info "Disabling apt-daily"
 $CHROOT <<EOF
@@ -925,6 +897,12 @@ rm -rf $ROOTFS_DIR/tmp/*
 report_info "Updating locate database"
 $CHROOT <<EOF
 updatedb
+EOF
+
+# Disabling the root user
+report_info "Disabling the root user"
+$CHROOT <<EOF
+passwd -l root
 EOF
 
 # Clearing bash history of the root user
