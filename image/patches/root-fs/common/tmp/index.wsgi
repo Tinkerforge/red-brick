@@ -1,6 +1,7 @@
 #!/usr/bin/env python
 # -*- coding: UTF-8 -*-
 
+import subprocess
 from flask import Flask, request # Use Flask framework
 from distutils.version import StrictVersion
 
@@ -11,17 +12,11 @@ import os
 import cgi
 
 IMAGE_VERSION = None
-MIN_VERSION_WITH_OPENHAB2 = StrictVersion('1.10')
 
 with open('/etc/tf_image_version', 'r') as f:
     IMAGE_VERSION = StrictVersion(f.read().split(' ')[0].strip())
 
 PATH_PROGRAMS = os.path.join('/', 'home', 'tf', 'programs')
-
-if IMAGE_VERSION and IMAGE_VERSION >= MIN_VERSION_WITH_OPENHAB2:
-    PATH_OPENHAB = os.path.join('/', 'etc', 'openhab2', 'sitemaps')
-else:
-    PATH_OPENHAB = os.path.join('/', 'etc', 'openhab', 'configurations', 'sitemaps')
 
 def get_program_ids():
     try:
@@ -37,12 +32,6 @@ def get_program_name(config_path):
 
     return '<unknown>'
 
-def get_openhab_sitemaps():
-    try:
-        return [c for c in os.listdir(PATH_OPENHAB) if c.endswith('.sitemap') and c != '.sitemap']
-    except:
-        return []
-
 @app.route('/')
 def index():
     program_infos = {}
@@ -53,16 +42,6 @@ def index():
         program_infos[i]['url_log'] = os.path.join('/', 'programs', i, 'log')
         program_infos[i]['url_bin'] = os.path.join('/', 'programs', i, 'bin')
 
-    openhab_infos = {}
-    for s in get_openhab_sitemaps():
-        openhab_infos[s] = {}
-        openhab_infos[s]['name'] = s[:-len('.sitemap')]
-
-        if IMAGE_VERSION and IMAGE_VERSION >= MIN_VERSION_WITH_OPENHAB2:
-            openhab_infos[s]['url_sitemap'] = 'http://{0}:8080/classicui/app?sitemap={1}'.format(request.host, s[:-len('.sitemap')])
-        else:
-            openhab_infos[s]['url_sitemap'] = 'http://{0}:8080/openhab.app?sitemap={1}'.format(request.host, s[:-len('.sitemap')])
-
     box_num = ['A', 'B', 'C']
     program_boxes = ''
     for i, program_info in enumerate(sorted(program_infos.values())):
@@ -72,23 +51,33 @@ def index():
                                             program_info['url_bin'],
                                             program_info['url_config'])
 
-    openhab_boxes = ''
-    for i, openhab_info in enumerate(sorted(openhab_infos.values())):
-        openhab_boxes += OPENHAB_BOX.format(box_num[i % 3],
-                                            cgi.escape(openhab_info['name']),
-                                            openhab_info['url_sitemap'])
-
     if os.path.isfile('/etc/tf_server_monitoring_enabled'):
         nagios_status = 'enabled'
     else:
         nagios_status = 'disabled'
 
+    openhab_status = 'in unknown state'
+    openhab_button_state_class = 'smallbutton'
+
+    ps = subprocess.Popen('/bin/systemctl is-enabled openhab2.service',
+                          shell=True,
+                          stdout=subprocess.PIPE,
+                          stderr=subprocess.PIPE)
+
+    ps_stdout = ps.communicate()[0].strip()
+
+    if ps_stdout and ps_stdout == 'disabled':
+        openhab_status = 'disabled'
+        openhab_button_state_class = 'smallbutton-disabled'
+    elif ps_stdout and ps_stdout == 'enabled':
+        openhab_status = 'enabled'
+
     return PAGE.format(len(program_infos),
                        program_boxes,
-                       len(openhab_infos),
-                       openhab_boxes,
+                       openhab_status,
+                       request.host,
+                       openhab_button_state_class,
                        nagios_status)
-
 
 PAGE = """
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
@@ -107,7 +96,7 @@ PAGE = """
             </div>
             <p>For information on how to use the RED Brick please visit the extensive online documentation.</p>
             <ul class="actions">
-                <li><a href="http://www.tinkerforge.com/en/doc/Hardware/Bricks/RED_Brick.html" class="button">RED Brick Documentation</a></li>
+                <li><a href="http://www.tinkerforge.com/en/doc/Hardware/Bricks/RED_Brick.html" target="_blank" class="button">RED Brick Documentation</a></li>
             </ul>
         </div>
     </div>
@@ -136,20 +125,25 @@ PAGE = """
     <div id="openhab" class="container">
         <div class="title">
             <h2>openHAB</h2>
-            <span class="byline">Currently there are <strong>{2}</strong> openHAB configurations available on the RED Brick</span>
+            <span class="byline">Currently this service is <strong>{2}</strong> on the RED Brick</span>
         </div>
         <p>
-            For each configuration you can view the sitemap. New configurations can be added and existing ones can be edited and deleted
-            using the openHAB settings tab of Brick Viewer.
+            When this service is enabled openHAB web interface can be accessed
+            by clicking the button below for configuring and using openHAB. This
+            service can be enabled or disabled from the services tab and openHAB
+            configuration files can be viewed and modified from openHAB settings
+            tab of Brick Viewer.
         </p>
+        <ul class="actions">
+            <li><a href="http://{3}:8080/" target="_blank" class="{4}">openHAB Web Interface</a></li>
+        </ul>
         <div id="three-column">
-{3}
         </div>
     </div>
     <div id="servermonitoring" class="container">
         <div class="title">
             <h2>Server Monitoring</h2>
-            <span class="byline">Currently this service is <strong>{4}</strong> on the RED Brick</span>
+            <span class="byline">Currently this service is <strong>{5}</strong> on the RED Brick</span>
         </div>
         <p>
             Monitoring rules for different Bricklets can be configured using the server monitoring settings tab of Brick Viewer.
@@ -157,7 +151,7 @@ PAGE = """
             The default username is <strong>nagiosadmin</strong> and the default password is <strong>tf</strong>.
         </p>
         <ul class="actions">
-            <li><a href="/nagios" class="smallbutton">Nagios Status and Configuration</a></li>
+            <li><a href="/nagios" target="_blank" class="smallbutton">Nagios Status and Configuration</a></li>
         </ul>
     </div>
 </div>
@@ -169,18 +163,9 @@ PROGRAM_BOX = """
             <div class="box{0}">
                 <div class="box">
                     <p><strong>{1}</strong></p>
-                    <a href="{2}" class="smallbutton">Log</a>
-                    <a href="{3}" class="smallbutton">Bin</a>
-                    <a href="{4}" class="smallbutton">Config</a>
-                </div>
-            </div>
-"""
-
-OPENHAB_BOX = """
-            <div class="box{0}">
-                <div class="box">
-                    <p><strong>{1}</strong></p>
-                    <a href="{2}" class="smallbutton">Sitemap</a>
+                    <a href="{2}" target="_blank" class="smallbutton">Log</a>
+                    <a href="{3}" target="_blank" class="smallbutton">Bin</a>
+                    <a href="{4}" target="_blank" class="smallbutton">Config</a>
                 </div>
             </div>
 """

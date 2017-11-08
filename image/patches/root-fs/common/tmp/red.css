@@ -180,6 +180,19 @@ ul.contact li a.icon-rss:before { background: #F2600B; }
 /* Button Style                                                                  */
 /*********************************************************************************/
 
+.smallbutton-disabled {
+    pointer-events:none;
+		opacity: 0.5;
+		display: inline-block;
+		padding: 0em 1em;
+		background: #A00;
+		line-height: 2em;
+		text-decoration: none;
+		font-weight: 400;
+		font-size: 1em;
+		color: #FFF;
+}
+
 .smallbutton
 {
 	display: inline-block;
