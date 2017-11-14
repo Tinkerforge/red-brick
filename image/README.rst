@@ -70,9 +70,17 @@ apt-cacher or not the next step is the same::
 
  sudo ./make-root-fs.sh <config-name>
 
+For example::
+
+ sudo ./make-root-fs.sh full
+
 Finally, run::
 
  sudo ./make-image.sh <config-name>
+
+For example::
+
+ sudo ./make-image.sh full
 
 which creates the image file in the ``./build/output`` directory.
 
