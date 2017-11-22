@@ -134,6 +134,11 @@ PAGE = """
             configuration files can be viewed and modified from openHAB settings
             tab of Brick Viewer.
         </p>
+        <p>
+            <strong>Note:</strong> If openHAB web interface is not available then
+            please wait a few minutes and try again. The web interface takes sometime
+            to be available after the RED Brick is running.
+        </p>
         <ul class="actions">
             <li><a href="http://{3}:8080/" target="_blank" class="{4}">openHAB Web Interface</a></li>
         </ul>
