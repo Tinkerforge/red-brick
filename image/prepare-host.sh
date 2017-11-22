@@ -108,7 +108,7 @@ pushd $TOOLS_DIR > /dev/null
 
 if [ ! -f ./$QEMU_BASE_NAME.tar.bz2 ]
 then
-	wget http://wiki.qemu-project.org/download/$QEMU_BASE_NAME.tar.bz2
+	wget https://download.qemu.org/$QEMU_BASE_NAME.tar.bz2
 fi
 
 if [ ! -d ./$QEMU_BASE_NAME ]
@@ -118,15 +118,9 @@ fi
 
 pushd ./$QEMU_BASE_NAME > /dev/null
 
-if [ ! -f ./$QEMU_BASE_NAME.patched ]
-then
-	patch -p1 -i $PATCHES_DIR/tools/$QEMU_BASE_NAME-sigrst-sigpwr.patch
-	touch ./$QEMU_BASE_NAME.patched
-fi
-
 if [ ! -f ./arm-linux-user/qemu-arm ]
 then
-	./configure --target-list="arm-linux-user" --static --disable-system --disable-libssh2
+	./configure --target-list="arm-linux-user" --static --disable-system
 	make
 fi
 
