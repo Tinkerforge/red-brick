@@ -287,16 +287,11 @@ $CHROOT <<EOF
 systemctl enable getty@tty2.service
 EOF
 
-# Installing Java 8
-report_info "Installing Java 8"
+# Fixing JAVA libjvm.so location for Octave bindings
+report_info "Fixing JAVA libjvm.so location for Octave bindings"
 $CHROOT <<EOF
-cd /tmp
-wget download.tinkerforge.com/_stuff/jdk-8-linux-arm-vfp-hflt.tar.gz
-tar zxf jdk-8-linux-arm-vfp-hflt.tar.gz -C /usr/lib/jvm
-update-alternatives --install /usr/bin/javac javac /usr/lib/jvm/jdk1.8.0/bin/javac 1
-update-alternatives --install /usr/bin/java java /usr/lib/jvm/jdk1.8.0/bin/java 1
-# We only have the Java8 javac
-echo 2 | update-alternatives --config java
+cd /usr/lib/jvm/java-8-openjdk-armhf/jre/lib/arm
+ln -s client server
 EOF
 
 # Installing brickd
@@ -389,6 +384,10 @@ wget http://download.tinkerforge.com/bindings/java/tinkerforge_java_bindings_lat
 unzip -q -d java tinkerforge_java_bindings_latest.zip
 wget http://download.tinkerforge.com/bindings/javascript/tinkerforge_javascript_bindings_latest.zip
 unzip -q -d javascript tinkerforge_javascript_bindings_latest.zip
+cd javascript/nodejs
+npm config set unsafe-perm true
+npm install -g ./tinkerforge.tgz
+cd /usr/tinkerforge/bindings
 wget http://download.tinkerforge.com/bindings/labview/tinkerforge_labview_bindings_latest.zip
 unzip -q -d labview tinkerforge_labview_bindings_latest.zip
 wget http://download.tinkerforge.com/bindings/mathematica/tinkerforge_mathematica_bindings_latest.zip
@@ -430,16 +429,6 @@ unzip -q -d vbnet tinkerforge_vbnet_bindings_latest.zip
 cd /usr/tinkerforge/bindings
 rm -rf *_bindings_latest.zip
 EOF
-
-# Install nodejs bindings. We can't install them through chroot, since
-# qemu does not support netlink (which is necessary for npm).
-# So instead we install them in a custom dir on the host system and
-# copy them into the rootfs afterwards.
-rm -rf $BUILD_DIR/nodejs_tmp
-mkdir -p $BUILD_DIR/nodejs_tmp
-npm install $ROOTFS_DIR/usr/tinkerforge/bindings/javascript/nodejs/tinkerforge.tgz -g --prefix $BUILD_DIR/nodejs_tmp
-rsync -ac --no-o --no-g $BUILD_DIR/nodejs_tmp/lib/node_modules/tinkerforge $ROOTFS_DIR/usr/lib/node_modules
-rm -rf $BUILD_DIR/nodejs_tmp
 
 # Installing Mono features
 report_info "Installing Mono features"
@@ -713,9 +702,9 @@ EOF
 report_info "Compiling and installing hostapd"
 $CHROOT <<EOF
 cd /tmp
-tar jxf hostap-hostap_2_6.tar.bz2
+tar jxf hostap_2_6.tar.bz2
 mkdir -p /etc/hostapd
-cd ./hostap-hostap_2_6/hostapd
+cd ./hostap_2_6/hostapd
 make clean
 make all
 make install
