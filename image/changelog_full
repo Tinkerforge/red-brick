@@ -69,3 +69,21 @@
 - Update all API bindings: C/C++ 2.1.15, C# 2.1.14, Delphi/Lazarus 2.1.15,
   Java 2.1.13, JavaScript 2.0.14, Octave 2.0.13, Perl 2.1.13, PHP 2.1.13,
   Python 2.1.13, Ruby 2.1.13, Shell 2.1.13, Visual Basic .NET 2.1.13
+
+2017-11-23: 1.10 (<unknown>)
+- Update Linux Kernel to version 4.13
+- Update Debian to version 9 (Stretch)
+- Fix KRACK vulnerability for WiFi encryption in AP and client mode
+  For details check: https://www.krackattacks.com/
+- On-Demand CPU frequency control
+- Support for Bluetooth LE/4
+- Networking with NetworkManager and ModemManager which improves response time
+  in Brick Viewer
+- Support for additional USB WiFi adapters in AP and client mode
+- Software updates: Node.js 8, Nagios 4, Octave 4, openHAB 2, etc
+- Update Brick Daemon to version 2.3.1
+- Update Brick Viewer to version 2.3.?
+- Update all API bindings: C/C++ 2.1.18, C# 2.1.16, Delphi/Lazarus 2.1.17,
+  Java 2.1.15, JavaScript 2.0.16, Octave 2.0.15, Perl 2.1.15, PHP 2.1.15,
+  Python 2.1.15, Ruby 2.1.15, Shell 2.1.15, Visual Basic .NET 2.1.15
+- No Mali GPU 3D acceleration support but 2D acceleration using CPU
