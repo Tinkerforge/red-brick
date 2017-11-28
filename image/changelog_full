@@ -45,9 +45,8 @@
 - Add official Mono 4 APT repository
 - Update Brick Viewer to version 2.2.6
 - Update all API bindings: C/C++ 2.1.7, C# 2.1.6, Delphi/Lazarus 2.1.6,
-  Java 2.1.5, JavaScript 2.0.5, LabVIEW 2.1.5, Mathematica 2.1.5,
-  MATLAB/Octave 2.0.5, Perl 2.1.5, PHP 2.1.5, Python 2.1.5, Ruby 2.1.5,
-  Shell 2.1.5, VB.NET 2.1.5
+  Java 2.1.5, JavaScript 2.0.5, Octave 2.0.5, Perl 2.1.5, PHP 2.1.5,
+  Python 2.1.5, Ruby 2.1.5, Shell 2.1.5, Visual Basic .NET 2.1.5
 
 2016-02-15: 1.8 (e28cb28)
 - Disable unnecessary OTG detection on Mini-USB port
@@ -70,11 +69,11 @@
   Java 2.1.13, JavaScript 2.0.14, Octave 2.0.13, Perl 2.1.13, PHP 2.1.13,
   Python 2.1.13, Ruby 2.1.13, Shell 2.1.13, Visual Basic .NET 2.1.13
 
-2017-11-23: 1.10 (<unknown>)
+2017-11-28: 1.10 (<unknown>)
 - Update Linux Kernel to version 4.13
 - Update Debian to version 9 (Stretch)
-- Fix KRACK vulnerability for WiFi encryption in AP and client mode
-  For details check: https://www.krackattacks.com/
+- Fix KRACK vulnerability for WiFi encryption in AP and client mode, for details
+  check: https://www.krackattacks.com/
 - On-Demand CPU frequency control
 - Support for Bluetooth LE/4
 - Networking with NetworkManager and ModemManager which improves response time
@@ -86,4 +85,4 @@
 - Update all API bindings: C/C++ 2.1.18, C# 2.1.16, Delphi/Lazarus 2.1.17,
   Java 2.1.15, JavaScript 2.0.16, Octave 2.0.15, Perl 2.1.15, PHP 2.1.15,
   Python 2.1.15, Ruby 2.1.15, Shell 2.1.15, Visual Basic .NET 2.1.15
-- No Mali GPU 3D acceleration support but 2D acceleration using CPU
+- No Mali GPU 3D acceleration support, but 2D acceleration using CPU
