@@ -1,0 +1,14 @@
+[Unit]
+Description=Automounter for Removable Media
+Documentation=man:udiskie(8)
+After=udisks2.service
+
+[Service]
+Type=simple
+Environment=DISPLAY=:0
+Environment=XAUTHORITY=/home/tf/.Xauthority
+ExecStart=/usr/bin/udiskie --smart-tray --no-notify --file-manager /usr/bin/pcmanfm
+Restart=on-failure
+
+[Install]
+WantedBy=default.target

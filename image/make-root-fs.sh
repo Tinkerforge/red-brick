@@ -549,6 +549,12 @@ $CHROOT <<EOF
 systemctl enable splashscreen.service
 EOF
 
+# Configuring udiskie for USB automount
+report_info "Configuring udiskie for USB automount"
+$CHROOT <<EOF
+systemctl enable udiskie.service
+EOF
+
 # Removing plymouth
 report_info "Removing plymouth"
 $CHROOT <<EOF
