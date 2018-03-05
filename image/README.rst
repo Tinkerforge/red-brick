@@ -22,30 +22,12 @@ one place. To fix the problem you need to edit ``/usr/sbin/multistrap`` and
 remove ``$forceyes`` from it. If you don't have the multistrap package installed
 yet, then the ``prepare-host.sh`` script in the next step will install it.
 
-Preparations
-------------
-
-Because the Node.js and NPM packages are different between Ubuntu, Debian and
-different Debian versions you have to install them manually for now. On Ubuntu
-and Debian jessie and sid just install the ``npm`` package using::
-
- sudo apt-get install npm
-
-On Debian wheezy follow this `setup instructions
-<https://github.com/joyent/node/wiki/installing-node.js-via-package-manager>`__
-to install Node.js including NPM. In short, run::
-
- curl -sL https://deb.nodesource.com/setup | sudo bash -
- sudo apt-get install nodejs
-
-After installing Node.js and NPM run::
-
- ./prepare-host.sh
-
-to install the remaining required tools and packages.
-
 Building the Image
 ------------------
+
+To prepare the system for building the image run::
+
+ ./prepare-host.sh
 
 After the preparations are done run::
 
@@ -123,41 +105,20 @@ The default user name is ``tf`` with password ``tf``.
 The full image runs a LXDE desktop on the HDMI interface. All images have a
 serial console running on the USB OTG interface.
 
-Editing the Kernel Config
--------------------------
-
-First update the kernel sources::
-
- ./update-source.sh
-
-Then run the edit script that starts the graphical config editor::
-
- ./edit-kernel-config.sh <config-name>
-
-After you edited and saved the config changes close the config editor and the
-edit script will take care of the rest. Then recompile the kernel::
-
- ./compile-source.sh <config-name>
-
-If you already have an image written to a SD card then you can update the
-kernel on it::
-
- sudo ./update-kernel-on-sd-card.sh <config-name> <device>
-
-For example (assuming that ``/dev/sdb`` is your SD card)::
-
- sudo ./update-kernel-on-sd-card.sh full /dev/sdb
-
-Now the SD card contains the modified kernel.
-
 Enable Serial Console for Debug Brick
 -------------------------------------
 
-In ``config/kernel/red_brick_*_defconfig`` add this to ``CONFIG_CMDLINE``::
+In ``config/kernel/boot.cmd`` replace the line::
 
- console=ttyS0,115200
+ setenv arg_console console=tty1
 
-For kernel debug output you can set these values too::
+with the following line::
 
- CONFIG_SW_DEBUG_UART=3
- CONFIG_DEBUG_LL=y
+ setenv arg_console console=serial,ttyS3
+
+Then move the file to RED-Brick's ``/boot`` directory and execute the following commands::
+
+ cd /boot
+ sudo mkimage -C none -A arm -T script -d boot.cmd boot.scr
+
+After these steps reboot the RED-Brick to get a serial console through a Debug Brick.
