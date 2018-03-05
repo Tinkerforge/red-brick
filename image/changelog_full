@@ -86,3 +86,7 @@
   Java 2.1.15, JavaScript 2.0.16, Octave 2.0.15, Perl 2.1.15, PHP 2.1.15,
   Python 2.1.15, Ruby 2.1.15, Shell 2.1.15, Visual Basic .NET 2.1.15
 - No Mali GPU 3D acceleration support, but 2D acceleration using CPU
+
+<unknown>: 1.11 (<unknown>)
+- Fix high CPU usage problem with SPI stack presence
+- Add DMA support for the SPI driver causing significant stack throughput increase
