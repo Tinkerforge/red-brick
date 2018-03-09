@@ -69,7 +69,7 @@
   Java 2.1.13, JavaScript 2.0.14, Octave 2.0.13, Perl 2.1.13, PHP 2.1.13,
   Python 2.1.13, Ruby 2.1.13, Shell 2.1.13, Visual Basic .NET 2.1.13
 
-2017-11-28: 1.10 (<unknown>)
+2017-11-28: 1.10 (6edcef2)
 - Update Linux Kernel to version 4.13
 - Update Debian to version 9 (Stretch)
 - Fix KRACK vulnerability for WiFi encryption in AP and client mode, for details
@@ -87,6 +87,10 @@
   Python 2.1.15, Ruby 2.1.15, Shell 2.1.15, Visual Basic .NET 2.1.15
 - No Mali GPU 3D acceleration support, but 2D acceleration using CPU
 
-<unknown>: 1.11 (<unknown>)
+2018-03-09: 1.11 (<unknown>)
 - Fix high CPU usage problem with SPI stack presence
 - Add DMA support for the SPI driver causing significant stack throughput increase
+- Update Brick Viewer to version 2.3.14
+- Update all API bindings: C/C++ 2.1.19, C# 2.1.17, Delphi/Lazarus 2.1.18,
+  Java 2.1.17, JavaScript 2.0.17, Octave 2.0.17, Perl 2.1.16, PHP 2.1.16,
+  Python 2.1.16, Ruby 2.1.16, Shell 2.1.16, Visual Basic .NET 2.1.16
