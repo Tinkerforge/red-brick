@@ -182,7 +182,12 @@ chmod a+x $ROOTFS_DIR/usr/sbin/policy-rc.d
 
 # Copying qemu-arm-static to root-fs
 report_info "Copying qemu-arm-static to root-fs"
-cp $TOOLS_DIR/$QEMU_BASE_NAME/arm-linux-user/qemu-arm $ROOTFS_DIR$QEMU_BIN
+if ! [[ "$QEMU_MIN_VER_NO_BUILD" = "`/bin/echo -e "$QEMU_CUR_VER\n$QEMU_MIN_VER_NO_BUILD" | /usr/bin/sort -V | /usr/bin/head -n1`" ]];
+then
+	cp $TOOLS_DIR/$QEMU_BASE_NAME/arm-linux-user/qemu-arm $ROOTFS_DIR$QEMU_BIN
+else
+	cp /usr/bin/qemu-arm $ROOTFS_DIR$QEMU_BIN
+fi
 
 # Configuring the generated root-fs
 report_info "Configuring the generated root-fs"

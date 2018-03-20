@@ -45,7 +45,6 @@ sudo apt-get update
 report_info "Installing tools (requires root access)"
 
 sudo apt-get install -y $REQUIRED_HOST_PACKAGES
-sudo apt-get build-dep -y qemu
 
 # Installing cross compiling toolchain
 report_info "Installing cross compiling toolchain"
@@ -101,31 +100,38 @@ fi
 popd > /dev/null
 popd > /dev/null
 
-# Compiling qemu-arm-static
-report_info "Compiling qemu-arm-static"
+QEMU_CUR_VER=$(/usr/bin/dpkg -s qemu | /bin/grep '^Version:' | grep -o -P '(?<=1:).*(?=\+)')
 
-pushd $TOOLS_DIR > /dev/null
-
-if [ ! -f ./$QEMU_BASE_NAME.tar.bz2 ]
+if ! [[ "$QEMU_MIN_VER_NO_BUILD" = "`/bin/echo -e "$QEMU_CUR_VER\n$QEMU_MIN_VER_NO_BUILD" | /usr/bin/sort -V | /usr/bin/head -n1`" ]];
 then
-	wget https://download.qemu.org/$QEMU_BASE_NAME.tar.bz2
+	# Compiling qemu-arm-static
+	report_info "Compiling qemu-arm-static"
+
+	sudo apt-get build-dep -y qemu
+
+	pushd $TOOLS_DIR > /dev/null
+
+	if [ ! -f ./$QEMU_BASE_NAME.tar.bz2 ]
+	then
+		wget https://download.qemu.org/$QEMU_BASE_NAME.tar.bz2
+	fi
+
+	if [ ! -d ./$QEMU_BASE_NAME ]
+	then
+		tar xjf ./$QEMU_BASE_NAME.tar.bz2
+	fi
+
+	pushd ./$QEMU_BASE_NAME > /dev/null
+
+	if [ ! -f ./arm-linux-user/qemu-arm ]
+	then
+		./configure --target-list="arm-linux-user" --static --disable-system
+		make
+	fi
+
+	popd > /dev/null
+	popd > /dev/null
 fi
-
-if [ ! -d ./$QEMU_BASE_NAME ]
-then
-	tar xjf ./$QEMU_BASE_NAME.tar.bz2
-fi
-
-pushd ./$QEMU_BASE_NAME > /dev/null
-
-if [ ! -f ./arm-linux-user/qemu-arm ]
-then
-	./configure --target-list="arm-linux-user" --static --disable-system
-	make
-fi
-
-popd > /dev/null
-popd > /dev/null
 
 report_process_finish
 
