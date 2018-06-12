@@ -1,0 +1,5 @@
+[target]
+programs=TestBrickletDualRelay
+
+[require]
+packages=tinkerforge

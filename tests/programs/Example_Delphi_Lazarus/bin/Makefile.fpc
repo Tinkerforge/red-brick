@@ -1,5 +1,0 @@
-[target]
-programs=ExampleSimple
-
-[require]
-packages=tinkerforge
