@@ -312,6 +312,7 @@ fi
 $CHROOT <<EOF
 dpkg -i /tmp/brickd_linux_latest+redbrick_armhf.deb
 dpkg --configure -a
+systemctl enable brickd.service
 # Add true here to avoid having a dpkg error abort the whole script here
 true
 EOF
