@@ -3,6 +3,7 @@
 
 from tinkerforge.ip_connection import IPConnection
 from tinkerforge.bricklet_real_time_clock import BrickletRealTimeClock
+from tinkerforge.bricklet_real_time_clock_v2 import BrickletRealTimeClockV2
 
 import time
 import datetime
@@ -25,6 +26,8 @@ class RTCTimeToLinuxTime:
 
         self.enum_sema = Semaphore(0)
         self.rtc_uid = None
+        self.rtc_device_identifier = None
+        self.rtc = None
         self.rtc_time = None
         self.timer = None
 
@@ -76,8 +79,13 @@ class RTCTimeToLinuxTime:
 
         try:
             # Create Real-Time Clock device object
-            self.rtc = BrickletRealTimeClock(self.rtc_uid, self.ipcon)
-            year, month, day, hour, minute, second, centisecond, _ = self.rtc.get_date_time()
+            if self.rtc_device_identifier == BrickletRealTimeClock.DEVICE_IDENTIFIER:
+                self.rtc = BrickletRealTimeClock(self.rtc_uid, self.ipcon)
+                year, month, day, hour, minute, second, centisecond, _ = self.rtc.get_date_time()
+            else:
+                self.rtc = BrickletRealTimeClockV2(self.rtc_uid, self.ipcon)
+                year, month, day, hour, minute, second, centisecond, _, _ = self.rtc.get_date_time()
+
             self.rtc_time = datetime.datetime(year, month, day, hour, minute, second, centisecond * 10000)
         except:
             return False
@@ -107,8 +115,10 @@ class RTCTimeToLinuxTime:
     def cb_enumerate(self, uid, connected_uid, position, hardware_version,
                      firmware_version, device_identifier, enumeration_type):
         # If more then one Real-Time Clock Bricklet is connected we will use the first one that we find
-        if device_identifier == BrickletRealTimeClock.DEVICE_IDENTIFIER:
+        if device_identifier in [BrickletRealTimeClock.DEVICE_IDENTIFIER,
+                                 BrickletRealTimeClockV2.DEVICE_IDENTIFIER]:
             self.rtc_uid = uid
+            self.rtc_device_identifier = device_identifier
             self.enum_sema.release()
 
 if __name__ == '__main__':

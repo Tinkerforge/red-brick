@@ -1,8 +1,8 @@
 Set RTC time as system time
 ---------------------------
 
-If you can't use NTP (i.e. the RED Brick does not have Internet access), you
-can use the battery-backed Real-Time Clock Bricklet to set a proper system time.
+If you can't use NTP (i.e. the RED Brick does not have Internet access), you can
+use the battery-backed Real-Time Clock Bricklet (2.0) to set a proper system time.
 
 Upload this program to the RED Brick using Brick Viewer's New Program wizard.
 With the following program settings the system time will be corrected every
