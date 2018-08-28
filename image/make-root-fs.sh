@@ -798,6 +798,7 @@ systemctl stop openhab2
 systemctl disable openhab2
 cp /tmp/openhab2/addons.cfg /etc/openhab2/services/addons.cfg
 cp /tmp/openhab2/tinkerforge.cfg /etc/openhab2/services/tinkerforge.cfg
+chown -R openhab.openhab /etc/openhab2/
 EOF
 
 # To save image build time the archive is created from Nagios
