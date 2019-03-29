@@ -2,11 +2,11 @@
 <html>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     <head>
-        <title>Tinkerforge | Test Bricklet Dual Relay</title>
+        <title>Tinkerforge | Test Bricklet Industrial Dual Relay</title>
     </head>
     <body>
         <div style="text-align:center;">
-            <h1>Test Bricklet Dual Relay</h1>
+            <h1>Test Bricklet Industrial Dual Relay</h1>
             <p>
                 <input value="localhost" id="host" type="text" size="20">:
                 <input value="4280" id="port" type="text" size="5">,
@@ -41,7 +41,7 @@
                 }
 
                 ipcon = new Tinkerforge.IPConnection(); // Create IP connection
-                dr = new Tinkerforge.BrickletDualRelay(UID, ipcon); // Create device object
+                dr = new Tinkerforge.BrickletIndustrialDualRelay(UID, ipcon); // Create device object
 
                 ipcon.connect(HOST, PORT,
                     function(error) {
@@ -53,10 +53,10 @@
                 ipcon.on(Tinkerforge.IPConnection.CALLBACK_CONNECTED,
                     function(connectReason) {
                         // Turn both relays off and on
-                        dr.setState(false, false);
+                        dr.setValue(false, false);
 
                         setTimeout(function() {
-                            dr.setState(true, true);
+                            dr.setValue(true, true);
                         }, 1000);
                     }
                 );

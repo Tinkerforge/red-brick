@@ -8,18 +8,18 @@ UID = "xyz" # Change to your UID
 import time
 
 from tinkerforge.ip_connection import IPConnection
-from tinkerforge.bricklet_dual_relay import DualRelay
+from tinkerforge.bricklet_industrial_dual_relay import IndustrialDualRelay
 
 if __name__ == "__main__":
     ipcon = IPConnection() # Create IP connection
-    dr = DualRelay(UID, ipcon) # Create device object
+    dr = IndustrialDualRelay(UID, ipcon) # Create device object
 
     ipcon.connect(HOST, PORT) # Connect to brickd
     # Don't use device before ipcon is connected
 
     # Turn both relays off and on
-    dr.set_state(False, False)
+    dr.set_value(False, False)
     time.sleep(1)
-    dr.set_state(True, True)
+    dr.set_value(True, True)
 
     ipcon.disconnect()

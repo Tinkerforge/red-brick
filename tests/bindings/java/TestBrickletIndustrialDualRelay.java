@@ -1,7 +1,7 @@
-import com.tinkerforge.BrickletDualRelay;
+import com.tinkerforge.BrickletIndustrialDualRelay;
 import com.tinkerforge.IPConnection;
 
-public class TestBrickletDualRelay {
+public class TestBrickletIndustrialDualRelay {
 	private static final String HOST = "localhost";
 	private static final int PORT = 4223;
 	private static final String UID = "xyz"; // Change to your UID
@@ -10,15 +10,15 @@ public class TestBrickletDualRelay {
 	//       might normally want to catch are described in the documentation
 	public static void main(String args[]) throws Exception {
 		IPConnection ipcon = new IPConnection(); // Create IP connection
-		BrickletDualRelay dr = new BrickletDualRelay(UID, ipcon); // Create device object
+		BrickletIndustrialDualRelay dr = new BrickletIndustrialDualRelay(UID, ipcon); // Create device object
 
 		ipcon.connect(HOST, PORT); // Connect to brickd
 		// Don't use device before ipcon is connected
 
 		// Turn both relays off and on
-		dr.setState(false, false);
+		dr.setValue(false, false);
 		Thread.sleep(1000);
-		dr.setState(true, true);
+		dr.setValue(true, true);
 
 		ipcon.disconnect();
 	}

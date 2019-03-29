@@ -5,7 +5,7 @@ var PORT = 4223;
 var UID = 'xyz'; // Change to your UID
 
 var ipcon = new Tinkerforge.IPConnection(); // Create IP connection
-var dr = new Tinkerforge.BrickletDualRelay(UID, ipcon); // Create device object
+var dr = new Tinkerforge.BrickletIndustrialDualRelay(UID, ipcon); // Create device object
 
 ipcon.connect(HOST, PORT,
     function(error) {
@@ -17,10 +17,10 @@ ipcon.connect(HOST, PORT,
 ipcon.on(Tinkerforge.IPConnection.CALLBACK_CONNECTED,
     function(connectReason) {
         // Turn both relays off and on
-        dr.setState(false, false);
+        dr.setValue(false, false);
 
         setTimeout(function() {
-            dr.setState(true, true);
+            dr.setValue(true, true);
         }, 1000);
     }
 );

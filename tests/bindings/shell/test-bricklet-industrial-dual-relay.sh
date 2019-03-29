@@ -5,6 +5,6 @@
 uid=xyz
 
 # Turn both relays off and on
-tinkerforge call dual-relay-bricklet $uid set-state false false
+tinkerforge call industrial-dual-relay-bricklet $uid set-value false false
 sleep 1
-tinkerforge call dual-relay-bricklet $uid set-state true true
+tinkerforge call industrial-dual-relay-bricklet $uid set-value true true

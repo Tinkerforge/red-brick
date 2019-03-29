@@ -2,8 +2,8 @@
 CC=g++
 CFLAGS=-c -Wall -I/usr/include/tinkerforge
 LIBS=-ltinkerforge -lpthread
-EXE=test_bricklet_dual_relay
-SOURCES=test_bricklet_dual_relay.c
+EXE=test_bricklet_industrial_dual_relay
+SOURCES=test_bricklet_industrial_dual_relay.c
 OBJECTS=$(SOURCES:.c=.o)
 
 # Build Rules

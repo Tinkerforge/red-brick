@@ -1,5 +1,5 @@
 [target]
-programs=TestBrickletDualRelay
+programs=TestBrickletIndustrialDualRelay
 
 [require]
 packages=tinkerforge
