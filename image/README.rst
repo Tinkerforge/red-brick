@@ -1,3 +1,4 @@
+
 RED Brick Linux Image
 =====================
 
@@ -33,13 +34,17 @@ Building the Image
 
 To start the build process execute::
 
- ./build.sh <config-name>
+``./build.sh <config-name>``
 
-The ``<config-name>`` option selects the image configuration to use. See the
-``image_<config-name>.conf`` files in the config directory for available
-configurations. For example::
+The ``<config-name>`` option selects the image configuration to use.
+See the ``image_<config-name>.conf`` files in the config directory for
+available configurations.
 
- ../build.sh full
+For example::
+
+```console
+foo@bar:~$ ./build.sh full
+```
 
 This script will execute the other scripts in the right order. If you have Docker
 installed then the script will automatically try to fetch the official Docker image
@@ -56,47 +61,63 @@ Scripts
 
 To prepare the system for building the image run::
 
- ./prepare-host.sh
+```console
+foo@bar:~$ ./prepare-host.sh
+```
 
-After the preparations are done run::
+After the preparations are done to get or update the kernel and u-boot source run::
 
- ./update-source.sh
-
-to get or update the kernel and u-boot source code.
+```console
+foo@bar:~$ ./update-source.sh
+```
 
 Now the source can be compiled by running::
 
- ./compile-source.sh <config-name>
+```console
+foo@bar:~$ ./compile-source.sh <config-name>
+```
 
-The next step is to create the root-fs. This will download several Debian
-packages. It's useful to setup ``apt-cacher`` to avoid downloading all the
-packages multiple times, see the apt-cacher section below for further details.
+The next step is to create the root file system. This process will download
+several Debian packages. It's useful to setup ``apt-cacher`` to avoid downloading
+all the packages multiple times, see the apt-cacher section below for further details.
+
 Whether you decided to use apt-cacher or not the next step is the same::
 
- sudo ./make-root-fs.sh <config-name>
+```console
+foo@bar:~$ sudo ./make-root-fs.sh <config-name>
+```
 
 Finally, run::
 
- sudo ./make-image.sh <config-name>
+```console
+foo@bar:~$ sudo ./make-image.sh <config-name>
+```
 
 which creates the image file in the ``./build/output`` directory.
 
 Using apt-cacher
 ^^^^^^^^^^^^^^^^
 
-The apt-cacher daemon acts as a local cache for an APT server. If you intent
+The ``apt-cacher`` daemon acts as a local cache for an APT server. If you intend
 to create multiple images it's useful to setup apt-cacher daemons to avoid
-downloading all packages multiple times. To do this you have to install the
-apt-cacher package (it's not installed by the ``prepare-host.sh`` script)::
+downloading all packages multiple times.
 
- sudo apt-get install apt-cacher
+To do this you have to install the ``apt-cacher`` package (it's not installed
+by the ``prepare-host.sh`` script)::
 
-If dpkg asks you how apt-cacher should be started, select "manual". Finally,
-start the apt-cacher daemons by running::
+```console
+foo@bar:~$ sudo apt-get install apt-cacher
+```
 
- ./start-apt-cacher.sh
+If ``dpkg`` asks you how ``apt-cacher`` should be started, select "manual".
 
-Now ``./make-root-fs.sh`` will automatically use the apt-cacher daemons instead
+Finally start the ``apt-cacher`` daemons by running::
+
+```console
+foo@bar:~$ ./start-apt-cacher.sh
+```
+
+Now ``./make-root-fs.sh`` will automatically use the ``apt-cacher`` daemons instead
 of directly downloading from the Debian APT servers.
 
 Writing the Image to an SD Card
@@ -104,11 +125,13 @@ Writing the Image to an SD Card
 
 The image can be transferred to an SD card with::
 
- sudo ./write-image-to-sd-card.sh <config-name> <device>
+``sudo ./write-image-to-sd-card.sh <config-name> <device``
 
 For example (assuming that ``/dev/sdb`` is your SD card)::
 
- sudo ./write-image-to-sd-card.sh full /dev/sdb
+```console
+foo@bar:~$ sudo ./write-image-to-sd-card.sh full /dev/sdb
+```
 
 Now the SD card can be used to boot the RED Brick.
 
@@ -117,23 +140,29 @@ Using the Image
 
 The default user name is ``tf`` with password ``tf``.
 
-The full image runs a LXDE desktop on the HDMI interface. All images have a
-serial console running on the USB OTG interface.
+The full image runs a LXDE desktop on the HDMI interface.
+All images have a serial console running on the USB OTG
+interface.
 
 Enable Serial Console for Debug Brick
 -------------------------------------
 
 In ``config/kernel/boot.cmd`` replace the line::
 
- setenv arg_console console=tty1
+``setenv arg_console console=tty1``
 
 with the following line::
 
- setenv arg_console console=serial,ttyS3
+``setenv arg_console console=serial,ttyS3``
 
 Then move the file to RED-Brick's ``/boot`` directory and execute the following commands::
 
- cd /boot
- sudo mkimage -C none -A arm -T script -d boot.cmd boot.scr
+```console
+foo@bar:~$ cd /boot
+```
+
+```console
+foo@bar:~$ sudo mkimage -C none -A arm -T script -d boot.cmd boot.scr
+```
 
 After these steps reboot the RED-Brick to get a serial console through a Debug Brick.
