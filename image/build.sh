@@ -34,11 +34,11 @@ compile-source() {
 }
 
 make-root-fs() {
-    ./${FUNCNAME[0]}.sh $IMAGE_CONFIG
+    echo "tf" | sudo -S ./${FUNCNAME[0]}.sh $IMAGE_CONFIG
 }
 
 make-image() {
-    ./${FUNCNAME[0]}.sh $IMAGE_CONFIG
+    echo "tf" | sudo -S ./${FUNCNAME[0]}.sh $IMAGE_CONFIG
 }
 
 start-apt-cacher() {

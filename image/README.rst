@@ -48,6 +48,11 @@ This script will execute the other scripts in the right order. If you have Docke
 installed then the script will automatically try to fetch the official Docker image
 and try to build using the Docker container.
 
+**NOTE:**
+Right after executing this script if Docker is being used then the user will be
+prompted to provide a password which is ``tf``. This is required to execute the
+Docker container.
+
 After this script has successfully finished excuting the generated image can be found
 in the ``./build/output`` directory.
 
