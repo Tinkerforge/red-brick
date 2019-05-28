@@ -48,10 +48,10 @@ This script will execute the other scripts in the right order. If you have Docke
 installed then the script will automatically try to fetch the official Docker image
 and try to build using the Docker container.
 
-**NOTE:**
-Right after executing this script if Docker is being used then the user will be
-prompted to provide a password which is ``tf``. This is required to execute the
-Docker container.
+.. note::
+ Right after executing this script if Docker is being used then the user will be
+ prompted to provide a password which is ``tf``. This is required to execute the
+ Docker container.
 
 After this script has successfully finished excuting the generated image can be found
 in the ``./build/output`` directory.
@@ -145,7 +145,6 @@ with the following line::
 Then move the file to RED-Brick's ``/boot`` directory and execute the following commands::
 
  foo@bar:~$ cd /boot
-
  foo@bar:~$ sudo mkimage -C none -A arm -T script -d boot.cmd boot.scr
 
 After these steps reboot the RED-Brick to get a serial console through a Debug Brick.
