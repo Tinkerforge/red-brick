@@ -2,9 +2,8 @@
 # -*- coding: utf-8 -*-
 
 from tinkerforge.ip_connection import IPConnection
-from tinkerforge.bricklet_gps import BrickletGPS
+from tinkerforge.bricklet_gps_v2 import BrickletGPSV2
 
-import time
 import datetime
 from subprocess import Popen, PIPE
 from threading import Semaphore, Timer
@@ -26,6 +25,11 @@ class GPSTimeToLinuxTime:
         self.enum_sema = Semaphore(0)
         self.gps_uid = None
         self.gps_time = None
+        self.has_fix = None
+        self.satellites_view = None
+        self.now_time1 = None
+        self.now_time2 = None
+        self.now_time3 = None
         self.timer = None
 
     # go trough the functions to update date and time
@@ -78,8 +82,11 @@ class GPSTimeToLinuxTime:
 
         try:
             # Create GPS device object
-            self.gps = BrickletGPS(self.gps_uid, self.ipcon)
-            date, time = self.gps.get_date_time()
+            self.gps = BrickletGPSV2(self.gps_uid, self.ipcon)
+            self.has_fix, self.satellites_view = self.gps.get_status()
+            self.now_time1 = datetime.datetime.utcnow()
+            date, time1 = self.gps.get_date_time()
+            self.now_time2 = datetime.datetime.utcnow()
 
             yy = date % 100
             yy += 2000
@@ -88,29 +95,30 @@ class GPSTimeToLinuxTime:
             date //= 100
             dd = date
 
-            time //= 1000
-            ss = time % 100
-            time //= 100
-            mins = time % 100
-            time //= 100
-            hh = time
+            mus = 1000 * (time1 % 1000)
+            time1 //= 1000
+            ss = time1 % 100
+            time1 //= 100
+            mins = time1 % 100
+            time1 //= 100
+            hh = time1
 
-            self.gps_time = datetime.datetime(yy, mm, dd, hh, mins, ss)
+            self.gps_time = datetime.datetime(yy, mm, dd, hh, mins, ss, mus)
         except:
             return False
 
         return True
 
     def are_times_equal(self):
-        # Are we more then 3 seconds off?
-        if abs(int(self.gps_time.strftime("%s")) - time.time()) > 3:
+        # Are we more than 0.5 seconds off?
+        if abs((self.gps_time - self.now_time1)/datetime.timedelta(seconds=1)) > 0.5:
             return False
 
         return True
 
     def is_time_crazy(self):
         try:
-            return self.gps_time.year < 2014
+            return self.gps_time.year < 2019
         except:
             return True
 
@@ -122,8 +130,11 @@ class GPSTimeToLinuxTime:
             # Set date as root
             timestamp = (self.gps_time - datetime.datetime(1970, 1, 1)) / datetime.timedelta(seconds=1)
             command = ['/usr/bin/sudo', '-S']
-            command.extend('/bin/date +%s -u -s @{0}'.format(timestamp).split(' '))
+            command.extend('/bin/date +%s%N -u -s @{0}'.format(timestamp).split(' '))
             Popen(command, stdout=PIPE, stdin=PIPE).communicate(SUDO_PASSWORD)
+            self.now_time3 = datetime.datetime.utcnow()
+            print('now: ',self.now_time1, self.now_time2, self.now_time3,' gps: ', self.gps_time, '\n')
+            print('has_fix: ', self.has_fix, 'satellites_view: ',self.satellites_view, '\n')
         except:
             return False
 
@@ -132,15 +143,15 @@ class GPSTimeToLinuxTime:
     def cb_enumerate(self, uid, connected_uid, position, hardware_version, 
                      firmware_version, device_identifier, enumeration_type):
         # If more then one GPS Bricklet is connected we will use the first one that we find
-        if device_identifier == BrickletGPS.DEVICE_IDENTIFIER:
+        if device_identifier == BrickletGPSV2.DEVICE_IDENTIFIER:
             self.gps_uid = uid
             self.enum_sema.release()
 
 if __name__ == '__main__':
-    with GPSTimeToLinuxTime() as (status, time):
+    with GPSTimeToLinuxTime() as (status, time1):
         if status == 0:
-            print("Updated time: {0}".format(str(time)))
+            print("Updated time: UTC {0}".format(str(time1)))
         elif status == 1:
-            print("Times are already equal: {0}".format(str(time)))
+            print("Times are already equal: UTC {0}".format(str(time1)))
         else:
             print("Failed with status: {0}".format(status))
