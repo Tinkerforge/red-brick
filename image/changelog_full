@@ -102,12 +102,21 @@
   Java 2.1.18, JavaScript 2.0.18, Octave 2.0.18, Perl 2.1.17, PHP 2.1.17,
   Python 2.1.17, Ruby 2.1.17, Shell 2.1.17, Visual Basic .NET 2.1.17
 
-2018-11-12: 1.13 (<unknown>)
+2018-11-12: 1.13 (d662291)
 - Disable drm_kms_helper polling to solve system stalls every 10 seconds
 - Add Lua 5.3 interpreter
 - Enable loopback device support
 - Update Brick Daemon to version 2.3.2
 - Update Brick Viewer to version 2.3.16
 - Update all API bindings: C/C++ 2.1.22, C# 2.1.20, Delphi/Lazarus 2.1.21,
-  Java 2.1.20, JavaScript 2.0.20, Octave 2.0.20, Perl 2.1.19, PHP 2.1.19,
+  Java 2.1.20, JavaScript 2.1.20, Octave 2.0.20, Perl 2.1.19, PHP 2.1.19,
   Python 2.1.19, Ruby 2.1.19, Shell 2.1.19, Visual Basic .NET 2.1.19
+
+2019-08-08: 1.14 (<unknown>)
+- Add PyQt5 for Python 3 dependencies for Brick Viewer version >= 2.4.0
+- Update Brick Daemon to version 2.4.0
+- Update Brick Viewer to version 2.4.6
+- Add PIL for Python 2 and 3
+- Update all API bindings: C/C++ 2.1.25, C# 2.1.23, Delphi/Lazarus 2.1.24,
+  Java 2.1.23, JavaScript 2.1.23, Octave 2.0.23, Perl 2.1.22, PHP 2.1.22,
+  Python 2.1.22, Ruby 2.1.22, Shell 2.1.22, Visual Basic .NET 2.1.22
