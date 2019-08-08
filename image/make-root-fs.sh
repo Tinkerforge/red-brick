@@ -671,8 +671,8 @@ EOF
 # Copy RED Brick index website
 report_info "Copy RED Brick index website"
 $CHROOT <<EOF
-cp /tmp/index.wsgi /home/tf
-chown tf:tf /home/tf/index.wsgi
+cp /tmp/index.py /home/tf
+chown tf:tf /home/tf/index.py
 cp /tmp/red.css /home/tf
 chown tf:tf /home/tf/red.css
 EOF
