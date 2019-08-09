@@ -129,10 +129,10 @@ unmount
 report_info "Cleaning up root-fs directory"
 if [ -d $ROOTFS_DIR ]
 then
-	rm -rf $ROOTFS_DIR/*
-else
-	mkdir -p $ROOTFS_DIR
+	rm -rf $ROOTFS_DIR
 fi
+
+mkdir -p $ROOTFS_DIR
 
 # Mounting critical filesystems on root-fs
 report_info "Mounting critical filesystems on root-fs"

@@ -133,13 +133,13 @@ dd bs=1024 seek=$UBOOT_DD_SEEK if=$UBOOT_IMAGE_FILE of=$loop_dev
 
 # Copying root-fs to the image
 report_info "Copying root-fs to the image"
-if [ ! -d $MOUNT_DIR ]
+
+if [ -d $MOUNT_DIR ]
 then
-	mkdir -p $MOUNT_DIR
-else
 	rm -rf $MOUNT_DIR
-	mkdir -p $MOUNT_DIR
 fi
+
+mkdir -p $MOUNT_DIR
 
 mount $loop_dev_p1 $MOUNT_DIR
 $ADVCP_BIN -garp $ROOTFS_DIR/* $MOUNT_DIR/
