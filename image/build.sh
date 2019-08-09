@@ -20,7 +20,9 @@
 # Free Software Foundation, Inc., 59 Temple Place - Suite 330,
 # Boston, MA 02111-1307, USA.
 
-# Functions.
+. ./utilities.sh
+
+# Functions
 prepare-host() {
     ./${FUNCNAME[0]}.sh
 }
@@ -49,7 +51,7 @@ stop-apt-cacher() {
     ./${FUNCNAME[0]}.sh
 }
 
-# Check args.
+# Check args
 if [ "$#" -ne 1 ];
 then
   echo "Usage: $0 <IMAGE-CONFIG>"
@@ -59,7 +61,7 @@ fi
 
 IMAGE_CONFIG=$1
 
-# Executing in container.
+# Executing in container
 if grep docker /proc/1/cgroup -qa;
 then
     prepare-host && \
@@ -68,14 +70,13 @@ then
     start-apt-cacher && \
     make-root-fs && \
     stop-apt-cacher && \
-    make-image
+    make-image && \
+    report_process_finish
 
     exit 0
 fi
 
-# Executing in host.
-
-#if [ "$?" -eq 0 ];
+# Executing in host
 if [ $(which docker) ]
 then
     # Build in container.
@@ -86,7 +87,7 @@ then
     exit 0
 fi
 
-# Build in host.
+# Build in host
 echo "[$0]: Building in host"
 prepare-host && \
 update-source && \
@@ -94,4 +95,5 @@ compile-source && \
 start-apt-cacher && \
 make-root-fs && \
 stop-apt-cacher && \
-make-image
+make-image && \
+report_process_finish
