@@ -535,6 +535,7 @@ EOF
 report_info "Installing PHP features"
 $CHROOT <<EOF
 pear config-set preferred_state alpha
+pear channel-update pear.php.net
 # GROUP-START:php
 pear install --onlyreqdeps FSM Archive_Tar Archive_Zip
 pear install --onlyreqdeps Crypt_Blowfish Crypt_CHAP Crypt_DiffieHellman Crypt_GPG
