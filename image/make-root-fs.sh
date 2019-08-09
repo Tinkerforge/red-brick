@@ -868,7 +868,7 @@ EOF
 	$CHROOT <<EOF
 mv /usr/lib/python2.7/dist-packages/pip/commands/list.py /usr/lib/python2.7/dist-packages/pip/commands/list.py.org
 mv /tmp/pip-list.py /usr/lib/python2.7/dist-packages/pip/commands/list.py
-pip list > /root/python.listing
+pip list --format=legacy > /root/python.listing
 mv /usr/lib/python2.7/dist-packages/pip/commands/list.py.org /usr/lib/python2.7/dist-packages/pip/commands/list.py
 mv /root/python.listing /root/python-$CONFIG_NAME.listing
 EOF
