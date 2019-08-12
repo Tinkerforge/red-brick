@@ -796,7 +796,7 @@ $CHROOT <<EOF
 wget -qO - 'https://bintray.com/user/downloadSubjectPublicKey?username=openhab' | apt-key add -
 echo 'deb https://dl.bintray.com/openhab/apt-repo2 stable main' | tee /etc/apt/sources.list.d/openhab2.list
 apt-get update
-apt-get install openhab2 openhab2-addons openhab2-addons-legacy -y
+apt-get install openhab2 openhab2-addons openhab2-addons-legacy -y --allow-unauthenticated
 systemctl daemon-reload
 systemctl stop openhab2
 systemctl disable openhab2
