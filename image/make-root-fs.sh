@@ -127,6 +127,9 @@ unmount
 
 # Cleaning up root-fs directory
 report_info "Cleaning up root-fs directory"
+
+rm -f $BUILD_DIR/root-fs-*.built
+
 if [ -d $ROOTFS_DIR ]
 then
 	rm -rf $ROOTFS_DIR

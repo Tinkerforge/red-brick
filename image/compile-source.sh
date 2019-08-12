@@ -40,14 +40,15 @@ fi
 CONFIG_NAME=$1
 . $CONFIG_DIR/image.conf
 
+# Cleaning up .built files
+rm -f $BUILD_DIR/u-boot-*.built
+rm -f $BUILD_DIR/kernel-*.built
+
 # Checking for the build directory
 if [ ! -d $BUILD_DIR ]
 then
 	mkdir -p $BUILD_DIR
 fi
-
-# Cleaning up .built files
-rm -f $BUILD_DIR/u-boot-*.built
 
 # Check U-Boot source directory
 if [ ! -d $UBOOT_SRC_DIR/arch ]
