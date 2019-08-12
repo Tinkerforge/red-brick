@@ -112,7 +112,7 @@
   Java 2.1.20, JavaScript 2.1.20, Octave 2.0.20, Perl 2.1.19, PHP 2.1.19,
   Python 2.1.19, Ruby 2.1.19, Shell 2.1.19, Visual Basic .NET 2.1.19
 
-2019-08-08: 1.14 (<unknown>)
+2019-08-12: 1.14 (<unknown>)
 - Add PyQt5 for Python 3 dependencies for Brick Viewer version >= 2.4.0
 - Update Brick Daemon to version 2.4.0
 - Update Brick Viewer to version 2.4.6
