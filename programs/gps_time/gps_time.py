@@ -2,10 +2,13 @@
 # -*- coding: utf-8 -*-
 
 from tinkerforge.ip_connection import IPConnection
+from tinkerforge.bricklet_gps import BrickletGPS
 from tinkerforge.bricklet_gps_v2 import BrickletGPSV2
 
-import datetime
-from subprocess import Popen, PIPE
+import sys
+import time
+import subprocess
+from datetime import datetime, timedelta, timezone
 from threading import Semaphore, Timer
 
 HOST = "localhost"
@@ -15,39 +18,42 @@ SUDO_PASSWORD = b'tf\n'
 class GPSTimeToLinuxTime:
     def __init__(self):
         # Create IP connection
-        self.ipcon = IPConnection() 
-        
+        self.ipcon = IPConnection()
+
         # Connect to brickd
         self.ipcon.connect(HOST, PORT)
         self.ipcon.register_callback(IPConnection.CALLBACK_ENUMERATE, self.cb_enumerate)
         self.ipcon.enumerate()
 
-        self.enum_sema = Semaphore(0)
+        self.enumerate_handshake = Semaphore(0)
         self.gps_uid = None
-        self.gps_time = None
-        self.has_fix = None
-        self.satellites_view = None
-        self.now_time1 = None
-        self.now_time2 = None
-        self.now_time3 = None
+        self.gps_class = None
+        self.gps_has_fix_function = None
+        self.gps_datetime = None
+        self.gps_has_fix = None
         self.timer = None
 
     # go trough the functions to update date and time
     def __enter__(self):
         if self.is_ntp_present():
             return -1, None
+
         if not self.get_gps_uid():
             return -2, None
+
         if not self.get_gps_time():
             return -3, None
+
+        if not self.gps_has_fix:
+            return 2, None
+
         if self.are_times_equal():
             return 1, self.gps_time
-        if self.is_time_crazy():
-            return -4, None
+
         if not self.set_linux_time():
             return -5, None
 
-        return 0, self.gps_time
+        return 0, self.gps_datetime
 
     def __exit__(self, type, value, traceback):
         try:
@@ -68,9 +74,9 @@ class GPSTimeToLinuxTime:
     def get_gps_uid(self):
         try:
             # Release semaphore after 1 second (if no GPS Bricklet is found)
-            self.timer = Timer(1, self.enum_sema.release)
+            self.timer = Timer(1, self.enumerate_handshake.release)
             self.timer.start()
-            self.enum_sema.acquire()
+            self.enumerate_handshake.acquire()
         except:
             return False
 
@@ -81,77 +87,78 @@ class GPSTimeToLinuxTime:
             return False
 
         try:
-            # Create GPS device object
             self.gps = BrickletGPSV2(self.gps_uid, self.ipcon)
-            self.has_fix, self.satellites_view = self.gps.get_status()
-            self.now_time1 = datetime.datetime.utcnow()
-            date, time1 = self.gps.get_date_time()
-            self.now_time2 = datetime.datetime.utcnow()
+            self.gps_has_fix = self.gps_has_fix_function(self.gps)
 
-            yy = date % 100
-            yy += 2000
-            date //= 100
-            mm = date % 100
-            date //= 100
-            dd = date
+            if not self.gps_has_fix:
+                return True
 
-            mus = 1000 * (time1 % 1000)
-            time1 //= 1000
-            ss = time1 % 100
-            time1 //= 100
-            mins = time1 % 100
-            time1 //= 100
-            hh = time1
+            gps_date, gps_time = self.gps.get_date_time()
 
-            self.gps_time = datetime.datetime(yy, mm, dd, hh, mins, ss, mus)
+            gps_year = 2000 + (gps_date % 100)
+            gps_date //= 100
+            gps_month = gps_date % 100
+            gps_date //= 100
+            gps_day = gps_date
+
+            gps_microsecond = 1000 * (gps_time % 1000)
+            gps_time //= 1000
+            gps_second = gps_time % 100
+            gps_time //= 100
+            gps_minute = gps_time % 100
+            gps_time //= 100
+            gps_hour = gps_time
+
+            self.gps_datetime = datetime(gps_year, gps_month, gps_day,
+                                         gps_hour, gps_minute, gps_second,
+                                         gps_microsecond, tzinfo=timezone.utc)
         except:
             return False
 
         return True
 
     def are_times_equal(self):
-        # Are we more than 0.5 seconds off?
-        if abs((self.gps_time - self.now_time1)/datetime.timedelta(seconds=1)) > 0.5:
-            return False
-
-        return True
-
-    def is_time_crazy(self):
-        try:
-            return self.gps_time.year < 2019
-        except:
-            return True
+        return False
+        # Are we more than 1 seconds off?
+        return abs((self.gps_datetime - self.local_datetime) / timedelta(seconds=1)) < 1
 
     def set_linux_time(self):
-        if self.gps_time == None:
+        if self.gps_datetime == None:
             return False
 
         try:
             # Set date as root
-            timestamp = (self.gps_time - datetime.datetime(1970, 1, 1)) / datetime.timedelta(seconds=1)
-            command = ['/usr/bin/sudo', '-S']
-            command.extend('/bin/date +%s%N -u -s @{0}'.format(timestamp).split(' '))
-            Popen(command, stdout=PIPE, stdin=PIPE).communicate(SUDO_PASSWORD)
-            self.now_time3 = datetime.datetime.utcnow()
-            print('now: ',self.now_time1, self.now_time2, self.now_time3,' gps: ', self.gps_time, '\n')
-            print('has_fix: ', self.has_fix, 'satellites_view: ',self.satellites_view, '\n')
+            timestamp = int((self.gps_datetime - datetime(1970, 1, 1, tzinfo=timezone.utc)) / timedelta(seconds=1) * 1000000000)
+            command = ['/usr/bin/sudo', '-S', '-p', '', '/bin/date', '+%s.%N', '-u', '-s', '@{0}.{1:09}'.format(timestamp // 1000000000, timestamp % 1000000000)]
+            subprocess.Popen(command, stdout=subprocess.PIPE, stdin=subprocess.PIPE).communicate(SUDO_PASSWORD)
         except:
             return False
 
         return True
 
-    def cb_enumerate(self, uid, connected_uid, position, hardware_version, 
+    def cb_enumerate(self, uid, connected_uid, position, hardware_version,
                      firmware_version, device_identifier, enumeration_type):
         # If more then one GPS Bricklet is connected we will use the first one that we find
-        if device_identifier == BrickletGPSV2.DEVICE_IDENTIFIER:
+        if device_identifier == BrickletGPS.DEVICE_IDENTIFIER:
             self.gps_uid = uid
-            self.enum_sema.release()
+            self.gps_class = BrickletGPS
+            self.gps_has_fix_function = lambda gps: gps.get_status().fix != gps.FIX_NO_FIX
+            self.enumerate_handshake.release()
+        elif device_identifier == BrickletGPSV2.DEVICE_IDENTIFIER:
+            self.gps_uid = uid
+            self.gps_class = BrickletGPSV2
+            self.gps_has_fix_function = lambda gps: gps.get_status().has_fix
+            self.enumerate_handshake.release()
 
 if __name__ == '__main__':
-    with GPSTimeToLinuxTime() as (status, time1):
+    with GPSTimeToLinuxTime() as (status, gps_datetime):
         if status == 0:
-            print("Updated time: UTC {0}".format(str(time1)))
+            print("Updated time: {0}".format(gps_datetime.strftime('%Y-%m-%d %H:%M:%S.%f %Z')))
         elif status == 1:
-            print("Times are already equal: UTC {0}".format(str(time1)))
+            print("Times are already equal: {0}".format(gps_datetime.strftime('%Y-%m-%d %H:%M:%S.%f %Z')))
+        elif status == 2:
+            print("No Fix, no GPS time available")
+            sys.exit(1)
         else:
             print("Failed with status: {0}".format(status))
+            sys.exit(2)
