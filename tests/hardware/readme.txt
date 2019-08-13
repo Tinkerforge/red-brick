@@ -16,6 +16,7 @@ RED Brick Test Procedure
 - Connect Ethernet Extension to network
 - Connect Adafruit 5" HDMI display to HDMI and USB of the RED Brick
 - Power Step-Down Power Supply
+- Check that all three LEDs work
 - Connect mini-USB cable to RED Brick
 - Wait for the tester.py program to show the test results on the HDMI display
 - Test is successful if RED Brick shows up in Brick Viewer on PC and all test

@@ -56,10 +56,14 @@ try:
     if not stack_success:
         overall_success = False
 
-    # check for Adafruit 5" HDMI display
+    # check for Adafruit 5" HDMI display 3G USB stick
     dmesg('>>> USB:        Testing')
 
-    usb_success = b'ID 04d8:0c02 Microchip Technology, Inc.' in subprocess.check_output('lsusb')
+    lsusb = subprocess.check_output('lsusb')
+
+    usb_success = b'ID 04d8:0c02 Microchip Technology, Inc.' in lsusb and \
+                  (b'ID 12d1:1001 Huawei Technologies Co., Ltd. E169/E620/E800 HSDPA Modem' in lsusb or \
+                   b'ID 12d1:1446 Huawei Technologies Co., Ltd. Broadband stick (modem on)' in lsusb)
 
     dmesg('>>> USB:        {0}'.format('Success +++' if usb_success else 'Failure ---'))
 
