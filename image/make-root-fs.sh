@@ -840,6 +840,21 @@ apt-key adv --keyserver hkp://keyserver.ubuntu.com:80 --recv-keys 3FA7E0328081BF
 apt-get update
 EOF
 
+# Installing RTL8821CU driver
+report_info "Installing RTL8821CU driver"
+$CHROOT <<EOF
+cp /usr/src/linux-headers-$KERNEL_RELEASE/arch/arm/Makefile /usr/src/linux-headers-$KERNEL_RELEASE/arch/arm/Makefile.$(date +%Y%m%d%H%M)
+sed -i 's/-msoft-float//' /usr/src/linux-headers-$KERNEL_RELEASE/arch/arm/Makefile
+ln -s /usr/src/linux-headers-$KERNEL_RELEASE/arch/arm /usr/src/linux-headers-$KERNEL_RELEASE/arch/armv7l
+mkdir -p /usr/tinkerforge/drivers
+cd /usr/tinkerforge/drivers
+git clone --depth=1 https://github.com/brektrou/rtl8821CU.git
+cd rtl8821CU/
+mv ./dkms-install.sh ./dkms-install.sh.org
+cp /tmp/dkms-install.sh ./
+./dkms-install.sh $KERNEL_RELEASE
+EOF
+
 if [ "$DRAFT_MODE" = "no" ]
 then
 	# Generating dpkg listing

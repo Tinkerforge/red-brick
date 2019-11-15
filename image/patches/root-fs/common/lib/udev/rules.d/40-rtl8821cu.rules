@@ -1,0 +1,1 @@
+echo ATTR{idVendor}=="0bda", ATTR{idProduct}=="1a2b", RUN+="/usr/sbin/usb_modeswitch -KW -v 0bda -p 1a2b"
