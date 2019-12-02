@@ -840,8 +840,8 @@ apt-key adv --keyserver hkp://keyserver.ubuntu.com:80 --recv-keys 3FA7E0328081BF
 apt-get update
 EOF
 
-# Installing RTL8821CU driver
-report_info "Installing RTL8821CU driver"
+# Installing RTL8821CU WiFi driver
+report_info "Installing RTL8821CU WiFi driver"
 $CHROOT <<EOF
 cp /usr/src/linux-headers-$KERNEL_RELEASE/arch/arm/Makefile /usr/src/linux-headers-$KERNEL_RELEASE/arch/arm/Makefile.$(date +%Y%m%d%H%M)
 sed -i 's/-msoft-float//' /usr/src/linux-headers-$KERNEL_RELEASE/arch/arm/Makefile
@@ -851,8 +851,21 @@ cd /usr/tinkerforge/drivers
 git clone --depth=1 https://github.com/brektrou/rtl8821CU.git
 cd rtl8821CU/
 mv ./dkms-install.sh ./dkms-install.sh.org
-cp /tmp/dkms-install.sh ./
+cp /tmp/rtl8821cu/dkms-install.sh ./
 ./dkms-install.sh $KERNEL_RELEASE
+EOF
+
+# Installing RTL8821CU Bluetooth driver
+report_info "Installing RTL8821CU Bluetooth driver"
+$CHROOT <<EOF
+cd /tmp/rtl8821cu
+cp -avr ./rtl_bt /lib/firmware/
+cd /usr/tinkerforge/drivers
+git clone --depth=1 https://github.com/MrCapone/btrtl-dkms.git
+cd ./btrtl-dkms
+mkdir /usr/src/btrtl-0.2
+git archive master | sudo tar -x -C /usr/src/btrtl-0.2
+dkms -k $KERNEL_RELEASE install btrtl/0.2
 EOF
 
 if [ "$DRAFT_MODE" = "no" ]
