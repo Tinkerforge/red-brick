@@ -123,6 +123,7 @@
 
 2019-12-03: 1.15 (eb75c33)
 - Add driver support for RTL8821CU USB WiFi + Bluetooth dongle
+- Workaround Ethernet Extension W5500 buffer config reset bug
 - Update Brick Viewer to version 2.4.9
 - Update all API bindings: C/C++ 2.1.27, C# 2.1.25, Delphi/Lazarus 2.1.26,
   Java 2.1.25, JavaScript 2.1.25, Octave 2.0.25, Perl 2.1.25, PHP 2.1.24,
