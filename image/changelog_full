@@ -120,3 +120,10 @@
 - Update all API bindings: C/C++ 2.1.25, C# 2.1.23, Delphi/Lazarus 2.1.24,
   Java 2.1.23, JavaScript 2.1.23, Octave 2.0.23, Perl 2.1.22, PHP 2.1.22,
   Python 2.1.22, Ruby 2.1.22, Shell 2.1.22, Visual Basic .NET 2.1.22
+
+2019-12-03: 1.15 (<unknown>)
+- Add driver support for RTL8821CU USB WiFi + Bluetooth dongle
+- Update Brick Viewer to version 2.4.9
+- Update all API bindings: C/C++ 2.1.27, C# 2.1.25, Delphi/Lazarus 2.1.26,
+  Java 2.1.25, JavaScript 2.1.25, Octave 2.0.25, Perl 2.1.25, PHP 2.1.24,
+  Python 2.1.24, Ruby 2.1.24, Shell 2.1.24, Visual Basic .NET 2.1.24
