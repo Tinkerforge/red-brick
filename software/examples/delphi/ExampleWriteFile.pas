@@ -50,19 +50,21 @@ var errorCode: byte; sessionId: word; remotePathStringId: word; remoteFileId: wo
     buffer: TArray0To60OfUInt8; lengthRead: longint; localFile: file; lengthWritten: byte;
     counter: longint;
 begin
-  { Create session }
-  red.CreateSession(60, errorCode, sessionId);
-  CheckError('CreateSession', errorCode);
-
   { Open local file for reading }
   Assign(localFile, localPath);
   Reset(localFile, 1);
+
+  { Create session }
+  red.CreateSession(60, errorCode, sessionId);
+  CheckError('CreateSession', errorCode);
 
   { Wrap remote path string }
   remotePathStringId := AllocateString(sessionId, remotePath);
 
   { Create remote non-executable file for writing as user/group tf }
-  red.OpenFile(remotePathStringId, BRICK_RED_FILE_FLAG_WRITE_ONLY or BRICK_RED_FILE_FLAG_CREATE or BRICK_RED_FILE_FLAG_NON_BLOCKING,
+  red.OpenFile(remotePathStringId,
+               BRICK_RED_FILE_FLAG_WRITE_ONLY or BRICK_RED_FILE_FLAG_CREATE or
+               BRICK_RED_FILE_FLAG_TRUNCATE or BRICK_RED_FILE_FLAG_NON_BLOCKING,
                420 { 0o644 }, 1000, 1000, sessionId, errorCode, remoteFileId);
   CheckError('OpenFile', errorCode);
 
