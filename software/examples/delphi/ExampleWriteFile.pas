@@ -70,7 +70,7 @@ begin
   counter := 500;
 
   repeat
-    BlockRead(localFile, buffer, 60, lengthRead);
+    BlockRead(localFile, buffer, 61, lengthRead);
     red.WriteFile(remoteFileId, buffer, lengthRead, errorCode, lengthWritten);
     CheckError('WriteFile', errorCode);
 
