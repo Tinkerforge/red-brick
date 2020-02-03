@@ -3,11 +3,11 @@
 
 HOST = 'localhost'
 PORT = 4223
-UID = '3dfEZD' # Change to your UID
+UID = 'XXYYZZ' # Change XXYYZZ to the UID of your RED Brick
 PROGRAM = 'test' # Change to your program identifier
 
 from tinkerforge.ip_connection import IPConnection
-from tinkerforge.brick_red import RED
+from tinkerforge.brick_red import BrickRED
 
 def check_error(error_code, *args):
     if error_code != 0:
@@ -57,7 +57,7 @@ def start_program(red, identifier):
 
 if __name__ == '__main__':
     ipcon = IPConnection() # Create IP connection
-    red = RED(UID, ipcon) # Create device object
+    red = BrickRED(UID, ipcon) # Create device object
 
     ipcon.connect(HOST, PORT) # Connect to brickd
     # Don't use device before ipcon is connected
