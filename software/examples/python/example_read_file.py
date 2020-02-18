@@ -24,7 +24,7 @@ def allocate_string(red, string, session_id):
     string_id = check_error(*red.allocate_string(len(string), string[:58], session_id))
 
     for offset in range(58, len(string), 58):
-        check_error(*red.set_string_chunk(string_id, offset, string[offset:offset + 58]))
+        check_error(red.set_string_chunk(string_id, offset, string[offset:offset + 58]))
 
     return string_id
 
