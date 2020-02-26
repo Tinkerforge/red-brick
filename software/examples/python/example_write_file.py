@@ -7,6 +7,7 @@ UID = 'XXYYZZ' # Change XXYYZZ to the UID of your RED Brick
 LOCAL_PATH = 'foobar.txt' # Change to your local path
 REMOTE_PATH = '/home/tf/foobar.txt' # Change to your remote path
 
+import sys
 from tinkerforge.ip_connection import IPConnection
 from tinkerforge.brick_red import BrickRED
 
@@ -51,6 +52,9 @@ def write_file(red, local_path, remote_path):
 
     while True:
         data = list(local_file.read(61))
+
+        if sys.version_info[0] < 3:
+            data = map(ord, data)
 
         if len(data) == 0:
             break
