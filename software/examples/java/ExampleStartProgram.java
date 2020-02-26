@@ -5,7 +5,7 @@ import com.tinkerforge.TinkerforgeException;
 public class ExampleStartProgram {
 	private static final String HOST = "localhost";
 	private static final int PORT = 4223;
-	private static final String UID = "3dfEZD"; // Change to your UID
+	private static final String UID = "XXYYZZ"; // Change XXYYZZ to the UID of your RED Brick
 	private static final String PROGRAM = "test"; // Change to your program identifier
 
 	private static void checkError(short errorCode) {
