@@ -54,7 +54,7 @@ def get_string(red, string_id):
 
     return string.decode('utf-8')
 
-def list_diretory(red, directory_path):
+def list_directory(red, directory_path):
     # Create session
     session_id = check_error(*red.create_session(60))
 
@@ -91,7 +91,7 @@ if __name__ == '__main__':
     ipcon.connect(HOST, PORT) # Connect to brickd
     # Don't use device before ipcon is connected
 
-    list_diretory(red, DIRECTORY_PATH)
+    list_directory(red, DIRECTORY_PATH)
 
     input("Press key to exit\n") # Use raw_input() in Python 2
     ipcon.disconnect()
