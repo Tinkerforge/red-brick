@@ -13,8 +13,7 @@ from tinkerforge.brick_red import BrickRED
 
 def check_error(error_code, *args):
     if error_code != 0:
-        print('RED Brick error occurred: {0}'.format(error_code))
-        exit(1)
+        raise Exception('RED Brick error occurred: {0}'.format(error_code))
 
     if len(args) == 1:
         return args[0]
