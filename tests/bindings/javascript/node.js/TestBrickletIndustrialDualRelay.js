@@ -21,6 +21,10 @@ ipcon.on(Tinkerforge.IPConnection.CALLBACK_CONNECTED,
 
         setTimeout(function() {
             dr.setValue(true, true);
+
+            setTimeout(function() {
+                process.exit(0);
+            }, 500);
         }, 1000);
     }
 );
