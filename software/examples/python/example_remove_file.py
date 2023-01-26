@@ -83,6 +83,7 @@ def remove_file(red, remote_path):
         time.sleep(0.1)
 
         state, timestamp, exit_code = check_error(*red.get_process_state(process_id))
+        check_error(red.keep_session_alive(session_id, 10))
 
     check_error(red.release_object(process_id, session_id))
 
